@@ -189,7 +189,7 @@ int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * 
 
 			if ( ! b )
 			{
-				a = 2; /* a new block of pattern is found */
+				a ++; /* a new block in pattern is found */
 				kkk = k;
 				iii = i;
 

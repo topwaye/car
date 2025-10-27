@@ -231,14 +231,8 @@ int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * 
 						break;
 					}
 
-					if ( a == 2 )
-					{
-						a = 3; /* before a new new block will be found in pattern, never go here */
-						k = kkk;
-						i = iii;
-					}
-
-					i ++;
+					k = kkk;
+					i = ++ iii;
 					continue;
 				}
 

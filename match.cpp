@@ -156,7 +156,6 @@ int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * 
 	char * pos;
 	int i, k;
 	int a, b, ii;
-	int kkk, iii;
 
 	i = * next;
 
@@ -189,24 +188,23 @@ int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * 
 
 			if ( ! b )
 			{
-				a ++; /* a new block in pattern is found */
-				kkk = k;
-				iii = i;
+				/* a new block in pattern is found */
 
-				if ( i == src_len ) /* must be here, do NOT move this line */
+				while ( i < src_len )
 				{
-					a = 0;
-					i = ii;
-					break;
+					if ( ! do_match_ex ( wildcard, pos + k, src, src_len, & i ) )
+					{
+						i ++;
+						continue;
+					}
+
+					a = 1;
+					goto quit;
 				}
 
-				if ( *( src + i ) != *( pos + k ) )
-				{
-					i ++;
-					continue;
-				}
-
-				i ++;
+				a = 0;
+				i = ii;
+				break;
 			}
 		}
 		else if ( a && ! b )
@@ -224,16 +222,9 @@ int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * 
 
 				if ( *( src + i ) != *( pos + k ) )
 				{
-					if ( a == 1 )
-					{
-						a = 0;
-						i = ii;
-						break;
-					}
-
-					k = kkk;
-					i = ++ iii;
-					continue;
+					a = 0;
+					i = ii;
+					break;
 				}
 
 				i ++;
@@ -249,7 +240,7 @@ int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * 
 
 	if ( a && b ) /* b must be after a, do NOT move this line */
 		i = src_len;
-
+quit:
 	* next = i;
 
 	return a;

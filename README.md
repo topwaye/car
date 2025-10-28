@@ -14,7 +14,7 @@ perhaps this program can help you fulfill your wish, quickly reading through fil
 
 this programme automatically inserts tracing source code into all PHP files, so that a tracing report is generated when the PHP files run, then this tracking report will be processed sequentially by this program, generating a directory tree on the disk
 
-this directory tree contains all the files used in a single PHP execution scope which is exactly what we want to know
+this directory tree contains all the files used in a single PHP execution scope, which is exactly what we want to know
 
 this is how we can quickly understand PHP projects with thousands of lines of code
 

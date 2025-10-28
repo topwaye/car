@@ -1,6 +1,6 @@
 # CAR : Computer Aided Read
 
-how to read files with thousands of lines of code. it will take you decades to read them all
+how to read files with thousands of lines of code? it will take you decades to read them all
 
 is there a way to quickly finish reading them? only a prodigy can manage to do it, but most of us are not prodigies
 

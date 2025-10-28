@@ -188,7 +188,7 @@ int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * 
 
 			if ( ! b )
 			{
-				/* a new block in pattern is found */
+				/* a new block in pattern was found, therefore, reenter */
 
 				while ( i < src_len )
 				{
@@ -198,7 +198,6 @@ int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * 
 						continue;
 					}
 
-					a = 1;
 					goto quit;
 				}
 

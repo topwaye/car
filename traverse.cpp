@@ -85,14 +85,14 @@ void do_command ( char * filename, char wildcard, char * header, char * footer, 
     _close ( fh );
 }
 
-void traverse ( char * directory, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude )
+void traverse ( char * directory, const char * specification, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude )
 {
     char path [ _MAX_PATH ];
     struct __finddata64_t info;
     intptr_t handle;
 
     copy_string ( directory, path, _MAX_PATH );
-    concatenate_string ( "*.php", path, _MAX_PATH );
+    concatenate_string ( specification, path, _MAX_PATH );
 
     handle = _findfirst64 ( path, &info );
     if ( handle != -1 )
@@ -117,7 +117,7 @@ void traverse ( char * directory, char wildcard, char * header, char * footer, c
                     continue;
 
 				concatenate_string ( "/", path, _MAX_PATH );
-                traverse ( path, wildcard, header, footer, pattern, replace, exclude );
+                traverse ( path, specification, wildcard, header, footer, pattern, replace, exclude );
             }
             else
             {

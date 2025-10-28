@@ -71,7 +71,7 @@ int test_traversing_phase_1 ( )
 	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
 
-	traverse ( path, '?', header, footer, pattern, replace, exclude );
+	traverse ( path, "*.php", '?', header, footer, pattern, replace, exclude );
 
 	return 0;
 }
@@ -94,7 +94,7 @@ int test_traversing_phase_2 ( )
 	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
 
-	traverse ( path, '*', header, footer, pattern, replace, exclude );
+	traverse ( path, "*.php", '*', header, footer, pattern, replace, exclude );
 
 	return 0;
 }
@@ -117,7 +117,7 @@ int test_traversing_phase_3 ( )
 	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
 
-	traverse ( path, '*', header, footer, pattern, replace, exclude );
+	traverse ( path, "*.php", '*', header, footer, pattern, replace, exclude );
 
 	return 0;
 }
@@ -182,7 +182,7 @@ int test_directory ( )
 void do_test ( )
 {
 	test_match ( );
-	test_traversing_phase_1 ( );
+	test_traversing_phase_1();
 	test_traversing_phase_2 ( );
 	test_traversing_phase_3 ( );
 	test_report_phase_1 ( );

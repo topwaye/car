@@ -11,7 +11,7 @@
 #ifndef TRAVERSE_H
 #define TRAVERSE_H
 
-void traverse ( char * directory, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude );
+void traverse ( char * directory, const char * specification, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude );
 
 #endif
 

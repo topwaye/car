@@ -46,7 +46,7 @@ void traverse ( char * directory, const char * specification, char wildcard, cha
  *     printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
  *     printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
  *
- *     traverse ( path, '*', header, footer, pattern, replace, exclude );
+ *     traverse ( path, "*.php", '*', header, footer, pattern, replace, exclude );
  *
  *     free ( buffer );
  *

@@ -33,7 +33,6 @@ int match_ex ( char wildcard, char * pattern, char * src, int src_len, int granu
 /* prototype do_match function */
 int match ( char * target, char * src, int src_len, int granularity );
 
-
 int copy_and_replace ( char * src, int src_len, char * dst, int dst_size,
 					   char * target, char * replace );
 

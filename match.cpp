@@ -14,6 +14,61 @@
 
 #include <stdarg.h>
 
+int string_length ( const char * src )
+{
+	int i;
+
+	i = 0;
+	while ( *( src + i ) )
+		i ++;
+
+	return i;
+}
+
+int compare_string_ex ( int src_index, int src_delta, const char * src, const char * dst )
+{
+	int i, h, n, ii;
+
+	n = string_length ( src );
+
+	if ( src_index < 0 )
+	{
+		src_index = -src_index;
+
+		if ( src_index > n )
+			return -1;
+
+		if ( src_index + src_delta > n + 1 )
+			return -1;
+
+		i = n + 1 - src_index - src_delta;
+	}
+	else
+	{
+		if ( src_index >= n )
+			return -1;
+
+		if ( src_index + src_delta > n )
+			return -1;
+
+		i = src_index;
+	}
+
+	h = 0;
+	do
+	{
+		if ( ! src_delta -- )
+			break;
+
+		ii = i;
+		if ( *( src + i ++ ) != *( dst + h ++ ) )
+			return 1;
+
+	} while ( *( src + ii ) );
+
+	return 0; /* matched */
+}
+
 int compare_string ( const char * src, const char * dst )
 {
 	int i, h, ii;

@@ -13,7 +13,7 @@
 
 /* if successful, returns 1. otherwise, returns 0 */
 
-int traverse ( const char * directory, const char * specification, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude );
+int traverse ( const char * directory, const char * extension, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude );
 
 #endif
 
@@ -43,7 +43,7 @@ int traverse ( const char * directory, const char * specification, char wildcard
  *     printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
  *     printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
  *
- *     traverse ( path, "*.php", '*', header, footer, pattern, replace, exclude );
+ *     traverse ( path, ".php", '*', header, footer, pattern, replace, exclude );
  *
  *     free ( buffer );
  * }

@@ -15,7 +15,11 @@
 #ifndef MATCH_H
 #define MATCH_H
 
+int string_length ( const char * src );
+
 int compare_string ( const char * src, const char * dst );
+
+int compare_string_ex ( int src_index, int src_delta, const char * src, const char * dst );
 
 int seek_string ( char c, char * src, int src_len, int * current );
 

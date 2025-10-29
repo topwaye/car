@@ -23,7 +23,7 @@
 #define SOURCE_PATH				"c:/test/"
 #define DESTINATION_PATH		"c:/test_bak/"
 
-#define FILE_SPECIFICATION		"*.php"
+#define FILE_EXTENSION			".php" /* do NOT include wildcard characters */
 
 #define REPORT_ORG_FILE			"c:/test/err.log"
 #define REPORT_TMP_FILE			"c:/test/err2.log"
@@ -75,11 +75,11 @@ int test_traversing_phase_1 ( )
 	char header [ ] = "";
 	char footer [ ] = "";
 
-	printf ( "listing %s%s\n", SOURCE_PATH, FILE_SPECIFICATION);
+	printf ( "listing %s*.%s\n", SOURCE_PATH, FILE_EXTENSION);
 	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
 	
-	return traverse ( SOURCE_PATH, FILE_SPECIFICATION, '?', header, footer, pattern, replace, exclude );
+	return traverse ( SOURCE_PATH, FILE_EXTENSION, '?', header, footer, pattern, replace, exclude );
 }
 
 int test_traversing_phase_2 ( )
@@ -90,11 +90,11 @@ int test_traversing_phase_2 ( )
 	char header [ ] = "";
 	char footer [ ] = "";
 
-	printf ( "listing %s%s\n", SOURCE_PATH, FILE_SPECIFICATION );
+	printf ( "listing %s*.%s\n", SOURCE_PATH, FILE_EXTENSION );
 	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
 
-	return traverse ( SOURCE_PATH, FILE_SPECIFICATION, '*', header, footer, pattern, replace, exclude );
+	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', header, footer, pattern, replace, exclude );
 }
 
 int test_traversing_phase_3 ( )
@@ -105,11 +105,11 @@ int test_traversing_phase_3 ( )
 	char header [ ] = "";
 	char footer [ ] = "";
 
-	printf ( "listing %s%s\n", SOURCE_PATH, FILE_SPECIFICATION );
+	printf ( "listing %s*.%s\n", SOURCE_PATH, FILE_EXTENSION );
 	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
 
-	return traverse ( SOURCE_PATH, FILE_SPECIFICATION, '*', header, footer, pattern, replace, exclude );
+	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', header, footer, pattern, replace, exclude );
 }
 
 int test_report_phase_1 ( )
@@ -181,5 +181,4 @@ int main ( )
 	free ( buffer );
 
 	return 1;
-
 }

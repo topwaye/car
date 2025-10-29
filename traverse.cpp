@@ -87,44 +87,58 @@ int do_command ( char * filename, char wildcard, char * header, char * footer, c
     return 1;
 }
 
-int traverse ( const char * directory, const char * specification, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude )
+int traverse ( const char * directory, const char * extension, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude )
 {
+    int ext_len;
     char path [ _MAX_PATH ];
     struct __finddata64_t info;
     intptr_t handle;
 
+    ext_len = string_length ( extension );
     copy_string ( directory, path, _MAX_PATH );
-    concatenate_string ( specification, path, _MAX_PATH );
+    concatenate_string ( "*.*", path, _MAX_PATH );
 
     handle = _findfirst64 ( path, &info );
     if ( handle != -1 )
     {
         do
         {
-            printf ( info.attrib & _A_RDONLY ? " Y  " : " N  " );
-            printf ( info.attrib & _A_SYSTEM ? " Y  " : " N  " );
-            printf ( info.attrib & _A_HIDDEN ? " Y  " : " N  " );
-            printf ( info.attrib & _A_ARCH ? " Y  " : " N  " );
-            printf ( "%9lld %-36s ", info.size, info.name );
-
-            copy_string ( directory, path, _MAX_PATH );
-            concatenate_string ( info.name, path, _MAX_PATH );
-
             /* determine whether this is a subdirectory */
             if ( info.attrib & _A_SUBDIR )
             {
-                printf ( "<DIR>\n" );
-
                 if ( compare_string ( info.name, "." ) == 0 || compare_string ( info.name, ".." ) == 0 )
                     continue;
 
-				concatenate_string ( "/", path, _MAX_PATH );
-                if ( ! traverse ( path, specification, wildcard, header, footer, pattern, replace, exclude ) )
+                printf ( info.attrib & _A_RDONLY ? " Y  " : " N  " );
+                printf ( info.attrib & _A_SYSTEM ? " Y  " : " N  " );
+                printf ( info.attrib & _A_HIDDEN ? " Y  " : " N  " );
+                printf ( info.attrib & _A_ARCH ? " Y  " : " N  " );
+                printf ( "%9lld %-36s ", info.size, info.name );
+
+                printf ( "<DIR>\n" );
+
+                copy_string ( directory, path, _MAX_PATH );
+                concatenate_string ( info.name, path, _MAX_PATH );
+                concatenate_string ( "/", path, _MAX_PATH );
+
+                if ( ! traverse ( path, extension, wildcard, header, footer, pattern, replace, exclude ) )
                     return 0;
             }
             else
             {
-				if ( ! do_command ( path, wildcard, header, footer, pattern, replace, exclude ) )
+                if ( compare_string_ex ( -1, ext_len, info.name, extension ) != 0 )
+                    continue;
+
+                printf ( info.attrib & _A_RDONLY ? " Y  " : " N  " );
+                printf ( info.attrib & _A_SYSTEM ? " Y  " : " N  " );
+                printf ( info.attrib & _A_HIDDEN ? " Y  " : " N  " );
+                printf ( info.attrib & _A_ARCH ? " Y  " : " N  " );
+                printf ( "%9lld %-36s ", info.size, info.name );
+
+                copy_string ( directory, path, _MAX_PATH );
+                concatenate_string ( info.name, path, _MAX_PATH );
+
+                if ( ! do_command ( path, wildcard, header, footer, pattern, replace, exclude ) )
                     return 0;
             }
 

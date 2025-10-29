@@ -146,7 +146,7 @@ int test_directory ( )
 int do_test ( )
 {
 	return test_match ( )
-		&& test_traversing_phase_1( )
+		&& test_traversing_phase_1 ( )
 		&& test_traversing_phase_2 ( )
 		&& test_traversing_phase_3 ( )
 		&& test_report_phase_1 ( )
@@ -181,4 +181,5 @@ int main ( )
 	free ( buffer );
 
 	return 1;
+
 }

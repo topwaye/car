@@ -44,8 +44,6 @@ int do_command ( char * filename, char wildcard, char * header, char * footer, c
         _close ( fh );
         return 0;
     }
-
-    printf ( "%u bytes read, ", bytes_read );
 	
 	size = MAX_FILE_SIZE;
 	pos = dst_buf;
@@ -59,8 +57,6 @@ int do_command ( char * filename, char wildcard, char * header, char * footer, c
 	bytes_copied = copy_string ( footer, pos, size, filename );
 	size -= bytes_copied;
 	bytes_copied = MAX_FILE_SIZE - size;
-
-	printf ( "%u bytes copied, ", bytes_copied );
 
 	/* seek the beginning of the file */
 	_lseek ( fh, 0L, SEEK_SET );
@@ -82,14 +78,16 @@ int do_command ( char * filename, char wildcard, char * header, char * footer, c
         return 0;
     }
 
-	printf ( "%u bytes written\n", bytes_written );
+	printf ( "%d bytes read, ", bytes_read );
+	printf ( "%d bytes copied, ", bytes_copied );
+	printf ( "%d bytes written\n", bytes_written );
 
     _close ( fh );
 
     return 1;
 }
 
-int traverse ( char * directory, const char * specification, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude )
+int traverse ( const char * directory, const char * specification, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude )
 {
     char path [ _MAX_PATH ];
     struct __finddata64_t info;

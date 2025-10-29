@@ -21,9 +21,9 @@
 
 /* if successful, returns 1. otherwise, returns 0 */
 
-int report_copy_file ( char * src_filename, char * dst_filename );
+int report_copy_file ( const char * src_filename, const char * dst_filename );
 
-int nonredundancy_copy_file ( char * src_filename, char * dst_filename );
+int nonredundancy_copy_file ( const char * src_filename, const char * dst_filename );
 
 #endif
 

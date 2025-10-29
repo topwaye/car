@@ -44,7 +44,6 @@ int copy_file ( char * src_filename, char * dst_filename )
 	char file_buf [ MAX_BUFFER_SIZE ];
 	int src_fh, dst_fh;
 	int bytes_read, bytes_written;
-	int total_bytes_read, total_bytes_written;
 
     /* open file for input */
     if ( _sopen_s ( &src_fh, src_filename, _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
@@ -61,7 +60,6 @@ int copy_file ( char * src_filename, char * dst_filename )
 		return 0;
     }
 
-	total_bytes_read = total_bytes_written = 0;
 	while ( 1 )
 	{
 		/* read in input */
@@ -77,8 +75,6 @@ int copy_file ( char * src_filename, char * dst_filename )
 		if ( bytes_read == 0 ) /* EOF */
 			break;
 
-		total_bytes_read += bytes_read;
-
 		/* write out output */
 		bytes_written = _write ( dst_fh, file_buf, bytes_read );
 		if ( bytes_written == -1 )
@@ -88,12 +84,7 @@ int copy_file ( char * src_filename, char * dst_filename )
 			_close ( src_fh );
 			return 0;
 		}
-
-		total_bytes_written += bytes_written;
 	}
-	
-	printf ( "%u bytes read, ", total_bytes_read );
-	printf ( "%u bytes written\n", total_bytes_written );
 
     _close ( dst_fh );
 	_close ( src_fh );
@@ -102,7 +93,7 @@ int copy_file ( char * src_filename, char * dst_filename )
 }
 
 /* returns the number of bytes read */
-int load_file ( char * filename )
+int load_file ( const char * filename )
 {
 	int fh;
 	int bytes_read;
@@ -123,16 +114,26 @@ int load_file ( char * filename )
         return 0;
     }
 
-    printf ( "%u bytes read\n", bytes_read );
     _close ( fh );
 
 	return bytes_read;
 }
 
-int copy_listed_files ( char * src_path, char * dst_path, char * list, int list_size )
+int copy_listed_files ( const char * listname, const char * src_path, const char * dst_path )
 {
 	int i, j, h, k, ii;
-	char list_entry [ _MAX_PATH ] = { 0 };
+	char list_entry [ _MAX_PATH ];
+	char * list;
+	int list_len;
+
+	list_len = load_file ( listname );
+	if ( ! list_len )
+	{
+		printf ( "failed to load %s\n", listname );
+		return 0;
+	}
+
+	list = src_buf;
 
 	h = 0, k = 0;
 	while ( *( dst_path + k ) )
@@ -144,7 +145,7 @@ int copy_listed_files ( char * src_path, char * dst_path, char * list, int list_
 	}
 
 	i = ii = 0, j = 0;
-	while ( i < list_size )
+	while ( i < list_len )
 	{
 		if ( j == 0 )
 		{
@@ -176,7 +177,7 @@ int copy_listed_files ( char * src_path, char * dst_path, char * list, int list_
 			*( list + i ) = 0;
 			*( list_entry + h ) = 0;
 
-			printf ( "%s\n", list + ii );
+			printf ( "%s > ", list + ii );
 			printf ( "%s\n", list_entry );
 
 			if ( ! copy_file ( list + ii, list_entry ) )

@@ -9,11 +9,9 @@
 #ifndef DIRECTORY_H
 #define DIRECTORY_H
 
-int load_file ( char * filename ); /* returns the number of bytes read */
-
 /* if successful, returns 1. otherwise, returns 0 */
 
-int copy_listed_files ( char * src_path, char * dst_path, char * list, int list_size );
+int copy_listed_files ( const char * listname, const char * src_path, const char * dst_path );
 
 #endif
 
@@ -42,8 +40,7 @@ int copy_listed_files ( char * src_path, char * dst_path, char * list, int list_
  *
  *     src_buf = buffer;
  *
- *     list_size = load_file ( file_list_name );
- *     copy_listed_files ( src_path, dst_path, src_buf, list_size );
+ *     copy_listed_files ( file_list_name, src_path, dst_path );
  *
  *     free ( buffer );
  *

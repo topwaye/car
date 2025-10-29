@@ -13,7 +13,7 @@
 
 /* if successful, returns 1. otherwise, returns 0 */
 
-int traverse ( char * directory, const char * specification, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude );
+int traverse ( const char * directory, const char * specification, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude );
 
 #endif
 

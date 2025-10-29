@@ -121,7 +121,7 @@ int report_copy ( char * src, int src_len, char * dst, int dst_size )
 
 /* if successful, returns 1. otherwise, returns 0 */
 
-int report_copy_file ( char * src_filename, char * dst_filename )
+int report_copy_file ( const char * src_filename, const char * dst_filename )
 {
 	int src_fh, dst_fh;
 	int bytes_read, bytes_copied, bytes_written;
@@ -162,10 +162,10 @@ int report_copy_file ( char * src_filename, char * dst_filename )
 		_close ( src_fh );
 		return 0;
 	}
-	
-	printf ( "%u bytes read, ", bytes_read );
-	printf ( "%u bytes copied, ", bytes_copied );
-	printf ( "%u bytes written\n", bytes_written );
+
+	printf ( "%d bytes read, ", bytes_read );
+	printf ( "%d bytes copied, ", bytes_copied );
+	printf ( "%d bytes written\n", bytes_written );
 
     _close ( dst_fh );
 	_close ( src_fh );
@@ -173,7 +173,7 @@ int report_copy_file ( char * src_filename, char * dst_filename )
 	return 1;
 }
 
-int nonredundancy_copy_file ( char * src_filename, char * dst_filename )
+int nonredundancy_copy_file ( const char * src_filename, const char * dst_filename )
 {
 	int src_fh, dst_fh;
 	int bytes_read, bytes_copied, bytes_written;
@@ -215,9 +215,9 @@ int nonredundancy_copy_file ( char * src_filename, char * dst_filename )
 		return 0;
 	}
 	
-	printf ( "%u bytes read, ", bytes_read );
-	printf ( "%u bytes copied, ", bytes_copied );
-	printf ( "%u bytes written\n", bytes_written );
+	printf ( "%d bytes read, ", bytes_read );
+	printf ( "%d bytes copied, ", bytes_copied );
+	printf ( "%d bytes written\n", bytes_written );
 
     _close ( dst_fh );
 	_close ( src_fh );

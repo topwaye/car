@@ -12,7 +12,7 @@ is there any way to change all of this? the weak monkeys took over the world fro
 
 perhaps this program can help you fulfill your wish, quickly reading through files with thousands of lines of code, at least for script files, this is the case, for example, PHP files
 
-this program automatically inserts tracing source code into all PHP files, so that a tracing report is generated when the PHP files run, then this tracking report will be processed sequentially by this program, generating a directory tree on the disk
+this program automatically inserts tracing source code into all PHP files, so that a tracing report is generated when the PHP files run, then this tracing report will be processed sequentially by this program, generating a directory tree on the disk
 
 this directory tree contains all the files used in a single PHP execution scope, which is exactly what we want to know
 

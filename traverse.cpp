@@ -20,7 +20,9 @@
 extern char * src_buf;
 extern char * dst_buf;
 
-void do_command ( char * filename, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude )
+/* if successful, returns 1. otherwise, returns 0 */
+
+int do_command ( char * filename, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude )
 {
 	int fh;
 	int bytes_read, bytes_copied, bytes_written;
@@ -31,7 +33,7 @@ void do_command ( char * filename, char wildcard, char * header, char * footer, 
     if ( _sopen_s ( &fh, filename, _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
     {
         printf ( "open failed on input file\n" );
-        return;
+        return 0;
     }
 
     /* read in input */
@@ -40,7 +42,7 @@ void do_command ( char * filename, char wildcard, char * header, char * footer, 
     {
         printf ( "problem reading file\n" );
         _close ( fh );
-        return;
+        return 0;
     }
 
     printf ( "%u bytes read, ", bytes_read );
@@ -68,7 +70,7 @@ void do_command ( char * filename, char wildcard, char * header, char * footer, 
 	{
 		printf ( "problem in changing the size\n" );
 		_close ( fh );
-		return;
+		return 0;
 	}
 	
 	/* write out output */
@@ -77,15 +79,17 @@ void do_command ( char * filename, char wildcard, char * header, char * footer, 
     {
         printf ( "problem writing file\n" );
         _close ( fh );
-        return;
+        return 0;
     }
 
 	printf ( "%u bytes written\n", bytes_written );
 
     _close ( fh );
+
+    return 1;
 }
 
-void traverse ( char * directory, const char * specification, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude )
+int traverse ( char * directory, const char * specification, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude )
 {
     char path [ _MAX_PATH ];
     struct __finddata64_t info;
@@ -117,15 +121,19 @@ void traverse ( char * directory, const char * specification, char wildcard, cha
                     continue;
 
 				concatenate_string ( "/", path, _MAX_PATH );
-                traverse ( path, specification, wildcard, header, footer, pattern, replace, exclude );
+                if ( ! traverse ( path, specification, wildcard, header, footer, pattern, replace, exclude ) )
+                    return 0;
             }
             else
             {
-				do_command ( path, wildcard, header, footer, pattern, replace, exclude );
+				if ( ! do_command ( path, wildcard, header, footer, pattern, replace, exclude ) )
+                    return 0;
             }
 
         } while ( _findnext64 ( handle, &info ) != -1 );
 
         _findclose ( handle );
     }
+
+    return 1;
 }

@@ -9,14 +9,16 @@
 #ifndef DIRECTORY_H
 #define DIRECTORY_H
 
-int load_file ( char * filename );
+int load_file ( char * filename ); /* returns the number of bytes read */
 
-void copy_listed_files ( char * src_path, char * dst_path, char * list, int list_size );
+/* if successful, returns 1. otherwise, returns 0 */
+
+int copy_listed_files ( char * src_path, char * dst_path, char * list, int list_size );
 
 #endif
 
 /*
- * int test ( )
+ * void test ( )
  * {
  *     // make sure these directories and files are there
  *
@@ -37,21 +39,10 @@ void copy_listed_files ( char * src_path, char * dst_path, char * list, int list
  *     char * buffer;
  *
  *     buffer = ( char * ) malloc ( MAX_FILE_SIZE );
- *     if ( ! buffer )
- *     {
- *         printf( "insufficient memory available\n" );
- *         return 1;
- *     }
  *
  *     src_buf = buffer;
  *
  *     list_size = load_file ( file_list_name );
- *     if ( ! list_size )
- *     {
- *         printf( "load_file failed\n" );
- *         return 1;
- *     }
- *
  *     copy_listed_files ( src_path, dst_path, src_buf, list_size );
  *
  *     free ( buffer );

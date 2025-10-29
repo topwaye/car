@@ -19,7 +19,9 @@
 
 extern char * src_buf;
 
-void make_directory ( char * dirname )
+/* if successful, returns 1. otherwise, returns 0 */
+
+int make_directory ( char * dirname )
 {
 	if ( _mkdir ( dirname ) == -1 )
 	{
@@ -30,12 +32,14 @@ void make_directory ( char * dirname )
 		if ( errno == ENOENT )
 		{
 			printf ( "path not found.\n" );
-			return;
+			return 0;
 		}
 	}
+
+	return 1;
 }
 
-void copy_file ( char * src_filename, char * dst_filename )
+int copy_file ( char * src_filename, char * dst_filename )
 {
 	char file_buf [ MAX_BUFFER_SIZE ];
 	int src_fh, dst_fh;
@@ -46,7 +50,7 @@ void copy_file ( char * src_filename, char * dst_filename )
     if ( _sopen_s ( &src_fh, src_filename, _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
     {
         printf ( "open failed on input file\n" );
-        return;
+        return 0;
     }
 	
 	/* open file for output */
@@ -54,7 +58,7 @@ void copy_file ( char * src_filename, char * dst_filename )
     {
         printf ( "open failed on output file\n" );
 		_close( src_fh );
-		return;
+		return 0;
     }
 
 	total_bytes_read = total_bytes_written = 0;
@@ -67,7 +71,7 @@ void copy_file ( char * src_filename, char * dst_filename )
 			printf ( "problem reading file\n" );
 			_close ( dst_fh );
 			_close ( src_fh );
-			return;
+			return 0;
 		}
 
 		if ( bytes_read == 0 ) /* EOF */
@@ -82,7 +86,7 @@ void copy_file ( char * src_filename, char * dst_filename )
 			printf ( "problem writing file\n" );
 			_close ( dst_fh );
 			_close ( src_fh );
-			return;
+			return 0;
 		}
 
 		total_bytes_written += bytes_written;
@@ -93,8 +97,11 @@ void copy_file ( char * src_filename, char * dst_filename )
 
     _close ( dst_fh );
 	_close ( src_fh );
+
+	return 1;
 }
 
+/* returns the number of bytes read */
 int load_file ( char * filename )
 {
 	int fh;
@@ -117,13 +124,12 @@ int load_file ( char * filename )
     }
 
     printf ( "%u bytes read\n", bytes_read );
-
     _close ( fh );
 
 	return bytes_read;
 }
 
-void copy_listed_files ( char * src_path, char * dst_path, char * list, int list_size )
+int copy_listed_files ( char * src_path, char * dst_path, char * list, int list_size )
 {
 	int i, j, h, k, ii;
 	char list_entry [ _MAX_PATH ] = { 0 };
@@ -132,7 +138,7 @@ void copy_listed_files ( char * src_path, char * dst_path, char * list, int list
 	while ( *( dst_path + k ) )
 	{
 		if ( h + 1 == _MAX_PATH )
-			return;
+			return 0;
 
 		*( list_entry + h ++ ) = *( dst_path + k ++ );
 	}
@@ -147,13 +153,13 @@ void copy_listed_files ( char * src_path, char * dst_path, char * list, int list
 				if ( *( src_path + j ++ ) != *( list + i ++ ) )
 				{
 					printf ( "bad src_path or bad list\n" );
-					return;
+					return 0;
 				}
 			}
 		}
 
 		if ( h + 1 == _MAX_PATH )
-			return;
+			return 0;
 		
 		if ( '\r' == *( list + i ) )
 		{
@@ -173,7 +179,8 @@ void copy_listed_files ( char * src_path, char * dst_path, char * list, int list
 			printf ( "%s\n", list + ii );
 			printf ( "%s\n", list_entry );
 
-			copy_file ( list + ii, list_entry );
+			if ( ! copy_file ( list + ii, list_entry ) )
+				return 0;
 			
 			ii = ++ i;
 			j = 0;
@@ -185,9 +192,12 @@ void copy_listed_files ( char * src_path, char * dst_path, char * list, int list
 		{
 			*( list_entry + h ) = 0;
 
-			make_directory ( list_entry );
+			if ( ! make_directory ( list_entry ) )
+				return 0;
 		}
 
 		*( list_entry + h ++ ) = *( list + i ++ );
 	}
+
+	return 1;
 }

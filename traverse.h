@@ -11,12 +11,14 @@
 #ifndef TRAVERSE_H
 #define TRAVERSE_H
 
-void traverse ( char * directory, const char * specification, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude );
+/* if successful, returns 1. otherwise, returns 0 */
+
+int traverse ( char * directory, const char * specification, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude );
 
 #endif
 
 /*
- * int test ( )
+ * void test ( )
  * {
  *     // make sure this directory is there
  *
@@ -32,11 +34,6 @@ void traverse ( char * directory, const char * specification, char wildcard, cha
  *     char * buffer = NULL;
  *
  *     buffer = ( char * ) malloc ( MAX_FILE_SIZE + MAX_FILE_SIZE );
- *     if ( ! buffer )
- *     {
- *         printf ( "insufficient memory available\n" );
- *         return 1;
- *     }
  *
  *     src_buf = buffer;
  *     dst_buf = buffer + MAX_FILE_SIZE;
@@ -49,8 +46,6 @@ void traverse ( char * directory, const char * specification, char wildcard, cha
  *     traverse ( path, "*.php", '*', header, footer, pattern, replace, exclude );
  *
  *     free ( buffer );
- *
- *     return 0;
  * }
  *
  */

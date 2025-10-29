@@ -19,14 +19,16 @@
 #ifndef REPORT_H
 #define REPORT_H
 
-void report_copy_file ( char * src_filename, char * dst_filename );
+/* if successful, returns 1. otherwise, returns 0 */
 
-void nonredundancy_copy_file ( char * src_filename, char * dst_filename );
+int report_copy_file ( char * src_filename, char * dst_filename );
+
+int nonredundancy_copy_file ( char * src_filename, char * dst_filename );
 
 #endif
 
 /*
- * int test ( )
+ * void test ( )
  * {
  *     // make sure these directories and files are there
  *
@@ -37,11 +39,6 @@ void nonredundancy_copy_file ( char * src_filename, char * dst_filename );
  *     char * buffer;
  *
  *     buffer = ( char * ) malloc ( MAX_FILE_SIZE + MAX_FILE_SIZE );
- *     if ( ! buffer )
- *     {
- *         printf ( "insufficient memory available\n" );
- *         return 1;
- *     }
  *
  *     src_buf = buffer;
  *     dst_buf = buffer + MAX_FILE_SIZE;
@@ -50,8 +47,6 @@ void nonredundancy_copy_file ( char * src_filename, char * dst_filename );
  *     nonredundancy_copy_file ( filename_2, filename_3 );
  *
  *     free ( buffer );
- *
- *     return 0;
  * }
  *
  */

@@ -119,7 +119,9 @@ int report_copy ( char * src, int src_len, char * dst, int dst_size )
 	return h;
 }
 
-void report_copy_file ( char * src_filename, char * dst_filename )
+/* if successful, returns 1. otherwise, returns 0 */
+
+int report_copy_file ( char * src_filename, char * dst_filename )
 {
 	int src_fh, dst_fh;
 	int bytes_read, bytes_copied, bytes_written;
@@ -128,7 +130,7 @@ void report_copy_file ( char * src_filename, char * dst_filename )
     if ( _sopen_s ( &src_fh, src_filename, _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
     {
         printf ( "open failed on input file\n" );
-        return;
+        return 0;
     }
 	
 	/* open file for output */
@@ -136,7 +138,7 @@ void report_copy_file ( char * src_filename, char * dst_filename )
     {
         printf ( "open failed on output file\n" );
 		_close( src_fh );
-		return;
+		return 0;
     }
 
 	/* read in input */
@@ -146,7 +148,7 @@ void report_copy_file ( char * src_filename, char * dst_filename )
 		printf ( "problem reading file\n" );
 		_close ( dst_fh );
 		_close ( src_fh );
-		return;
+		return 0;
 	}
 
 	bytes_copied = report_copy ( src_buf, bytes_read, dst_buf, MAX_FILE_SIZE );
@@ -158,7 +160,7 @@ void report_copy_file ( char * src_filename, char * dst_filename )
 		printf ( "problem writing file\n" );
 		_close ( dst_fh );
 		_close ( src_fh );
-		return;
+		return 0;
 	}
 	
 	printf ( "%u bytes read, ", bytes_read );
@@ -167,9 +169,11 @@ void report_copy_file ( char * src_filename, char * dst_filename )
 
     _close ( dst_fh );
 	_close ( src_fh );
+
+	return 1;
 }
 
-void nonredundancy_copy_file ( char * src_filename, char * dst_filename )
+int nonredundancy_copy_file ( char * src_filename, char * dst_filename )
 {
 	int src_fh, dst_fh;
 	int bytes_read, bytes_copied, bytes_written;
@@ -178,7 +182,7 @@ void nonredundancy_copy_file ( char * src_filename, char * dst_filename )
     if ( _sopen_s ( &src_fh, src_filename, _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
     {
         printf ( "open failed on input file\n" );
-        return;
+        return 0;
     }
 	
 	/* open file for output */
@@ -186,7 +190,7 @@ void nonredundancy_copy_file ( char * src_filename, char * dst_filename )
     {
         printf ( "open failed on output file\n" );
 		_close( src_fh );
-		return;
+		return 0;
     }
 
 	/* read in input */
@@ -196,7 +200,7 @@ void nonredundancy_copy_file ( char * src_filename, char * dst_filename )
 		printf ( "problem reading file\n" );
 		_close ( dst_fh );
 		_close ( src_fh );
-		return;
+		return 0;
 	}
 
 	bytes_copied = nonredundancy_copy ( src_buf, bytes_read, dst_buf, MAX_FILE_SIZE );
@@ -208,7 +212,7 @@ void nonredundancy_copy_file ( char * src_filename, char * dst_filename )
 		printf ( "problem writing file\n" );
 		_close ( dst_fh );
 		_close ( src_fh );
-		return;
+		return 0;
 	}
 	
 	printf ( "%u bytes read, ", bytes_read );
@@ -217,4 +221,6 @@ void nonredundancy_copy_file ( char * src_filename, char * dst_filename )
 
     _close ( dst_fh );
 	_close ( src_fh );
+
+	return 1;
 }

@@ -41,7 +41,7 @@ int copy_and_replace ( char * src, int src_len, char * dst, int dst_size,
 /*
  * #define MAX_TEST_SIZE	128
  *
- * int test ( )
+ * void test ( )
  * {
  *     char target [ ] = "HTM";
  *
@@ -70,8 +70,6 @@ int copy_and_replace ( char * src, int src_len, char * dst, int dst_size,
  *     printf ( "%d:%s\n", len, unknown_chars_1 );
  *     len = copy_and_replace_ex ( '*', unknown_chars_1, len, unknown_chars_2, MAX_TEST_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
  *     printf ( "%d:%s\n", len, unknown_chars_2 );
- *
- *     return 0;
  * }
  * 
  */

@@ -50,7 +50,7 @@ int test_match ( )
 	len = copy_and_replace_ex ( '*', unknown_chars_1, len, unknown_chars_2, MAX_TEST_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
 	printf ( "%d:%s\n", len, unknown_chars_2 );
 
-	return 0;
+	return 1; /* NOT 0 */
 }
 
 int test_traversing_phase_1 ( )
@@ -71,9 +71,7 @@ int test_traversing_phase_1 ( )
 	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
 
-	traverse ( path, "*.php", '?', header, footer, pattern, replace, exclude );
-
-	return 0;
+	return traverse ( path, "*.php", '?', header, footer, pattern, replace, exclude );
 }
 
 int test_traversing_phase_2 ( )
@@ -94,9 +92,7 @@ int test_traversing_phase_2 ( )
 	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
 
-	traverse ( path, "*.php", '*', header, footer, pattern, replace, exclude );
-
-	return 0;
+	return traverse ( path, "*.php", '*', header, footer, pattern, replace, exclude );
 }
 
 int test_traversing_phase_3 ( )
@@ -109,17 +105,15 @@ int test_traversing_phase_3 ( )
 	char pattern [ ] = "function *(*)*{";
 	char replace [ ] = "#\n\t\terror_log(\"c:/apache/htdocs\".$_SERVER['PHP_SELF'].\">&>@\\n\", 3, \"c:/test/err.log\");";
 	char exclude [ ] = "\r\n${"; /* what characters a matched @string excludes */
-	char header [ ] = "<?php error_log(\"header<&>\\n\", 3, \"c:/test/err.log\"); ?>\n";
-	char footer [ ] = "\n<?php error_log(\"footer<&>\\n\", 3, \"c:/test/err.log\"); ?>";
+	char header [ ] = "";
+	char footer [ ] = "";
 
 	/* list the files... */
 	printf ( "listing of files in the directory %s\n\n", path );
 	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
 
-	traverse ( path, "*.php", '*', header, footer, pattern, replace, exclude );
-
-	return 0;
+	return traverse ( path, "*.php", '*', header, footer, pattern, replace, exclude );
 }
 
 int test_report_phase_1 ( )
@@ -129,9 +123,7 @@ int test_report_phase_1 ( )
 	char filename_1 [ _MAX_PATH ] = "c:/test/err.log";
 	char filename_2 [ _MAX_PATH ] = "c:/test/err2.log";
 
-	report_copy_file ( filename_1, filename_2 );
-
-	return 0;
+	return report_copy_file ( filename_1, filename_2 );
 }
 
 int test_report_phase_2 ( )
@@ -141,9 +133,7 @@ int test_report_phase_2 ( )
 	char filename_1 [ _MAX_PATH ] = "c:/test/err2.log";
 	char filename_2 [ _MAX_PATH ] = "c:/test/err3.log";
 
-	nonredundancy_copy_file ( filename_1, filename_2 );
-
-	return 0;
+	return nonredundancy_copy_file ( filename_1, filename_2 );
 }
 
 int test_directory ( )
@@ -174,21 +164,21 @@ int test_directory ( )
 		return 1;
 	}
 
-	copy_listed_files ( src_path, dst_path, src_buf, list_size );
-
-	return 0;
+	return copy_listed_files ( src_path, dst_path, src_buf, list_size );
 }
 
-void do_test ( )
+int do_test ( )
 {
-	test_match ( );
-	test_traversing_phase_1();
-	test_traversing_phase_2 ( );
-	test_traversing_phase_3 ( );
-	test_report_phase_1 ( );
-	test_report_phase_2 ( );
-	test_directory ( );
+	return test_match ( )
+		&& test_traversing_phase_1( )
+		&& test_traversing_phase_2 ( )
+		&& test_traversing_phase_3 ( )
+		&& test_report_phase_1 ( )
+		&& test_report_phase_2 ( )
+		&& test_directory ( );
 }
+
+/* if successful, returns 1. otherwise, returns 0 */
 
 int main ( )
 {
@@ -198,15 +188,21 @@ int main ( )
 	if ( ! buffer )
 	{
 		printf ( "insufficient memory available\n" );
-		return 1;
+		return 0;
 	}
 
 	src_buf = buffer;
 	dst_buf = buffer + MAX_FILE_SIZE;
 
-	do_test ( );
+	if ( ! do_test ( ) )
+	{
+		printf ( "do_test failed\n" );
+		
+		free ( buffer );
+		return 0;
+	}
 
 	free ( buffer );
 
-	return 0;
+	return 1;
 }

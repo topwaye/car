@@ -75,7 +75,7 @@ int test_traversing_phase_1 ( )
 	char header [ ] = "";
 	char footer [ ] = "";
 
-	printf ( "listing %s*.%s\n", SOURCE_PATH, FILE_EXTENSION);
+	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION);
 	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
 	
@@ -90,7 +90,7 @@ int test_traversing_phase_2 ( )
 	char header [ ] = "";
 	char footer [ ] = "";
 
-	printf ( "listing %s*.%s\n", SOURCE_PATH, FILE_EXTENSION );
+	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
 	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
 
@@ -105,7 +105,7 @@ int test_traversing_phase_3 ( )
 	char header [ ] = "";
 	char footer [ ] = "";
 
-	printf ( "listing %s*.%s\n", SOURCE_PATH, FILE_EXTENSION );
+	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
 	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
 

@@ -29,12 +29,15 @@
 #define REPORT_TMP_FILE			"c:/test/err2.log"
 #define REPORT_OBJ_FILE			"c:/test/err3.log"
 
+#define KNOWN_ALPHABET_NUM		"1234567890"
+#define KNOWN_ALPHABET_BLANK	" \t\r\n"
+
 #define DEFAULT_BUFFER_SIZE		128
 
 extern char * src_buf;
 extern char * dst_buf;
 
-int test_match ( )
+int test_match_phase_1 ( )
 {
 	char target [ ] = "HTM";
 
@@ -46,7 +49,7 @@ int test_match ( )
 	char replace [ ] = "&hello world";
 	char replace [ ] = "&hello&world";
 	*/
-	char exclude [ ] = "\r\n"; /* what characters a matched @string excludes */
+	char exclude [ ] = "";
 
 	char unknown_chars_1 [ ] = "x<HTML>x<HTM>xSELECTx";
 	char unknown_chars_2 [ DEFAULT_BUFFER_SIZE ];
@@ -67,11 +70,30 @@ int test_match ( )
 	return 1; /* NOT 0 */
 }
 
+int test_match_phase_2 ( )
+{
+	char pattern [ ] = "*8*****3***";
+	char replace [ ] = "hello world";
+	char exclude [ ] = "";
+
+	char unknown_chars_1 [ ] = "x98765432x83x678x";
+	char unknown_chars_2 [ DEFAULT_BUFFER_SIZE ];
+	int len;
+
+	len = sizeof ( unknown_chars_1 ) / sizeof ( unknown_chars_1 [ 0 ] ) - 1;
+
+	printf ( "%d:%s\n", len, unknown_chars_1 );
+	len = copy_and_replace_ex2 ( KNOWN_ALPHABET_NUM, '*', unknown_chars_1, len, unknown_chars_2, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	printf ( "%d:%s\n", len, unknown_chars_2 );
+
+	return 1; /* NOT 0 */
+}
+
 int test_traversing_phase_1 ( )
 {
 	char pattern [ ] = "/*?*/";
 	char replace [ ] = "";
-	char exclude [ ] = "\r\n"; /* what characters a matched @string excludes */
+	char exclude [ ] = "";
 	char header [ ] = "";
 	char footer [ ] = "";
 
@@ -86,7 +108,7 @@ int test_traversing_phase_2 ( )
 {
 	char pattern [ ] = "//*\n";
 	char replace [ ] = "\n";
-	char exclude [ ] = "\r\n"; /* what characters a matched @string excludes */
+	char exclude [ ] = "";
 	char header [ ] = "";
 	char footer [ ] = "";
 
@@ -98,6 +120,21 @@ int test_traversing_phase_2 ( )
 }
 
 int test_traversing_phase_3 ( )
+{
+	char pattern [ ] = "*\n*\n*\n*";
+	char replace [ ] = "\n\n\t";
+	char exclude [ ] = "";
+	char header [ ] = "";
+	char footer [ ] = "";
+
+	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
+	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
+	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
+
+	return traverse2 ( SOURCE_PATH, FILE_EXTENSION, KNOWN_ALPHABET_BLANK, '*', header, footer, pattern, replace, exclude );
+}
+
+int test_traversing_phase_4 ( )
 {
 	char pattern [ ] = "function *(*)*{";
 	char replace [ ] = "#\n\t\terror_log(\"c:/apache/htdocs\".$_SERVER['PHP_SELF'].\">&>@\\n\", 3, \"c:/test/err.log\");";
@@ -145,13 +182,15 @@ int test_directory ( )
 
 int do_test ( )
 {
-	return test_match ( )
-		&& test_traversing_phase_1 ( )
-		&& test_traversing_phase_2 ( )
-		&& test_traversing_phase_3 ( )
-		&& test_report_phase_1 ( )
-		&& test_report_phase_2 ( )
-		&& test_directory ( );
+	return test_match_phase_1 ( )
+		   && test_match_phase_2 ( )
+		   && test_traversing_phase_1 ( )
+		   && test_traversing_phase_2 ( )
+		   && test_traversing_phase_3 ( )
+		   && test_traversing_phase_4 ( )
+		   && test_report_phase_1 ( )
+		   && test_report_phase_2 ( )
+		   && test_directory ( );
 }
 
 /* if successful, returns 1. otherwise, returns 0 */

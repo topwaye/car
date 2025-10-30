@@ -15,6 +15,8 @@
 
 int traverse ( const char * directory, const char * extension, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude );
 
+int traverse2 ( const char * directory, const char * extension, const char * known, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude );
+
 #endif
 
 /*

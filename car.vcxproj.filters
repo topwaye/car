@@ -33,6 +33,12 @@
     <ClCompile Include="traverse.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="match2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="traverse2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">

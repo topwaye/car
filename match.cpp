@@ -91,7 +91,7 @@ int seek_string ( char c, char * src, int src_len, int * current )
 	int a;
 
 	i = * current;
-	
+
 	a = 0;
 	while ( i < src_len )
 	{
@@ -121,7 +121,7 @@ int concatenate_string ( const char * src, char * dst, int dst_size, ... )
 	va_start ( args, dst_size );
 
 	i = 0;
-	if ( ! seek_string ( 0, dst, dst_size - 1, & i ) )
+	if ( ! seek_string ( 0, dst, dst_size, & i ) )
 		return 0;
 
 	h = i, k = 0;
@@ -225,7 +225,7 @@ int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * 
 
 			if ( ! b )
 			{
-				if ( * ( src + i ) != *( pos + k ) )
+				if ( *( src + i ) != *( pos + k ) )
 					break;
 
 				ii = i ++;

@@ -5,6 +5,7 @@
  * 
  * copy and replace pattern words with predefined words
  * a wildcard (*) matches zero or more characters
+ * can only matches any one of the known characters from predefined character set (e.g. 1234567890)
  * 
  * as a result:
  * sign # represents a runtime current matched string which can NOT be trimmed
@@ -189,7 +190,6 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 	return h;
 }
 
-/* prototype do_match_ex2 function */
 int match_ex2 ( char * known, char wildcard, char * pattern, char * src, int src_len, int granularity )
 {
 	int i, ii, iii; 

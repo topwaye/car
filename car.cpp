@@ -98,8 +98,8 @@ int test_traversing_phase_1 ( )
 	char footer [ ] = "";
 
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION);
-	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
-	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
+	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
+	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 	
 	return traverse ( SOURCE_PATH, FILE_EXTENSION, '?', header, footer, pattern, replace, exclude );
 }
@@ -113,8 +113,8 @@ int test_traversing_phase_2 ( )
 	char footer [ ] = "";
 
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
-	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
-	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
+	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
+	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
 	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', header, footer, pattern, replace, exclude );
 }
@@ -128,8 +128,8 @@ int test_traversing_phase_3 ( )
 	char footer [ ] = "";
 
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
-	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
-	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
+	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
+	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
 	return traverse2 ( SOURCE_PATH, FILE_EXTENSION, KNOWN_ALPHABET_BLANK, '*', header, footer, pattern, replace, exclude );
 }
@@ -143,8 +143,8 @@ int test_traversing_phase_4 ( )
 	char footer [ ] = "";
 
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
-	printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
-	printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
+	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
+	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
 	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', header, footer, pattern, replace, exclude );
 }

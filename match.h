@@ -35,7 +35,6 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 						   char * pattern, char * replace, char * exclude,
 						   ... );
 
-/* prototype do_match_ex2 function */
 int match_ex2 ( char * known, char wildcard, char * pattern, char * src, int src_len, int granularity );
 
 /* prototype do_match_ex function */

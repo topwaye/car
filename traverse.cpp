@@ -113,7 +113,7 @@ int traverse ( const char * directory, const char * extension, char wildcard, ch
                 printf ( info.attrib & _A_SYSTEM ? " Y  " : " N  " );
                 printf ( info.attrib & _A_HIDDEN ? " Y  " : " N  " );
                 printf ( info.attrib & _A_ARCH ? " Y  " : " N  " );
-                printf ( "%9lld %-36s ", info.size, info.name );
+                printf ( "%9lld %-35s ", info.size, info.name );
 
                 printf ( "<DIR>\n" );
 
@@ -133,7 +133,7 @@ int traverse ( const char * directory, const char * extension, char wildcard, ch
                 printf ( info.attrib & _A_SYSTEM ? " Y  " : " N  " );
                 printf ( info.attrib & _A_HIDDEN ? " Y  " : " N  " );
                 printf ( info.attrib & _A_ARCH ? " Y  " : " N  " );
-                printf ( "%9lld %-36s ", info.size, info.name );
+                printf ( "%9lld %-35s ", info.size, info.name );
 
                 copy_string ( directory, path, _MAX_PATH );
                 concatenate_string ( info.name, path, _MAX_PATH );

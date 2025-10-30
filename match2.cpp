@@ -5,7 +5,7 @@
  * 
  * copy and replace pattern words with predefined words
  * a wildcard (*) matches zero or more characters
- * can only matches any one of the known characters from predefined character set (e.g. 1234567890)
+ * only matches any one of the known characters from predefined character set (e.g. 1234567890)
  * 
  * as a result:
  * sign # represents a runtime current matched string which can NOT be trimmed

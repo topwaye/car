@@ -33,12 +33,9 @@ int copy_listed_files ( const char * listname, const char * src_path, const char
  *     char src_path [ _MAX_PATH ] = "c:/test/";
  *     char dst_path [ _MAX_PATH ] = "c:/test_bak/";
  *
- *     int list_size;	
  *     char * buffer;
  *
  *     buffer = ( char * ) malloc ( MAX_FILE_SIZE );
- *
- *     src_buf = buffer;
  *
  *     copy_listed_files ( file_list_name, src_path, dst_path );
  *

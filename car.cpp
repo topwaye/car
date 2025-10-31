@@ -14,6 +14,7 @@
 #include "traverse.h"
 #include "report.h"
 #include "directory.h"
+#include "debug.h"
 
 /*
  * make sure these directories and files are there
@@ -29,8 +30,11 @@
 #define REPORT_TMP_FILE			"c:/test/err2.log"
 #define REPORT_OBJ_FILE			"c:/test/err3.log"
 
+#define DEBUG_FILE				"c:/test/debug.php"
+
 #define KNOWN_ALPHABET_NUM		"1234567890"
 #define KNOWN_ALPHABET_BLANK	" \t\r\n"
+#define KNOWN_ALPHABET_DEBUG	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_$?!&\"\'<>(){}[]+-*/.,;="
 
 #define DEFAULT_BUFFER_SIZE		128
 
@@ -180,6 +184,13 @@ int test_directory ( )
 	return copy_listed_files ( REPORT_OBJ_FILE, SOURCE_PATH, DESTINATION_PATH );
 }
 
+int test_debugging ( )
+{
+	printf ( "debugging %s\n", DEBUG_FILE );
+
+	return debug ( KNOWN_ALPHABET_DEBUG, DEBUG_FILE );
+}
+
 int do_test ( )
 {
 	return test_match_phase_1 ( )
@@ -190,7 +201,8 @@ int do_test ( )
 		   && test_traversing_phase_4 ( )
 		   && test_report_phase_1 ( )
 		   && test_report_phase_2 ( )
-		   && test_directory ( );
+		   && test_directory ( )
+		   && test_debugging ( );
 }
 
 /* if successful, returns 1. otherwise, returns 0 */

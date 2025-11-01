@@ -44,10 +44,10 @@ int test_match_phase_1 ( )
 	char pattern [ ] = "*H*****L***";
 	char replace [ ] = "hello world";
 	/*
-	char replace [ ] = "#hello world";
-	char replace [ ] = "@hello world";
-	char replace [ ] = "&hello world";
-	char replace [ ] = "&hello&world";
+	char replace [ ] = "\ahello world";
+	char replace [ ] = "\bhello world";
+	char replace [ ] = "\fhello world";
+	char replace [ ] = "\fhello\fworld";
 	*/
 	char exclude [ ] = "";
 
@@ -140,7 +140,7 @@ int test_traversing_phase_3 ( )
 int test_traversing_phase_4 ( )
 {
 	char pattern [ ] = "function *(*)*{";
-	char replace [ ] = "#error_log(\"c:/apache/htdocs\".$_SERVER['PHP_SELF'].\">&>@\\n\", 3, \"c:/test/err.log\");";
+	char replace [ ] = "\aerror_log(\"c:/apache/htdocs\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"c:/test/err.log\");";
 	char exclude [ ] = "\r\n${"; /* what characters a matched @string excludes */
 	char header [ ] = "";
 	char footer [ ] = "";

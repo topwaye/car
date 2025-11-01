@@ -18,6 +18,7 @@ struct filter_t
 {
     int ( * filter_on_replace ) ( char *, int, int, int *, char *, int, int * );
 	int ( * filter_on_load ) ( char *, int, int, int *, char *, int, int * );
+    int ( * filter_on_custom ) ( char *, int, int, int *, char *, int, int * );
 };
 
 #endif

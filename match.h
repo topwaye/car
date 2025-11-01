@@ -7,9 +7,9 @@
  * a wildcard (*) matches zero or more characters
  * 
  * as a result:
- * sign # represents a runtime current matched string which can NOT be trimmed
- * sign @ represents a runtime current matched string which can be trimmed (e.g. exclude somechar)
- * sign & represents a runtime placeholder which can be arbitrary string predefined
+ * escape character \a represents a runtime current matched string which can NOT be trimmed
+ * escape character \b represents a runtime current matched string which can be trimmed (e.g. exclude somechar)
+ * escape character \f represents a runtime placeholder which can be arbitrary string predefined
  */
 
 #ifndef MATCH_H
@@ -26,6 +26,8 @@ int seek_string ( char c, char * src, int src_len, int * current );
 int concatenate_string ( const char * src, char * dst, int dst_size, ... );
 
 int copy_string ( const char * src, char * dst, int dst_size, ... );
+
+int filter_custom ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 
 int filter_forward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 
@@ -64,10 +66,10 @@ int copy_and_replace ( char * src, int src_len, char * dst, int dst_size,
  *     char pattern [ ] = "*H*****L***";
  *     char replace [ ] = "hello world";
  *
- *  // char replace [ ] = "#hello world";
- *  // char replace [ ] = "@hello world";
- *  // char replace [ ] = "&hello world";
- *  // char replace [ ] = "&hello&world";
+ *  // char replace [ ] = "\ahello world";
+ *  // char replace [ ] = "\bhello world";
+ *  // char replace [ ] = "\fhello world";
+ *  // char replace [ ] = "\fhello\fworld";
  *
  *     char exclude [ ] = "\r\n"; // what characters a matched @string excludes
  *

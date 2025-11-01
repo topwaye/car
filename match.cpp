@@ -7,9 +7,9 @@
  * a wildcard (*) matches zero or more characters
  * 
  * as a result:
- * sign # represents a runtime current matched string which can NOT be trimmed
- * sign @ represents a runtime current matched string which can be trimmed (e.g. exclude somechar)
- * sign & represents a runtime placeholder which can be arbitrary string predefined
+ * escape character \a represents a runtime current matched string which can NOT be trimmed
+ * escape character \b represents a runtime current matched string which can be trimmed (e.g. exclude somechar)
+ * escape character \f represents a runtime placeholder which can be arbitrary string predefined
  */
 
 #include <stdarg.h>
@@ -131,7 +131,7 @@ int concatenate_string ( const char * src, char * dst, int dst_size, ... )
 			return 0; /* NOT i */
 		}
 
-		if ( '&' == *( src + k ) )
+		if ( '\f' == *( src + k ) )
 		{
 			placeholder = va_arg ( args, char * );
 
@@ -177,7 +177,7 @@ int copy_string ( const char * src, char * dst, int dst_size, ... )
 		if ( h + 1 == dst_size )
 			return 0;
 
-		if ( '&' == *( src + k ) )
+		if ( '\f' == *( src + k ) )
 		{
 			placeholder = va_arg ( args, char * );
 
@@ -307,6 +307,7 @@ int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, in
 	int i, ii, j, h, k, s, t;
 	int ( * filter_on_replace ) ( char *, int, int, int *, char *, int, int * );
 	int ( * filter_on_load ) ( char *, int, int, int *, char *, int, int * );
+	int ( * filter_on_custom ) ( char *, int, int, int *, char *, int, int * );
 	va_list args;
 
 	if ( dst_size < 1 ) /* size >= len + 1 */
@@ -314,6 +315,7 @@ int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, in
 
 	filter_on_replace = filter ?  filter -> filter_on_replace : NULL;
 	filter_on_load = filter ?  filter -> filter_on_load : NULL;
+	filter_on_custom = filter ?  filter -> filter_on_custom : NULL;
 
 	h = 0, i = 0; 
 	while ( i < src_len )
@@ -340,40 +342,48 @@ int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, in
 			if ( h + 1 == dst_size )
 				return 0;
 
-			if ( '@' == *( pos + k ) )
+			if ( '\b' == *( pos + k ) )
 			{
-				j = ii;
-				while ( j < i )
+				if ( filter_on_custom )
 				{
-					if ( h + 1 == dst_size )
+					if ( ! filter_on_custom ( src, src_len, ii, & i, dst, dst_size, & h ) )
 						return 0;
-
-					posx = exclude;
-
-					s = 0, t = 0;
-					while ( *( posx + t ) )
+				}
+				else
+				{
+					j = ii;
+					while ( j < i )
 					{
-						if ( *( src + j ) == *( posx + t ) )
+						if ( h + 1 == dst_size )
+							return 0;
+
+						posx = exclude;
+
+						s = 0, t = 0;
+						while ( *( posx + t ) )
 						{
-							s = 1;
-							break;
+							if ( *( src + j ) == *( posx + t ) )
+							{
+								s = 1;
+								break;
+							}
+							t ++;
 						}
-						t ++;
-					}
-					if ( s )
-					{
-						j ++;
-						continue;
-					}
+						if ( s )
+						{
+							j ++;
+							continue;
+						}
 
-					*( dst + h ++ ) = *( src + j ++ );
+						*( dst + h ++ ) = *( src + j ++ );
+					}
 				}
 
 				k ++;
 				continue;
 			}
 
-			if ( '#' == *( pos + k ) )
+			if ( '\a' == *( pos + k ) )
 			{
 				j = ii;
 				while ( j < i )
@@ -391,7 +401,7 @@ int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, in
 				continue;
 			}
 
-			if ( '&' == *( pos + k ) )
+			if ( '\f' == *( pos + k ) )
 			{
 				posx = va_arg ( args, char * );
 

@@ -8,9 +8,9 @@
  * only matches any one of the known characters from predefined character set (e.g. 1234567890)
  * 
  * as a result:
- * sign # represents a runtime current matched string which can NOT be trimmed
- * sign @ represents a runtime current matched string which can be trimmed (e.g. exclude somechar)
- * sign & represents a runtime placeholder which can be arbitrary string predefined
+ * escape character \a represents a runtime current matched string which can NOT be trimmed
+ * escape character \b represents a runtime current matched string which can be trimmed (e.g. exclude somechar)
+ * escape character \f represents a runtime placeholder which can be arbitrary string predefined
  */
 
 #include <stdarg.h>
@@ -78,6 +78,7 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 	int len;
 	int ( * filter_on_replace ) ( char *, int, int, int *, char *, int, int * );
 	int ( * filter_on_load ) ( char *, int, int, int *, char *, int, int * );
+	int ( * filter_on_custom ) ( char *, int, int, int *, char *, int, int * );
 	va_list args;
 
 	if ( dst_size < 1 ) /* size >= len + 1 */
@@ -85,8 +86,9 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 
 	filter_on_replace = filter ?  filter -> filter_on_replace : NULL;
 	filter_on_load = filter ?  filter -> filter_on_load : NULL;
+	filter_on_custom = filter ?  filter -> filter_on_custom : NULL;
 
-	h = 0, i = 0; 
+	h = 0, i = 0;
 	while ( i < src_len )
 	{
 		if ( ! is_known_character ( *( src + i ), known ) )
@@ -123,40 +125,48 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 			if ( h + 1 == dst_size )
 				return 0;
 
-			if ( '@' == *( pos + k ) )
+			if ( '\b' == *( pos + k ) )
 			{
-				j = ii;
-				while ( j < i )
+				if ( filter_on_custom )
 				{
-					if ( h + 1 == dst_size )
+					if ( ! filter_on_custom ( src, len, ii, & i, dst, dst_size, & h ) )
 						return 0;
-
-					posx = exclude;
-
-					s = 0, t = 0;
-					while ( *( posx + t ) )
+				}
+				else
+				{
+					j = ii;
+					while ( j < i )
 					{
-						if ( *( src + j ) == *( posx + t ) )
+						if ( h + 1 == dst_size )
+							return 0;
+
+						posx = exclude;
+
+						s = 0, t = 0;
+						while ( *( posx + t ) )
 						{
-							s = 1;
-							break;
+							if ( *( src + j ) == *( posx + t ) )
+							{
+								s = 1;
+								break;
+							}
+							t ++;
 						}
-						t ++;
-					}
-					if ( s )
-					{
-						j ++;
-						continue;
-					}
+						if ( s )
+						{
+							j ++;
+							continue;
+						}
 
-					*( dst + h ++ ) = *( src + j ++ );
+						*( dst + h ++ ) = *( src + j ++ );
+					}
 				}
 
 				k ++;
 				continue;
 			}
 
-			if ( '#' == *( pos + k ) )
+			if ( '\a' == *( pos + k ) )
 			{
 				j = ii;
 				while ( j < i )
@@ -174,7 +184,7 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 				continue;
 			}
 
-			if ( '&' == *( pos + k ) )
+			if ( '\f' == *( pos + k ) )
 			{
 				posx = va_arg ( args, char * );
 
@@ -203,6 +213,32 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 	*( dst + h ) = 0;
 
 	return h;
+}
+
+/*
+ * this is a placeholder function
+ * do anything you want to change when getting a runtime current matched string
+ */
+int filter_custom ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index )
+{
+	int i, h, j;
+
+	i = * src_index;
+	h = * dst_index;
+
+	j = src_prior;
+	while ( j < i )
+	{
+		if ( h + 1 == dst_size )
+			return 0;
+
+		*( dst + h ++ ) = *( src + j ++ );
+	}
+
+	* src_index = i;
+	* dst_index = h;
+
+	return 1;
 }
 
 int filter_backward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index )

@@ -14,6 +14,8 @@
 
 #include <stdarg.h>
 
+#include "config.h"
+
 int string_length ( const char * src )
 {
 	int i;
@@ -88,25 +90,21 @@ int compare_string ( const char * src, const char * dst )
 int seek_string ( char c, char * src, int src_len, int * current )
 {
 	int i;
-	int a;
 
 	i = * current;
 
-	a = 0;
 	while ( i < src_len )
 	{
 		if ( c == *( src + i ) )
 		{
-			a = 1;
-			break;	
+			* current = i;
+			return 1;	
 		}
 		
 		i ++; /* must be here, do NOT move this line */
 	}
 
-	* current = i;
-
-	return a;
+	return 0;
 }
 
 int concatenate_string ( const char * src, char * dst, int dst_size, ... )
@@ -301,15 +299,21 @@ quit:
 }
 
 int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, int dst_size,
+						  struct filter_t * filter,
 						  char * pattern, char * replace, char * exclude,
 						  ... )
 {
 	char * pos, * posx;
 	int i, ii, j, h, k, s, t;
+	int ( * filter_on_replace ) ( char *, int, int, int *, char *, int, int * );
+	int ( * filter_on_load ) ( char *, int, int, int *, char *, int, int * );
 	va_list args;
 
 	if ( dst_size < 1 ) /* size >= len + 1 */
 		return 0;
+
+	filter_on_replace = filter ?  filter -> filter_on_replace : NULL;
+	filter_on_load = filter ?  filter -> filter_on_load : NULL;
 
 	h = 0, i = 0; 
 	while ( i < src_len )
@@ -325,7 +329,7 @@ int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, in
 			
 			continue;
 		}
-	
+
 		va_start ( args, exclude );
 
 		pos = replace;
@@ -380,6 +384,9 @@ int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, in
 					*( dst + h ++ ) = *( src + j ++ );
 				}
 
+				if ( filter_on_load && ! filter_on_load ( src, src_len, ii, & i, dst, dst_size, & h ) )
+					return 0;
+
 				k ++;
 				continue;
 			}
@@ -405,6 +412,9 @@ int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, in
 		}
 
 		va_end ( args );
+
+		if ( filter_on_replace && ! filter_on_replace ( src, src_len, ii, & i, dst, dst_size, & h ) )
+			return 0;
 	}
 
 	*( dst + h ) = 0;

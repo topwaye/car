@@ -32,10 +32,6 @@
 
 #define DEBUG_FILE				"c:/test/debug.php"
 
-#define KNOWN_ALPHABET_NUM		"1234567890"
-#define KNOWN_ALPHABET_BLANK	" \t\r\n"
-#define KNOWN_ALPHABET_DEBUG	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_$?!&\"\'<>(){}[]+-*/.,;="
-
 #define DEFAULT_BUFFER_SIZE		128
 
 extern char * src_buf;
@@ -68,7 +64,7 @@ int test_match_phase_1 ( )
 	len = sizeof ( unknown_chars_1 ) / sizeof ( unknown_chars_1 [ 0 ] ) - 1;
 
 	printf ( "%d:%s\n", len, unknown_chars_1 );
-	len = copy_and_replace_ex ( '*', unknown_chars_1, len, unknown_chars_2, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	len = copy_and_replace_ex ( '*', unknown_chars_1, len, unknown_chars_2, DEFAULT_BUFFER_SIZE, NULL, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
 	printf ( "%d:%s\n", len, unknown_chars_2 );
 
 	return 1; /* NOT 0 */
@@ -87,7 +83,7 @@ int test_match_phase_2 ( )
 	len = sizeof ( unknown_chars_1 ) / sizeof ( unknown_chars_1 [ 0 ] ) - 1;
 
 	printf ( "%d:%s\n", len, unknown_chars_1 );
-	len = copy_and_replace_ex2 ( KNOWN_ALPHABET_NUM, '*', unknown_chars_1, len, unknown_chars_2, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	len = copy_and_replace_ex2 ( KNOWN_ALPHABET_NUM, '*', unknown_chars_1, len, unknown_chars_2, DEFAULT_BUFFER_SIZE, NULL, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
 	printf ( "%d:%s\n", len, unknown_chars_2 );
 
 	return 1; /* NOT 0 */
@@ -105,7 +101,7 @@ int test_traversing_phase_1 ( )
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 	
-	return traverse ( SOURCE_PATH, FILE_EXTENSION, '?', header, footer, pattern, replace, exclude );
+	return traverse ( SOURCE_PATH, FILE_EXTENSION, '?', NULL, header, footer, pattern, replace, exclude );
 }
 
 int test_traversing_phase_2 ( )
@@ -120,37 +116,43 @@ int test_traversing_phase_2 ( )
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
-	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', header, footer, pattern, replace, exclude );
+	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', NULL, header, footer, pattern, replace, exclude );
 }
 
 int test_traversing_phase_3 ( )
 {
 	char pattern [ ] = "*\n*\n*\n*";
-	char replace [ ] = "\n\n\t";
+	char replace [ ] = "\n\n";
 	char exclude [ ] = "";
 	char header [ ] = "";
 	char footer [ ] = "";
+
+	struct filter_t filter = { 0 }; /* init */
+	filter.filter_on_replace = filter_backward;
 
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
-	return traverse2 ( SOURCE_PATH, FILE_EXTENSION, KNOWN_ALPHABET_BLANK, '*', header, footer, pattern, replace, exclude );
+	return traverse2 ( SOURCE_PATH, FILE_EXTENSION, KNOWN_ALPHABET_BLANK, '*', & filter, header, footer, pattern, replace, exclude );
 }
 
 int test_traversing_phase_4 ( )
 {
 	char pattern [ ] = "function *(*)*{";
-	char replace [ ] = "#\n\t\terror_log(\"c:/apache/htdocs\".$_SERVER['PHP_SELF'].\">&>@\\n\", 3, \"c:/test/err.log\");";
+	char replace [ ] = "#error_log(\"c:/apache/htdocs\".$_SERVER['PHP_SELF'].\">&>@\\n\", 3, \"c:/test/err.log\");";
 	char exclude [ ] = "\r\n${"; /* what characters a matched @string excludes */
 	char header [ ] = "";
 	char footer [ ] = "";
+	
+	struct filter_t filter = { 0 }; /* init */
+	filter.filter_on_load = filter_forward;
 
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
-	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', header, footer, pattern, replace, exclude );
+	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', & filter, header, footer, pattern, replace, exclude );
 }
 
 int test_report_phase_1 ( )

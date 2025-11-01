@@ -13,9 +13,13 @@
 
 /* if successful, returns 1. otherwise, returns 0 */
 
-int traverse ( const char * directory, const char * extension, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude );
+int traverse ( const char * directory, const char * extension, char wildcard,
+               struct filter_t * filter,
+               char * header, char * footer, char * pattern, char * replace, char * exclude );
 
-int traverse2 ( const char * directory, const char * extension, const char * known, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude );
+int traverse2 ( const char * directory, const char * extension, const char * known, char wildcard,
+                struct filter_t * filter,
+                char * header, char * footer, char * pattern, char * replace, char * exclude );
 
 #endif
 
@@ -28,7 +32,7 @@ int traverse2 ( const char * directory, const char * extension, const char * kno
  *     char path [ _MAX_PATH ] = "c:/test2/";
  *
  *     char pattern [ ] = "function *(*)*{";
- *     char replace [ ] = "#\n\t\terror_log(\"c:/apache/htdocs\".$_SERVER['PHP_SELF'].\">&>@\\n\", 3, \"c:/test/err.log\");";
+ *     char replace [ ] = "#error_log(\"c:/apache/htdocs\".$_SERVER['PHP_SELF'].\">&>@\\n\", 3, \"c:/test/err.log\");";
  *     char exclude [ ] = "\r\n${"; // what characters a matched @string excludes
  *     char header [ ] = "<?php error_log(\"header<&>\\n\", 3, \"c:/test/err.log\"); ?>\n";
  *     char footer [ ] = "\n<?php error_log(\"footer<&>\\n\", 3, \"c:/test/err.log\"); ?>";
@@ -45,7 +49,7 @@ int traverse2 ( const char * directory, const char * extension, const char * kno
  *     printf ( "RDO HID SYS ARC      SIZE FILE %31c COMMAND\n", ' ' );
  *     printf ( "--- --- --- ---      ---- ---- %31c -------\n", ' ' );
  *
- *     traverse ( path, ".php", '*', header, footer, pattern, replace, exclude );
+ *     traverse ( path, ".php", '*', NULL, header, footer, pattern, replace, exclude );
  *
  *     free ( buffer );
  * }

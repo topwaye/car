@@ -22,7 +22,9 @@ extern char * dst_buf;
 
 /* if successful, returns 1. otherwise, returns 0 */
 
-int do_command ( char * filename, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude )
+int do_command ( char * filename, char wildcard,
+                 struct filter_t * filter,
+                 char * header, char * footer, char * pattern, char * replace, char * exclude )
 {
 	int fh;
 	int bytes_read, bytes_copied, bytes_written;
@@ -51,7 +53,7 @@ int do_command ( char * filename, char wildcard, char * header, char * footer, c
 	pos += bytes_copied;
 	size -= bytes_copied;
 	bytes_copied = copy_and_replace_ex ( wildcard, src_buf, bytes_read, pos, size,
-										 pattern, replace, exclude, filename );
+                                         filter, pattern, replace, exclude, filename );
 	pos += bytes_copied;
 	size -= bytes_copied;
 	bytes_copied = copy_string ( footer, pos, size, filename );
@@ -87,7 +89,9 @@ int do_command ( char * filename, char wildcard, char * header, char * footer, c
     return 1;
 }
 
-int traverse ( const char * directory, const char * extension, char wildcard, char * header, char * footer, char * pattern, char * replace, char * exclude )
+int traverse ( const char * directory, const char * extension, char wildcard,
+               struct filter_t * filter,
+               char * header, char * footer, char * pattern, char * replace, char * exclude )
 {
     int ext_len;
     char path [ _MAX_PATH ];
@@ -121,7 +125,7 @@ int traverse ( const char * directory, const char * extension, char wildcard, ch
                 concatenate_string ( info.name, path, _MAX_PATH );
                 concatenate_string ( "/", path, _MAX_PATH );
 
-                if ( ! traverse ( path, extension, wildcard, header, footer, pattern, replace, exclude ) )
+                if ( ! traverse ( path, extension, wildcard, filter, header, footer, pattern, replace, exclude ) )
                     return 0;
             }
             else
@@ -138,7 +142,7 @@ int traverse ( const char * directory, const char * extension, char wildcard, ch
                 copy_string ( directory, path, _MAX_PATH );
                 concatenate_string ( info.name, path, _MAX_PATH );
 
-                if ( ! do_command ( path, wildcard, header, footer, pattern, replace, exclude ) )
+                if ( ! do_command ( path, wildcard, filter, header, footer, pattern, replace, exclude ) )
                     return 0;
             }
 

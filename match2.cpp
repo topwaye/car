@@ -15,6 +15,8 @@
 
 #include <stdarg.h>
 
+#include "config.h"
+
 extern int seek_string ( char c, char * src, int src_len, int * current );
 extern int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * next );
 
@@ -55,27 +57,34 @@ int seek_unknown_character ( const char * known, char * src, int src_len, int * 
 			k++;
 		}
 		if ( ! a )
-			break;
+		{
+			* current = i;
+			return 1;
+		}
 
 		i ++; /* must be here, do NOT move this line */
 	}
 
-	* current = i;
-
-	return ! a;
+	return 0;
 }
 
 int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int src_len, char * dst, int dst_size,
+						   struct filter_t * filter,
 						   char * pattern, char * replace, char * exclude,
 						   ... )
 {
 	char * pos, * posx;
 	int i, ii, iii, j, h, k, s, t;
 	int len;
+	int ( * filter_on_replace ) ( char *, int, int, int *, char *, int, int * );
+	int ( * filter_on_load ) ( char *, int, int, int *, char *, int, int * );
 	va_list args;
 
 	if ( dst_size < 1 ) /* size >= len + 1 */
 		return 0;
+
+	filter_on_replace = filter ?  filter -> filter_on_replace : NULL;
+	filter_on_load = filter ?  filter -> filter_on_load : NULL;
 
 	h = 0, i = 0; 
 	while ( i < src_len )
@@ -103,11 +112,11 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 			
 			continue;
 		}
-	
+
 		va_start ( args, exclude );
 
 		pos = replace;
-
+	
 		k = 0;
 		while ( *( pos + k ) )
 		{
@@ -158,6 +167,9 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 					*( dst + h ++ ) = *( src + j ++ );
 				}
 
+				if ( filter_on_load && ! filter_on_load ( src, len, ii, & i, dst, dst_size, & h ) )
+					return 0;
+
 				k ++;
 				continue;
 			}
@@ -183,11 +195,64 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 		}
 
 		va_end ( args );
+
+		if ( filter_on_replace && ! filter_on_replace ( src, len, ii, & i, dst, dst_size, & h ) )
+			return 0;
 	}
 
 	*( dst + h ) = 0;
 
 	return h;
+}
+
+int filter_backward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index )
+{
+	int i, h, j;
+
+	i = * src_index;
+	h = * dst_index;
+
+	j = src_prior;
+	while ( seek_string ( '\n', src, src_len, & j ) )
+		j ++;
+
+	while ( j < i )
+	{
+		if ( h + 1 == dst_size )
+			return 0;
+
+		*( dst + h ++ ) = *( src + j ++ );
+	}
+
+	* src_index = i;
+	* dst_index = h;
+
+	return 1;
+}
+
+int filter_forward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index )
+{
+	int i, h, j, t;
+
+	i = * src_index;
+	h = * dst_index;
+
+	t = j = i; /* NOT src_prior */
+	if ( ! seek_unknown_character ( KNOWN_ALPHABET_BLANK, src, src_len, & t ) )
+		t = src_len;
+
+	while ( j < t )
+	{
+		if ( h + 1 == dst_size )
+			return 0;
+
+		*( dst + h ++ ) = *( src + j ++ );
+	}
+
+	* src_index = i; /* NOT t */
+	* dst_index = h;
+
+	return 1; /* NOT 0 */
 }
 
 int match_ex2 ( char * known, char wildcard, char * pattern, char * src, int src_len, int granularity )

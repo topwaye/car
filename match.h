@@ -27,11 +27,17 @@ int concatenate_string ( const char * src, char * dst, int dst_size, ... );
 
 int copy_string ( const char * src, char * dst, int dst_size, ... );
 
+int filter_forward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
+
+int filter_backward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
+
 int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, int dst_size,
+						  struct filter_t * filter,
 						  char * pattern, char * replace, char * exclude,
 						  ... );
 
 int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int src_len, char * dst, int dst_size,
+						   struct filter_t * filter,
 						   char * pattern, char * replace, char * exclude,
 						   ... );
 
@@ -78,7 +84,7 @@ int copy_and_replace ( char * src, int src_len, char * dst, int dst_size,
  *     len = sizeof ( unknown_chars_1 ) / sizeof ( unknown_chars_1 [ 0 ] ) - 1;
  *
  *     printf ( "%d:%s\n", len, unknown_chars_1 );
- *     len = copy_and_replace_ex ( '*', unknown_chars_1, len, unknown_chars_2, MAX_TEST_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+ *     len = copy_and_replace_ex ( '*', unknown_chars_1, len, unknown_chars_2, MAX_TEST_SIZE, NULL, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
  *     printf ( "%d:%s\n", len, unknown_chars_2 );
  * }
  * 

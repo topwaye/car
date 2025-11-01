@@ -34,7 +34,7 @@ int debug ( const char * known, const char * filename )
 	while ( i < src_len )
 	{
 		if ( ! is_known_character ( *( src + i ), known ) )
-			printf ( "\\x%x", *( src + i ) );
+			printf ( "\\x%02x", *( src + i ) );
 		else
 			printf ( "%c", *( src + i ) );
 

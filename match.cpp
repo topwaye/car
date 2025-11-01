@@ -305,9 +305,7 @@ int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, in
 {
 	char * pos, * posx;
 	int i, ii, j, h, k, s, t;
-	int ( * filter_on_replace ) ( char *, int, int, int *, char *, int, int * );
-	int ( * filter_on_load ) ( char *, int, int, int *, char *, int, int * );
-	int ( * filter_on_custom ) ( char *, int, int, int *, char *, int, int * );
+	filter_operation_t filter_on_replace, filter_on_load, filter_on_custom;
 	va_list args;
 
 	if ( dst_size < 1 ) /* size >= len + 1 */

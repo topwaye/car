@@ -14,11 +14,13 @@
 #define KNOWN_ALPHABET_BLANK	" \t\r\n"
 #define KNOWN_ALPHABET_DEBUG	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_$?!&\"\'<>(){}[]+-*/.,;="
 
+typedef int ( * filter_operation_t ) ( char *, int, int, int *, char *, int, int * );
+
 struct filter_t
 {
-    int ( * filter_on_replace ) ( char *, int, int, int *, char *, int, int * );
-	int ( * filter_on_load ) ( char *, int, int, int *, char *, int, int * );
-    int ( * filter_on_custom ) ( char *, int, int, int *, char *, int, int * );
+    filter_operation_t filter_on_replace;
+	filter_operation_t filter_on_load;
+    filter_operation_t filter_on_custom;
 };
 
 #endif

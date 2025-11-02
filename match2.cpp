@@ -292,6 +292,7 @@ int filter_forward ( char * src, int src_len, int src_prior, int * src_index, ch
 	while ( seek_string ( '\n', src, t, & j ) ) /* NOT src_len */
 		r = j ++;
 
+	i = r; /* i moves forward */
 	while ( r < t )
 	{
 		if ( h + 1 == dst_size )

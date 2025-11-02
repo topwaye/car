@@ -32,6 +32,7 @@ int do_command ( char * filename, char wildcard,
 	int bytes_read, bytes_copied, bytes_written;
 	int size;
 	char * pos;
+    int dirty;
 
     /* open file for input */
     if ( _sopen_s ( &fh, filename, _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
@@ -52,17 +53,20 @@ int do_command ( char * filename, char wildcard,
 	size = MAX_FILE_SIZE;
 	pos = dst_buf;
 	bytes_copied = copy_string ( header, pos, size, filename );
+    dirty = bytes_copied > 0;
 	pos += bytes_copied;
 	size -= bytes_copied;
 	bytes_copied = copy_and_replace_ex ( wildcard, src_buf, bytes_read, pos, size,
                                          filter, pattern, replace, exclude, filename );
+    dirty += hit_count;
 	pos += bytes_copied;
 	size -= bytes_copied;
 	bytes_copied = copy_string ( footer, pos, size, filename );
+    dirty += bytes_copied > 0;
 	size -= bytes_copied;
 	bytes_copied = MAX_FILE_SIZE - size;
 
-    if ( ! hit_count )
+    if ( ! dirty )
     {
         printf ( "%d bytes read, ", bytes_read );
 	    printf ( "%d bytes copied\n", bytes_copied );

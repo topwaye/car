@@ -1,5 +1,5 @@
 ﻿/*
- * directory.c
+ * debug.c
  *
  * Copyright (C) 2025.10.31 TOP WAYE topwaye@hotmail.com
  * 

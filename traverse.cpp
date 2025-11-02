@@ -20,6 +20,8 @@
 extern char * src_buf;
 extern char * dst_buf;
 
+extern int hit_count;
+
 /* if successful, returns 1. otherwise, returns 0 */
 
 int do_command ( char * filename, char wildcard,
@@ -59,6 +61,16 @@ int do_command ( char * filename, char wildcard,
 	bytes_copied = copy_string ( footer, pos, size, filename );
 	size -= bytes_copied;
 	bytes_copied = MAX_FILE_SIZE - size;
+
+    if ( ! hit_count )
+    {
+        printf ( "%d bytes read, ", bytes_read );
+	    printf ( "%d bytes copied\n", bytes_copied );
+
+        _close ( fh );
+
+        return 1;
+    }
 
 	/* seek the beginning of the file */
 	_lseek ( fh, 0L, SEEK_SET );

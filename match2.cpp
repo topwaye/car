@@ -224,8 +224,11 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 }
 
 /*
- * this is a placeholder function
- * do anything you want to change when getting a runtime current matched string
+ * this is a placeholder function, change anything you want
+ * it shows what to do when getting a runtime current matched string
+ * do NOT forget a replace[] string must include escape character \b
+ * and use parameter &filter (.filter_custom = filter_custom)
+ * to call copy_and_replace like functions
  */
 int filter_custom ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index )
 {

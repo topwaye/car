@@ -16,6 +16,8 @@
 
 #include "config.h"
 
+extern int hit_count;
+
 int string_length ( const char * src )
 {
 	int i;
@@ -305,13 +307,16 @@ int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, in
 {
 	char * pos, * posx;
 	int i, ii, j, h, k, s, t;
-	filter_operation_t filter_on_replace, filter_on_load, filter_on_custom;
+	filter_operation_t filter_before_replace, filter_after_replace, filter_on_load, filter_on_custom;
 	va_list args;
 
 	if ( dst_size < 1 ) /* size >= len + 1 */
 		return 0;
 
-	filter_on_replace = filter ?  filter -> filter_on_replace : NULL;
+	hit_count = 0;
+
+	filter_before_replace = filter ?  filter -> filter_before_replace : NULL;
+	filter_after_replace = filter ?  filter -> filter_after_replace : NULL;
 	filter_on_load = filter ?  filter -> filter_on_load : NULL;
 	filter_on_custom = filter ?  filter -> filter_on_custom : NULL;
 
@@ -329,6 +334,11 @@ int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, in
 			
 			continue;
 		}
+	
+		hit_count ++;
+
+		if ( filter_before_replace && ! filter_before_replace ( src, src_len, ii, & i, dst, dst_size, & h ) )
+			return 0;
 
 		va_start ( args, exclude );
 
@@ -421,7 +431,7 @@ int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, in
 
 		va_end ( args );
 
-		if ( filter_on_replace && ! filter_on_replace ( src, src_len, ii, & i, dst, dst_size, & h ) )
+		if ( filter_after_replace && ! filter_after_replace ( src, src_len, ii, & i, dst, dst_size, & h ) )
 			return 0;
 	}
 
@@ -483,6 +493,8 @@ int match_ex ( char wildcard, char * pattern, char * src, int src_len, int granu
 {
 	int i, ii; 
 
+	hit_count = 0;
+
 	i = 0;
 	while ( i < src_len )
 	{
@@ -501,6 +513,7 @@ int match_ex ( char wildcard, char * pattern, char * src, int src_len, int granu
 		}
 
 		/* match succeeded when i = current index, i is changed to next index automatically */
+		hit_count ++;
 
 		return i - ii; /* matched string length */
 	}
@@ -512,6 +525,8 @@ int match_ex ( char wildcard, char * pattern, char * src, int src_len, int granu
 int match ( char * target, char * src, int src_len, int granularity )
 {
 	int i, ii; 
+
+	hit_count = 0;
 
 	i = 0;
 	while ( i < src_len )
@@ -531,6 +546,7 @@ int match ( char * target, char * src, int src_len, int granularity )
 		}
 
 		/* match succeeded when i = current index, i is changed to next index automatically */
+		hit_count ++;
 
 		return i - ii; /* matched string length */
 	}
@@ -546,6 +562,8 @@ int copy_and_replace ( char * src, int src_len, char * dst, int dst_size,
 	if ( dst_size < 1 ) /* size >= len + 1 */
 		return 0;
 
+	hit_count = 0;
+
 	h = 0, i = 0; 
 	while ( i < src_len )
 	{
@@ -558,6 +576,8 @@ int copy_and_replace ( char * src, int src_len, char * dst, int dst_size,
 			
 			continue;
 		}
+
+		hit_count ++;
 
 		k = 0;
 		while ( *( replace + k ) )

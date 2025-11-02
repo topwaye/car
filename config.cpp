@@ -8,3 +8,5 @@
  
 char * src_buf;
 char * dst_buf;
+
+int hit_count; /* matched times */

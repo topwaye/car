@@ -18,7 +18,8 @@ typedef int ( * filter_operation_t ) ( char *, int, int, int *, char *, int, int
 
 struct filter_t
 {
-    filter_operation_t filter_on_replace;
+    filter_operation_t filter_before_replace;
+    filter_operation_t filter_after_replace;
 	filter_operation_t filter_on_load;
     filter_operation_t filter_on_custom;
 };

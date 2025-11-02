@@ -97,11 +97,14 @@ int test_traversing_phase_1 ( )
 	char header [ ] = "";
 	char footer [ ] = "";
 
+	struct filter_t filter = { 0 }; /* init */
+	filter.filter_before_replace = filter_forward2;
+
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION);
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 	
-	return traverse ( SOURCE_PATH, FILE_EXTENSION, '?', NULL, header, footer, pattern, replace, exclude );
+	return traverse ( SOURCE_PATH, FILE_EXTENSION, '?', & filter, header, footer, pattern, replace, exclude );
 }
 
 int test_traversing_phase_2 ( )
@@ -112,11 +115,14 @@ int test_traversing_phase_2 ( )
 	char header [ ] = "";
 	char footer [ ] = "";
 
+	struct filter_t filter = { 0 }; /* init */
+	filter.filter_before_replace = filter_forward3;
+
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
-	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', NULL, header, footer, pattern, replace, exclude );
+	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', & filter, header, footer, pattern, replace, exclude );
 }
 
 int test_traversing_phase_3 ( )
@@ -128,7 +134,7 @@ int test_traversing_phase_3 ( )
 	char footer [ ] = "";
 
 	struct filter_t filter = { 0 }; /* init */
-	filter.filter_on_replace = filter_backward;
+	filter.filter_after_replace = filter_backward;
 
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );

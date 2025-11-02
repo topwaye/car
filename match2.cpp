@@ -17,6 +17,8 @@
 
 #include "config.h"
 
+extern int hit_count;
+
 extern int seek_string ( char c, char * src, int src_len, int * current );
 extern int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * next );
 
@@ -76,13 +78,16 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 	char * pos, * posx;
 	int i, ii, iii, j, h, k, s, t;
 	int len;
-	filter_operation_t filter_on_replace, filter_on_load, filter_on_custom;
+	filter_operation_t filter_before_replace, filter_after_replace, filter_on_load, filter_on_custom;
 	va_list args;
 
 	if ( dst_size < 1 ) /* size >= len + 1 */
 		return 0;
 
-	filter_on_replace = filter ?  filter -> filter_on_replace : NULL;
+	hit_count = 0;
+
+	filter_before_replace = filter ?  filter -> filter_before_replace : NULL;
+	filter_after_replace = filter ?  filter -> filter_after_replace : NULL;
 	filter_on_load = filter ?  filter -> filter_on_load : NULL;
 	filter_on_custom = filter ?  filter -> filter_on_custom : NULL;
 
@@ -112,6 +117,11 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 			
 			continue;
 		}
+
+		hit_count ++;
+
+		if ( filter_before_replace && ! filter_before_replace ( src, len, ii, & i, dst, dst_size, & h ) )
+			return 0;
 
 		va_start ( args, exclude );
 
@@ -204,7 +214,7 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 
 		va_end ( args );
 
-		if ( filter_on_replace && ! filter_on_replace ( src, len, ii, & i, dst, dst_size, & h ) )
+		if ( filter_after_replace && ! filter_after_replace ( src, len, ii, & i, dst, dst_size, & h ) )
 			return 0;
 	}
 
@@ -266,22 +276,67 @@ int filter_backward ( char * src, int src_len, int src_prior, int * src_index, c
 
 int filter_forward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index )
 {
+	int i, h, j, r, t;
+
+	i = * src_index;
+	h = * dst_index;
+
+	t = i; /* NOT src_prior */
+	if ( ! seek_unknown_character ( KNOWN_ALPHABET_BLANK, src, src_len, & t ) )
+		t = src_len;
+
+	r = j = i;
+	while ( seek_string ( '\n', src, t, & j ) ) /* NOT src_len */
+		r = j ++;
+
+	while ( r < t )
+	{
+		if ( h + 1 == dst_size )
+			return 0;
+
+		*( dst + h ++ ) = *( src + r ++ );
+	}
+
+	* src_index = i; /* NOT t */
+	* dst_index = h;
+
+	return 1; /* NOT 0 */
+}
+
+int filter_forward2 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index )
+{
 	int i, h, j, t;
 
 	i = * src_index;
 	h = * dst_index;
 
-	t = j = i; /* NOT src_prior */
+	t = i; /* NOT src_prior */
 	if ( ! seek_unknown_character ( KNOWN_ALPHABET_BLANK, src, src_len, & t ) )
 		t = src_len;
 
-	while ( j < t )
-	{
-		if ( h + 1 == dst_size )
-			return 0;
+	j = i;
+	while ( seek_string ( '\n', src, t, & j ) ) /* NOT src_len */
+		i = j ++;
 
-		*( dst + h ++ ) = *( src + j ++ );
-	}
+	* src_index = i; /* NOT t */
+	* dst_index = h;
+
+	return 1; /* NOT 0 */
+}
+
+int filter_forward3 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index )
+{
+	int i, h, t;
+
+	i = * src_index;
+	h = * dst_index;
+
+	t = i; /* NOT src_prior */
+	if ( ! seek_unknown_character ( KNOWN_ALPHABET_BLANK, src, src_len, & t ) )
+		t = src_len;
+
+	while ( seek_string ( '\n', src, t, & i ) ) /* NOT src_len */
+		i ++;
 
 	* src_index = i; /* NOT t */
 	* dst_index = h;

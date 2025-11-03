@@ -38,10 +38,24 @@
 extern char * src_buf;
 extern char * dst_buf;
 
-int test_match_phase_1 ( )
+int my_match ( )
 {
 	char target [ ] = "HTM";
+	char replace [ ] = "hello world";
 
+	char src [ ] = "x<HTML>x<HTM>xSELECTx";
+	char dst [ DEFAULT_BUFFER_SIZE ];
+	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
+
+	printf ( "%d:%s\n", len, src );
+	len = copy_and_replace ( src, len, dst, DEFAULT_BUFFER_SIZE, target, replace );
+	printf ( "%d:%s\n", len, dst );
+
+	return 1; /* NOT 0 */
+}
+
+int my_match_ex ( )
+{
 	char pattern [ ] = "*H*****L***";
 	char replace [ ] = "hello world";
 	/*
@@ -52,45 +66,35 @@ int test_match_phase_1 ( )
 	*/
 	char exclude [ ] = "";
 
-	char unknown_chars_1 [ ] = "x<HTML>x<HTM>xSELECTx";
-	char unknown_chars_2 [ DEFAULT_BUFFER_SIZE ];
-	int len;
+	char src [ ] = "x<HTML>x<HTM>xSELECTx";
+	char dst [ DEFAULT_BUFFER_SIZE ];
+	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
 
-	len = sizeof ( unknown_chars_1 ) / sizeof ( unknown_chars_1 [ 0 ] ) - 1;
-
-	printf ( "%d:%s\n", len, unknown_chars_1 );
-	len = copy_and_replace ( unknown_chars_1, len, unknown_chars_2, DEFAULT_BUFFER_SIZE, target, replace );
-	printf ( "%d:%s\n", len, unknown_chars_2 );
-
-	len = sizeof ( unknown_chars_1 ) / sizeof ( unknown_chars_1 [ 0 ] ) - 1;
-
-	printf ( "%d:%s\n", len, unknown_chars_1 );
-	len = copy_and_replace_ex ( '*', unknown_chars_1, len, unknown_chars_2, DEFAULT_BUFFER_SIZE, NULL, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
-	printf ( "%d:%s\n", len, unknown_chars_2 );
+	printf ( "%d:%s\n", len, src );
+	len = copy_and_replace_ex ( '*', src, len, dst, DEFAULT_BUFFER_SIZE, NULL, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	printf ( "%d:%s\n", len, dst );
 
 	return 1; /* NOT 0 */
 }
 
-int test_match_phase_2 ( )
+int my_match_ex2 ( )
 {
 	char pattern [ ] = "*8*****3***";
 	char replace [ ] = "hello world";
 	char exclude [ ] = "";
 
-	char unknown_chars_1 [ ] = "x98765432x83x678x";
-	char unknown_chars_2 [ DEFAULT_BUFFER_SIZE ];
-	int len;
+	char src [ ] = "x98765432x83x678x";
+	char dst [ DEFAULT_BUFFER_SIZE ];
+	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
 
-	len = sizeof ( unknown_chars_1 ) / sizeof ( unknown_chars_1 [ 0 ] ) - 1;
-
-	printf ( "%d:%s\n", len, unknown_chars_1 );
-	len = copy_and_replace_ex2 ( KNOWN_ALPHABET_NUM, '*', unknown_chars_1, len, unknown_chars_2, DEFAULT_BUFFER_SIZE, NULL, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
-	printf ( "%d:%s\n", len, unknown_chars_2 );
+	printf ( "%d:%s\n", len, src );
+	len = copy_and_replace_ex2 ( KNOWN_ALPHABET_NUM, '*', src, len, dst, DEFAULT_BUFFER_SIZE, NULL, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	printf ( "%d:%s\n", len, dst );
 
 	return 1; /* NOT 0 */
 }
 
-int test_traversing_phase_1 ( )
+int my_traverse1 ( )
 {
 	char pattern [ ] = "/*?*/";
 	char replace [ ] = "";
@@ -108,7 +112,7 @@ int test_traversing_phase_1 ( )
 	return traverse ( SOURCE_PATH, FILE_EXTENSION, '?', & filter, header, footer, pattern, replace, exclude );
 }
 
-int test_traversing_phase_2 ( )
+int my_traverse2 ( )
 {
 	char pattern [ ] = "//*\n";
 	char replace [ ] = "\n";
@@ -126,7 +130,7 @@ int test_traversing_phase_2 ( )
 	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', & filter, header, footer, pattern, replace, exclude );
 }
 
-int test_traversing_phase_3 ( )
+int my_traverse3 ( )
 {
 	char pattern [ ] = "*\n*\n*\n*";
 	char replace [ ] = "\n\n";
@@ -144,7 +148,7 @@ int test_traversing_phase_3 ( )
 	return traverse2 ( SOURCE_PATH, FILE_EXTENSION, KNOWN_ALPHABET_BLANK, '*', & filter, header, footer, pattern, replace, exclude );
 }
 
-int test_traversing_phase_4 ( )
+int my_traverse4 ( )
 {
 	char pattern [ ] = "function *(*)*{";
 	char replace [ ] = "\aerror_log(\"c:/apache/htdocs\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"c:/test/err.log\");";
@@ -162,21 +166,21 @@ int test_traversing_phase_4 ( )
 	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', & filter, header, footer, pattern, replace, exclude );
 }
 
-int test_report_phase_1 ( )
+int my_report1 ( )
 {
 	printf ( "parsing %s\n", REPORT_ORG_FILE );
 
 	return report_copy_file ( REPORT_ORG_FILE, REPORT_TMP_FILE );
 }
 
-int test_report_phase_2 ( )
+int my_report2 ( )
 {
 	printf ( "parsing %s\n", REPORT_TMP_FILE );
 
 	return nonredundancy_copy_file ( REPORT_TMP_FILE, REPORT_OBJ_FILE );
 }
 
-int test_directory ( )
+int my_directory ( )
 {
 	/*
 	 * each line is a list entry which ends with '\n' implicitly
@@ -193,28 +197,14 @@ int test_directory ( )
 	return copy_listed_files ( REPORT_OBJ_FILE, SOURCE_PATH, DESTINATION_PATH );
 }
 
-int test_debugging ( )
+int my_debug ( )
 {
 	printf ( "debugging %s\n", DEBUG_FILE );
 
 	return debug ( KNOWN_ALPHABET_DEBUG, DEBUG_FILE );
 }
 
-int do_test ( )
-{
-	return test_match_phase_1 ( )
-		   && test_match_phase_2 ( )
-		   && test_traversing_phase_1 ( )
-		   && test_traversing_phase_2 ( )
-		   && test_traversing_phase_3 ( )
-		   && test_traversing_phase_4 ( )
-		   && test_report_phase_1 ( )
-		   && test_report_phase_2 ( )
-		   && test_directory ( )
-		   && test_debugging ( );
-}
-
-int do_input ( )
+int run ( )
 {
 	int c;
 
@@ -232,16 +222,17 @@ int do_input ( )
 
 	switch ( c )
 	{
-		case '0': return test_match_phase_1 ( ) 
-						 && test_match_phase_2 ( );
-		case '1': return test_traversing_phase_1 ( )
-						 && test_traversing_phase_2 ( )
-						 && test_traversing_phase_3 ( )
-						 && test_traversing_phase_4 ( );
-		case '2': return test_report_phase_1 ( )
-						 && test_report_phase_2 ( )
-						 && test_directory ( );
-		case '3': return test_debugging ( );
+		case '0': return my_match ( ) 
+						 && my_match_ex ( ) 
+						 && my_match_ex2 ( );
+		case '1': return my_traverse1 ( )
+						 && my_traverse2 ( )
+						 && my_traverse3 ( )
+						 && my_traverse4 ( );
+		case '2': return my_report1 ( )
+						 && my_report2 ( )
+						 && my_directory ( );
+		case '3': return my_debug ( );
 	}
 
 	printf ( "invalid operation number\n" );
@@ -265,7 +256,7 @@ int main ( )
 	src_buf = buffer;
 	dst_buf = buffer + MAX_FILE_SIZE;
 
-	if ( ! do_input ( ) )
+	if ( ! run ( ) )
 	{
 		printf ( "operation failed\n" );
 		

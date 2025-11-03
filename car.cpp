@@ -204,47 +204,74 @@ int my_debug ( )
 	return debug ( KNOWN_ALPHABET_DEBUG, DEBUG_FILE );
 }
 
-int run ( )
+int run ( int operation )
 {
-	int c;
-
-	printf ( "CAR : Computer Aided Read\n" );
-	printf ( "copyright (C) 2025.10.28 TOP WAYE topwaye@hotmail.com\n" );
-	printf ( "[ 0 ] match a pattern string\n" );
-	printf ( "[ 1 ] traverse a directory tree and insert a line of source code into all files\n" );
-	printf ( "[ 2 ] make a new directory tree on the disk according to a tracing report\n" );
-	printf ( "[ 3 ] debug a file to print each known and unknown character\n" );
-	printf ( "enter an operation number: " );
-
-	c = _getch();
-	_putch ( c );
-	_putch ( '\n' ); /* line feed */
-
-	switch ( c )
+	switch ( operation )
 	{
-		case '0': return my_match ( ) 
-						 && my_match_ex ( ) 
-						 && my_match_ex2 ( );
-		case '1': return my_traverse1 ( )
-						 && my_traverse2 ( )
-						 && my_traverse3 ( )
-						 && my_traverse4 ( );
-		case '2': return my_report1 ( )
-						 && my_report2 ( )
-						 && my_directory ( );
-		case '3': return my_debug ( );
+		case 1: return my_match ( ) && my_match_ex ( ) && my_match_ex2 ( );
+		case 2: return my_traverse1 ( ) && my_traverse2 ( ) && my_traverse3 ( ) && my_traverse4 ( );
+		case 3: return my_report1 ( ) && my_report2 ( ) && my_directory ( );
+		case 4: return my_debug ( );
 	}
-
-	printf ( "invalid operation number\n" );
 
 	return 0;
 }
 
 /* if successful, returns 1. otherwise, returns 0 */
 
-int main ( )
+int main ( int argc, char * argv [ ] )
 {
 	char * buffer;
+	int operation;
+	int c;
+
+	printf ( "CAR : Computer Aided Read\n" );
+	printf ( "copyright (C) 2025.10.28 TOP WAYE topwaye@hotmail.com\n" );
+
+	if ( argc == 1 )
+	{
+		printf ( "[ 1 ] match a pattern string\n" );
+		printf ( "[ 2 ] traverse a directory tree and insert a line of source code into all files\n" );
+		printf ( "[ 3 ] make a new directory tree on the disk according to a tracing report\n" );
+		printf ( "[ 4 ] debug a file to print each known and unknown character\n" );
+		printf ( "enter an operation number: " );
+
+		c = _getch ( );
+		_putch ( c );
+		_putch ( '\n' ); /* line feed */
+
+		switch ( c )
+		{
+			case '1': operation = 1; break;
+			case '2': operation = 2; break;
+			case '3': operation = 3; break;
+			case '4': operation = 4; break;
+			default: operation = 0;
+		}
+	}
+	else if ( argc == 2 )
+	{
+		if ( compare_string ( argv [ 1 ], "1" ) == 0 )
+			operation = 1;
+		else if ( compare_string ( argv [ 1 ], "2" ) == 0 )
+			operation = 2;
+		else if ( compare_string ( argv [ 1 ], "3" ) == 0 )
+			operation = 3;
+		else if ( compare_string ( argv [ 1 ], "4" ) == 0 )
+			operation = 4;
+		else
+			operation = 0;
+	}
+	else
+	{
+		operation = 0;
+	}
+
+	if ( ! operation )
+	{
+		printf ( "invalid operation number\n" );
+		return 0;
+	}
 
 	buffer = ( char * ) malloc ( MAX_FILE_SIZE + MAX_FILE_SIZE );
 	if ( ! buffer )
@@ -256,7 +283,7 @@ int main ( )
 	src_buf = buffer;
 	dst_buf = buffer + MAX_FILE_SIZE;
 
-	if ( ! run ( ) )
+	if ( ! run ( operation ) )
 	{
 		printf ( "operation failed\n" );
 		

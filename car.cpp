@@ -6,6 +6,7 @@
  * CAR : Computer Aided Read
  */
 
+#include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -213,6 +214,41 @@ int do_test ( )
 		   && test_debugging ( );
 }
 
+int do_input ( )
+{
+	int c;
+
+	printf ( "CAR : Computer Aided Read\n" );
+	printf ( "copyright (C) 2025.10.28 TOP WAYE topwaye@hotmail.com\n" );
+	printf ( "[ 0 ] match a pattern string\n" );
+	printf ( "[ 1 ] traverse a directory tree and insert a line of source code into all files\n" );
+	printf ( "[ 2 ] make a new directory tree on the disk according to a tracing report\n" );
+	printf ( "[ 3 ] debug a file to print each known and unknown character\n" );
+	printf ( "enter an operation number: " );
+
+	c = _getch();
+	_putch ( c );
+	_putch ( '\n' ); /* line feed */
+
+	switch ( c )
+	{
+		case '0': return test_match_phase_1 ( ) 
+						 && test_match_phase_2 ( );
+		case '1': return test_traversing_phase_1 ( )
+						 && test_traversing_phase_2 ( )
+						 && test_traversing_phase_3 ( )
+						 && test_traversing_phase_4 ( );
+		case '2': return test_report_phase_1 ( )
+						 && test_report_phase_2 ( )
+						 && test_directory ( );
+		case '3': return test_debugging ( );
+	}
+
+	printf ( "invalid operation number\n" );
+
+	return 0;
+}
+
 /* if successful, returns 1. otherwise, returns 0 */
 
 int main ( )
@@ -229,9 +265,9 @@ int main ( )
 	src_buf = buffer;
 	dst_buf = buffer + MAX_FILE_SIZE;
 
-	if ( ! do_test ( ) )
+	if ( ! do_input ( ) )
 	{
-		printf ( "do_test failed\n" );
+		printf ( "operation failed\n" );
 		
 		free ( buffer );
 		return 0;

@@ -11,6 +11,7 @@
  * escape character \a represents a runtime current matched string which can NOT be trimmed
  * escape character \b represents a runtime current matched string which can be trimmed (e.g. exclude somechar)
  * escape character \f represents a runtime placeholder which can be arbitrary string predefined
+ * escape character \v represents anything, the behavior of a \v is defined by filters.
  */
 
 #include <stdarg.h>
@@ -20,9 +21,9 @@
 extern int hit_count;
 
 extern int seek_string ( char c, char * src, int src_len, int * current );
-extern int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * next );
+extern int do_match_ex ( char wildcard, struct filter_t * filter, char * pattern, char * src, int src_len, int * next );
 
-int is_known_character ( char c, const char * known )
+int is_known_character ( const char * known, char c )
 {
 	int i;
 
@@ -70,8 +71,7 @@ int seek_unknown_character ( const char * known, char * src, int src_len, int * 
 	return 0;
 }
 
-int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int src_len, char * dst, int dst_size,
-						   struct filter_t * filter,
+int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
 						   char * pattern, char * replace, char * exclude,
 						   ... )
 {
@@ -94,7 +94,7 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 	h = 0, i = 0;
 	while ( i < src_len )
 	{
-		if ( ! is_known_character ( *( src + i ), known ) )
+		if ( ! is_known_character ( known, *( src + i ) ) )
 		{
 			if ( h + 1 == dst_size )
 				return 0;
@@ -108,7 +108,7 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int sr
 
 		len = ! seek_unknown_character ( known, src, src_len, & iii ) ? src_len : iii; /* NOT iii - ii */
 
-		if ( ! do_match_ex ( wildcard, pattern, src, len, & i ) )
+		if ( ! do_match_ex ( wildcard, filter, pattern, src, len, & i ) )
 		{
 			if ( h + 1 == dst_size )
 				return 0;
@@ -348,7 +348,65 @@ int filter_forward3 ( char * src, int src_len, int src_prior, int * src_index, c
 	return 1; /* NOT 0 */
 }
 
-int match_ex2 ( char * known, char wildcard, char * pattern, char * src, int src_len, int granularity )
+int filter_equal_blank ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index )
+{
+	char * pos;
+	int i, j, k;
+
+	i = * src_index;
+
+	pos = pattern;
+	k = * pattern_index;
+
+	k ++;
+
+	if ( *( pos + k ) )
+	{
+		if ( *( pos + k ) == '1' ) /* \v0: call number == 1 */
+		{
+			/* 
+			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
+			 * do NOT check if ( i == src_len ) return 0 again here
+			 */
+			if ( is_known_character ( KNOWN_ALPHABET_BLANK, *( src + i ) ) )
+			{
+				* src_index = ++ i; /* ++i must be here */
+				* pattern_index = k;
+
+				return 1;
+			}
+		}
+		if ( *( pos + k ) == '2' ) /* \v1: call number == 2 */
+		{
+			j = i;
+						
+			/* 
+			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
+			 * do NOT check if ( i == src_len ) return 0 again here
+			 * meaning the 1st round comparing is safe to go
+			 */
+			while ( is_known_character ( KNOWN_ALPHABET_BLANK, *( src + i ) ) )
+				if ( ++ i == src_len ) /* must be here, do NOT move this line */
+					break; /* NOT return 0 */
+
+			if ( j < i )
+			{
+				* src_index = i; /* NOT ++i */
+				* pattern_index = k;
+
+				return 1;
+			}
+		}
+		else
+		{
+			/* illegal call number */
+		}
+	}
+
+	return 0;
+}
+
+int match_ex2 ( char * known, char wildcard, struct filter_t * filter, char * pattern, char * src, int src_len, int granularity )
 {
 	int i, ii, iii; 
 	int len;
@@ -356,7 +414,7 @@ int match_ex2 ( char * known, char wildcard, char * pattern, char * src, int src
 	i = 0;
 	while ( i < src_len )
 	{
-		if ( ! is_known_character ( *( src + i ), known ) )
+		if ( ! is_known_character ( known, *( src + i ) ) )
 		{
 			i ++;
 			continue;
@@ -366,7 +424,7 @@ int match_ex2 ( char * known, char wildcard, char * pattern, char * src, int src
 
 		len = ! seek_unknown_character ( known, src, src_len, & iii ) ? src_len : iii; /* NOT iii - ii */
 
-		if ( ! do_match_ex ( wildcard, pattern, src, len, & i ) )
+		if ( ! do_match_ex ( wildcard, filter, pattern, src, len, & i ) )
 		{
 			/* match failed when i = current index, i is not changed */
 

@@ -11,7 +11,7 @@
 extern char * src_buf;
 
 extern int load_file ( const char * filename );
-extern int is_known_character ( char c, const char * known );
+extern int is_known_character ( const char * known, char c );
 
 /* if successful, returns 1. otherwise, returns 0 */
 
@@ -33,7 +33,7 @@ int debug ( const char * known, const char * filename )
 	i = 0;
 	while ( i < src_len )
 	{
-		if ( ! is_known_character ( *( src + i ), known ) )
+		if ( ! is_known_character ( known, *( src + i ) ) )
 			printf ( "\\x%02x", *( src + i ) );
 		else
 			printf ( "%c", *( src + i ) );

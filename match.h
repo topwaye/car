@@ -10,6 +10,7 @@
  * escape character \a represents a runtime current matched string which can NOT be trimmed
  * escape character \b represents a runtime current matched string which can be trimmed (e.g. exclude somechar)
  * escape character \f represents a runtime placeholder which can be arbitrary string predefined
+ * escape character \v represents anything, the behavior of a \v is defined by filters.
  */
 
 #ifndef MATCH_H
@@ -27,6 +28,8 @@ int concatenate_string ( const char * src, char * dst, int dst_size, ... );
 
 int copy_string ( const char * src, char * dst, int dst_size, ... );
 
+int filter_equal_blank ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index );
+
 int filter_custom ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 
 int filter_forward3 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
@@ -37,20 +40,18 @@ int filter_forward ( char * src, int src_len, int src_prior, int * src_index, ch
 
 int filter_backward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 
-int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, int dst_size,
-						  struct filter_t * filter,
+int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
 						  char * pattern, char * replace, char * exclude,
 						  ... );
 
-int copy_and_replace_ex2 ( const char * known, char wildcard, char * src, int src_len, char * dst, int dst_size,
-						   struct filter_t * filter,
+int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
 						   char * pattern, char * replace, char * exclude,
 						   ... );
 
-int match_ex2 ( char * known, char wildcard, char * pattern, char * src, int src_len, int granularity );
+int match_ex2 ( char * known, char wildcard, struct filter_t * filter, char * pattern, char * src, int src_len, int granularity );
 
 /* prototype do_match_ex function */
-int match_ex ( char wildcard, char * pattern, char * src, int src_len, int granularity );
+int match_ex ( char wildcard, struct filter_t * filter, char * pattern, char * src, int src_len, int granularity );
 
 /* prototype do_match function */
 int match ( char * target, char * src, int src_len, int granularity );

@@ -10,6 +10,7 @@
  * escape character \a represents a runtime current matched string which can NOT be trimmed
  * escape character \b represents a runtime current matched string which can be trimmed (e.g. exclude somechar)
  * escape character \f represents a runtime placeholder which can be arbitrary string predefined
+ * escape character \v represents anything, the behavior of a \v is defined by filters.
  */
 
 #include <stdarg.h>
@@ -206,11 +207,14 @@ int copy_string ( const char * src, char * dst, int dst_size, ... )
 	return h;
 }
 
-int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * next )
+int do_match_ex ( char wildcard, struct filter_t * filter, char * pattern, char * src, int src_len, int * next )
 {
 	char * pos;
 	int i, k;
 	int a, b, ii;
+
+	filter_equal_t filter_equal;
+	filter_equal = filter ?  filter -> filter_equal : NULL;
 
 	i = * next;
 
@@ -225,10 +229,19 @@ int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * 
 
 			if ( ! b )
 			{
-				if ( *( src + i ) != *( pos + k ) )
-					break;
-
-				ii = i ++;
+				if ( '\v' == *( pos + k ) && filter_equal )
+				{
+					ii = i; /* save i = current index */
+					if ( ! filter_equal ( pos, & k, src, src_len, & i ) )
+						break;
+				}
+				else
+				{
+					if ( *( src + i ) != *( pos + k ) )
+						break;
+				
+					ii = i ++;
+				}
 			}
 			else
 			{
@@ -247,7 +260,7 @@ int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * 
 
 				while ( i < src_len )
 				{
-					if ( ! do_match_ex ( wildcard, pos + k, src, src_len, & i ) )
+					if ( ! do_match_ex ( wildcard, filter, pos + k, src, src_len, & i ) )
 					{
 						i ++;
 						continue;
@@ -274,14 +287,26 @@ int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * 
 					break;
 				}
 
-				if ( *( src + i ) != *( pos + k ) )
+				if ( '\v' == *( pos + k ) && filter_equal )
 				{
-					a = 0;
-					i = ii;
-					break;
+					if ( ! filter_equal ( pos, & k, src, src_len, & i ) )
+					{
+						a = 0;
+						i = ii;
+						break;
+					}
 				}
+				else
+				{
+					if ( *( src + i ) != *( pos + k ) )
+					{
+						a = 0;
+						i = ii;
+						break;
+					}
 
-				i ++;
+					i ++;
+				}
 			}
 		}
 		else /* ! a && b */
@@ -300,8 +325,7 @@ quit:
 	return a;
 }
 
-int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, int dst_size,
-						  struct filter_t * filter,
+int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
 						  char * pattern, char * replace, char * exclude,
 						  ... )
 {
@@ -325,7 +349,7 @@ int copy_and_replace_ex ( char wildcard, char * src, int src_len, char * dst, in
 	{
 		ii = i; /* save i = current index */
 
-		if ( ! do_match_ex ( wildcard, pattern, src, src_len, & i ) )
+		if ( ! do_match_ex ( wildcard, filter, pattern, src, src_len, & i ) )
 		{
 			if ( h + 1 == dst_size )
 				return 0;
@@ -489,7 +513,7 @@ int do_match ( char * target, char * src, int src_len, int * next )
 }
 
 /* prototype do_match_ex function */
-int match_ex ( char wildcard, char * pattern, char * src, int src_len, int granularity )
+int match_ex ( char wildcard, struct filter_t * filter, char * pattern, char * src, int src_len, int granularity )
 {
 	int i, ii; 
 
@@ -500,7 +524,7 @@ int match_ex ( char wildcard, char * pattern, char * src, int src_len, int granu
 	{
 		ii = i; /* save i = current index */
 
-		if ( ! do_match_ex ( wildcard, pattern, src, src_len, & i ) )
+		if ( ! do_match_ex ( wildcard, filter, pattern, src, src_len, & i ) )
 		{
 			/* match failed when i = current index, i is not changed */
 

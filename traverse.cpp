@@ -56,8 +56,8 @@ int do_command ( char * filename, char wildcard,
     dirty = bytes_copied > 0;
 	pos += bytes_copied;
 	size -= bytes_copied;
-	bytes_copied = copy_and_replace_ex ( wildcard, src_buf, bytes_read, pos, size,
-                                         filter, pattern, replace, exclude, filename );
+	bytes_copied = copy_and_replace_ex ( wildcard, filter, src_buf, bytes_read, pos, size,
+                                         pattern, replace, exclude, filename );
     dirty += hit_count;
 	pos += bytes_copied;
 	size -= bytes_copied;

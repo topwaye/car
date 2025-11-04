@@ -56,8 +56,8 @@ int do_command2 ( char * filename, const char * known, char wildcard,
     dirty = bytes_copied > 0;
 	pos += bytes_copied;
 	size -= bytes_copied;
-	bytes_copied = copy_and_replace_ex2 ( known, wildcard, src_buf, bytes_read, pos, size,
-										 filter, pattern, replace, exclude, filename );
+	bytes_copied = copy_and_replace_ex2 ( known, wildcard, filter, src_buf, bytes_read, pos, size,
+										  pattern, replace, exclude, filename );
     dirty += hit_count;
 	pos += bytes_copied;
 	size -= bytes_copied;

@@ -88,7 +88,7 @@ int my_match3 ( )
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
 	
 	struct filter_t filter = { 0 }; /* init */
-	filter.filter_equal = filter_equal_blank;
+	filter.filter_equal = filter_blank;
 
 	printf ( "%d:%s\n", len, src );
 	len = copy_and_replace_ex ( '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
@@ -108,7 +108,7 @@ int my_match4 ( )
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
 	
 	struct filter_t filter = { 0 }; /* init */
-	filter.filter_equal = filter_equal_blank;
+	filter.filter_equal = filter_blank;
 
 	printf ( "%d:%s\n", len, src );
 	len = copy_and_replace_ex ( '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
@@ -219,7 +219,7 @@ int my_traverse4 ( )
 	char footer [ ] = "";
 	
 	struct filter_t filter = { 0 }; /* init */
-	filter.filter_equal = filter_equal_blank;
+	filter.filter_equal = filter_blank;
 	filter.filter_on_load = filter_forward;
 
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );

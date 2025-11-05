@@ -19,27 +19,20 @@
 int string_length ( const char * src );
 
 int compare_string ( const char * src, const char * dst );
-
 int compare_string_ex ( int src_index, int src_delta, const char * src, const char * dst );
 
 int seek_string ( char c, char * src, int src_len, int * current );
 
 int concatenate_string ( const char * src, char * dst, int dst_size, ... );
-
 int copy_string ( const char * src, char * dst, int dst_size, ... );
 
-int filter_equal_blank ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index );
-
 int filter_quote ( char * src, int src_len, int * src_index );
+int filter_blank ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index );
 
 int filter_custom ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
-
 int filter_forward3 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
-
 int filter_forward2 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
-
 int filter_forward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
-
 int filter_backward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 
 int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,

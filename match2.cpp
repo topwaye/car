@@ -366,7 +366,7 @@ int filter_forward3 ( char * src, int src_len, int src_prior, int * src_index, c
 
 int filter_quote ( char * src, int src_len, int * src_index )
 {
-	int i, j;
+	int i;
 	int a;
 
 	i = * src_index;
@@ -375,7 +375,6 @@ int filter_quote ( char * src, int src_len, int * src_index )
 	 * do_match_ex ( ) has already checked current 1 char *( src + i ),
 	 * do NOT check if ( i == src_len ) return 0 again here
 	 */
-	j = i;
 	if ( '\'' == *( src + i ) )
 	{
 		a = 0;
@@ -423,12 +422,12 @@ int filter_quote ( char * src, int src_len, int * src_index )
 		return 0;
 	}
 
-	* src_index = i;
+	* src_index = i; /* i == src_len, normally or abnormally, that is what we expect */
 
 	return 1;
 }
 
-int filter_equal_blank ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index )
+int filter_blank ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index )
 {
 	char * pos;
 	int i, j, k;

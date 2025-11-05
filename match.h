@@ -30,6 +30,8 @@ int copy_string ( const char * src, char * dst, int dst_size, ... );
 
 int filter_equal_blank ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index );
 
+int filter_quote ( char * src, int src_len, int * src_index );
+
 int filter_custom ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 
 int filter_forward3 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );

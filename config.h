@@ -16,10 +16,12 @@
 
 typedef int ( * filter_operation_t ) ( char *, int, int, int *, char *, int, int * );
 typedef int ( * filter_equal_t ) ( char *, int *, char *, int, int * );
+typedef int ( * filter_initiate_t ) ( char * src, int src_len, int * src_index );
 
 struct filter_t
 {
     filter_equal_t filter_equal;
+    filter_initiate_t filter_initiate;
     filter_operation_t filter_before_replace;
     filter_operation_t filter_after_replace;
 	filter_operation_t filter_on_load;

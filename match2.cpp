@@ -78,6 +78,7 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 	char * pos, * posx;
 	int i, ii, iii, j, h, k, s, t;
 	int len;
+	filter_initiate_t filter_initiate;
 	filter_operation_t filter_before_replace, filter_after_replace, filter_on_load, filter_on_custom;
 	va_list args;
 
@@ -86,10 +87,11 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 
 	hit_count = 0;
 
-	filter_before_replace = filter ?  filter -> filter_before_replace : NULL;
-	filter_after_replace = filter ?  filter -> filter_after_replace : NULL;
-	filter_on_load = filter ?  filter -> filter_on_load : NULL;
-	filter_on_custom = filter ?  filter -> filter_on_custom : NULL;
+	filter_initiate = filter ? filter -> filter_initiate : NULL;
+	filter_before_replace = filter ? filter -> filter_before_replace : NULL;
+	filter_after_replace = filter ? filter -> filter_after_replace : NULL;
+	filter_on_load = filter ? filter -> filter_on_load : NULL;
+	filter_on_custom = filter ? filter -> filter_on_custom : NULL;
 
 	h = 0, i = 0;
 	while ( i < src_len )
@@ -107,6 +109,20 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 		iii = ii = i; /* save i = current index */
 
 		len = ! seek_unknown_character ( known, src, src_len, & iii ) ? src_len : iii; /* NOT iii - ii */
+
+		if ( filter_initiate && filter_initiate ( src, len, & i ) )
+		{
+			j = ii;
+			while ( j < i )
+			{
+				if ( h + 1 == dst_size )
+					return 0;
+
+				*( dst + h ++ ) = *( src + j ++ );
+			}
+
+			continue; /* must continue to test i < src_len now */
+		}
 
 		if ( ! do_match_ex ( wildcard, filter, pattern, src, len, & i ) )
 		{
@@ -346,6 +362,70 @@ int filter_forward3 ( char * src, int src_len, int src_prior, int * src_index, c
 	* dst_index = h;
 
 	return 1; /* NOT 0 */
+}
+
+int filter_quote ( char * src, int src_len, int * src_index )
+{
+	int i, j;
+	int a;
+
+	i = * src_index;
+
+	/* 
+	 * do_match_ex ( ) has already checked current 1 char *( src + i ),
+	 * do NOT check if ( i == src_len ) return 0 again here
+	 */
+	j = i;
+	if ( '\'' == *( src + i ) )
+	{
+		a = 0;
+		while ( ++ i < src_len ) 
+		{
+			if ( a )
+			{
+				a = 0;
+				continue;
+			}
+
+			if ( '\'' == *( src + i ) )
+			{
+				i ++; /* ++i must be here */
+				break;	
+			}
+
+			if ( '\\' == *( src + i ) )
+				a = 1;
+		}
+	}
+	else if ( '\"' == *( src + i ) )
+	{
+		a = 0;
+		while ( ++ i < src_len ) 
+		{
+			if ( a )
+			{
+				a = 0;
+				continue;
+			}
+
+			if ( '\"' == *( src + i ) )
+			{
+				i ++; /* ++i must be here */
+				break;	
+			}
+
+			if ( '\\' == *( src + i ) )
+				a = 1;
+		}
+	}
+	else
+	{
+		return 0;
+	}
+
+	* src_index = i;
+
+	return 1;
 }
 
 int filter_equal_blank ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index )

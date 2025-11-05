@@ -119,6 +119,26 @@ int my_match4 ( )
 
 int my_match5 ( )
 {
+	char pattern [ ] = "H*****M";
+	char replace [ ] = "hello world";
+	char exclude [ ] = "";
+
+	char src [ ] = "x<\'HTM\\\'L\'>x<HTM>x<HTM>xSELECTx";
+	char dst [ DEFAULT_BUFFER_SIZE ];
+	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
+	
+	struct filter_t filter = { 0 }; /* init */
+	filter.filter_initiate = filter_quote;
+
+	printf ( "%d:%s\n", len, src );
+	len = copy_and_replace_ex ( '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	printf ( "%d:%s\n", len, dst );
+
+	return 1; /* NOT 0 */
+}
+
+int my_match6 ( )
+{
 	char pattern [ ] = "*8*****3***";
 	char replace [ ] = "hello world";
 	char exclude [ ] = "";
@@ -143,6 +163,7 @@ int my_traverse1 ( )
 	char footer [ ] = "";
 
 	struct filter_t filter = { 0 }; /* init */
+	filter.filter_initiate = filter_quote;
 	filter.filter_before_replace = filter_forward2;
 
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION);
@@ -161,6 +182,7 @@ int my_traverse2 ( )
 	char footer [ ] = "";
 
 	struct filter_t filter = { 0 }; /* init */
+	filter.filter_initiate = filter_quote;
 	filter.filter_before_replace = filter_forward3;
 
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
@@ -192,7 +214,7 @@ int my_traverse4 ( )
 {
 	char pattern [ ] = "function\v2*(*)*{";
 	char replace [ ] = "\aerror_log(\"c:/apache24/htdocs\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"c:/test/err.log\");";
-	char exclude [ ] = "\r\n${"; /* what characters a matched @string excludes */
+	char exclude [ ] = "\r\n\"\'${"; /* what characters a matched @string excludes */
 	char header [ ] = "";
 	char footer [ ] = "";
 	
@@ -249,8 +271,10 @@ int run ( int operation )
 {
 	switch ( operation )
 	{
-		case 1: return my_match1 ( ) && my_match2 ( ) && my_match3 ( ) && my_match4 ( ) && my_match5 ( );
-		case 2: return my_traverse1 ( ) && my_traverse2 ( ) && my_traverse3 ( ) && my_traverse4 ( );
+		case 1: return my_match1 ( ) && my_match2 ( ) && my_match3 ( )
+					   && my_match4 ( ) && my_match5 ( ) && my_match6 ( );
+		case 2: return my_traverse1 ( ) && my_traverse2 ( ) && my_traverse3 ( )
+					   && my_traverse4 ( );
 		case 3: return my_report1 ( ) && my_report2 ( ) && my_directory ( );
 		case 4: return my_debug ( );
 	}

@@ -156,25 +156,6 @@ int my_match6 ( )
 
 int my_traverse1 ( )
 {
-	char pattern [ ] = "/*?*/";
-	char replace [ ] = "";
-	char exclude [ ] = "";
-	char header [ ] = "";
-	char footer [ ] = "";
-
-	struct filter_t filter = { 0 }; /* init */
-	filter.filter_initiate = filter_quote;
-	filter.filter_before_replace = filter_forward2;
-
-	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION);
-	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
-	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
-	
-	return traverse ( SOURCE_PATH, FILE_EXTENSION, '?', & filter, header, footer, pattern, replace, exclude );
-}
-
-int my_traverse2 ( )
-{
 	char pattern [ ] = "//*\n";
 	char replace [ ] = "\n";
 	char exclude [ ] = "";
@@ -190,6 +171,25 @@ int my_traverse2 ( )
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
 	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', & filter, header, footer, pattern, replace, exclude );
+}
+
+int my_traverse2 ( )
+{
+	char pattern [ ] = "/*?*/";
+	char replace [ ] = "";
+	char exclude [ ] = "";
+	char header [ ] = "";
+	char footer [ ] = "";
+
+	struct filter_t filter = { 0 }; /* init */
+	filter.filter_initiate = filter_quote;
+	filter.filter_before_replace = filter_forward2;
+
+	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION);
+	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
+	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
+	
+	return traverse ( SOURCE_PATH, FILE_EXTENSION, '?', & filter, header, footer, pattern, replace, exclude );
 }
 
 int my_traverse3 ( )

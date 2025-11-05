@@ -21,7 +21,8 @@
 extern int hit_count;
 
 extern int seek_string ( char c, char * src, int src_len, int * current );
-extern int do_match_ex ( char wildcard, struct filter_t * filter, char * pattern, char * src, int src_len, int * next );
+extern int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * next,
+						 filter_initiate_t filter_initiate, filter_equal_t filter_equal);
 
 int is_known_character ( const char * known, char c )
 {
@@ -78,6 +79,7 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 	char * pos, * posx;
 	int i, ii, iii, j, h, k, s, t;
 	int len;
+	filter_equal_t filter_equal;
 	filter_initiate_t filter_initiate;
 	filter_operation_t filter_before_replace, filter_after_replace, filter_on_load, filter_on_custom;
 	va_list args;
@@ -87,6 +89,7 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 
 	hit_count = 0;
 
+	filter_equal = filter ? filter -> filter_equal : NULL;
 	filter_initiate = filter ? filter -> filter_initiate : NULL;
 	filter_before_replace = filter ? filter -> filter_before_replace : NULL;
 	filter_after_replace = filter ? filter -> filter_after_replace : NULL;
@@ -124,7 +127,7 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 			continue; /* must continue to test i < src_len now */
 		}
 
-		if ( ! do_match_ex ( wildcard, filter, pattern, src, len, & i ) )
+		if ( ! do_match_ex ( wildcard, pattern, src, len, & i, filter_initiate, filter_equal ) )
 		{
 			if ( h + 1 == dst_size )
 				return 0;
@@ -485,7 +488,7 @@ int filter_blank ( char * pattern, int * pattern_index, char * src, int src_len,
 	return 0;
 }
 
-int match_ex2 ( char * known, char wildcard, struct filter_t * filter, char * pattern, char * src, int src_len, int granularity )
+int match_ex2 ( char * known, char wildcard, char * pattern, char * src, int src_len, int granularity )
 {
 	int i, ii, iii; 
 	int len;
@@ -503,7 +506,7 @@ int match_ex2 ( char * known, char wildcard, struct filter_t * filter, char * pa
 
 		len = ! seek_unknown_character ( known, src, src_len, & iii ) ? src_len : iii; /* NOT iii - ii */
 
-		if ( ! do_match_ex ( wildcard, filter, pattern, src, len, & i ) )
+		if ( ! do_match_ex ( wildcard, pattern, src, len, & i, NULL, NULL ) )
 		{
 			/* match failed when i = current index, i is not changed */
 

@@ -43,10 +43,10 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 						   char * pattern, char * replace, char * exclude,
 						   ... );
 
-int match_ex2 ( char * known, char wildcard, struct filter_t * filter, char * pattern, char * src, int src_len, int granularity );
+int match_ex2 ( char * known, char wildcard, char * pattern, char * src, int src_len, int granularity );
 
 /* prototype do_match_ex function */
-int match_ex ( char wildcard, struct filter_t * filter, char * pattern, char * src, int src_len, int granularity );
+int match_ex ( char wildcard, char * pattern, char * src, int src_len, int granularity );
 
 /* prototype do_match function */
 int match ( char * target, char * src, int src_len, int granularity );

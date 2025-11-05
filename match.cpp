@@ -207,16 +207,12 @@ int copy_string ( const char * src, char * dst, int dst_size, ... )
 	return h;
 }
 
-int do_match_ex ( char wildcard, struct filter_t * filter, char * pattern, char * src, int src_len, int * next )
+int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * next,
+				  filter_initiate_t filter_initiate, filter_equal_t filter_equal )
 {
 	char * pos;
 	int i, k;
 	int a, b, ii;
-	filter_equal_t filter_equal;
-	filter_initiate_t filter_initiate;
-
-	filter_equal = filter ? filter -> filter_equal : NULL;
-	filter_initiate = filter ? filter -> filter_initiate : NULL;
 
 	i = * next;
 
@@ -265,7 +261,7 @@ int do_match_ex ( char wildcard, struct filter_t * filter, char * pattern, char 
 					if ( filter_initiate && filter_initiate ( src, src_len, & i ) )
 						continue; /* must continue to test i < src_len now */
 
-					if ( ! do_match_ex ( wildcard, filter, pos + k, src, src_len, & i ) )
+					if ( ! do_match_ex ( wildcard, pos + k, src, src_len, & i, filter_initiate, filter_equal ) )
 					{
 						i ++;
 						continue;
@@ -336,6 +332,7 @@ int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, i
 {
 	char * pos, * posx;
 	int i, ii, j, h, k, s, t;
+	filter_equal_t filter_equal;
 	filter_initiate_t filter_initiate;
 	filter_operation_t filter_before_replace, filter_after_replace, filter_on_load, filter_on_custom;
 	va_list args;
@@ -345,6 +342,7 @@ int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, i
 
 	hit_count = 0;
 
+	filter_equal = filter ? filter -> filter_equal : NULL;
 	filter_initiate = filter ? filter -> filter_initiate : NULL;
 	filter_before_replace = filter ? filter -> filter_before_replace : NULL;
 	filter_after_replace = filter ? filter -> filter_after_replace : NULL;
@@ -370,7 +368,7 @@ int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, i
 			continue; /* must continue to test i < src_len now */
 		}
 
-		if ( ! do_match_ex ( wildcard, filter, pattern, src, src_len, & i ) )
+		if ( ! do_match_ex ( wildcard, pattern, src, src_len, & i, filter_initiate, filter_equal ) )
 		{
 			if ( h + 1 == dst_size )
 				return 0;
@@ -534,7 +532,7 @@ int do_match ( char * target, char * src, int src_len, int * next )
 }
 
 /* prototype do_match_ex function */
-int match_ex ( char wildcard, struct filter_t * filter, char * pattern, char * src, int src_len, int granularity )
+int match_ex ( char wildcard, char * pattern, char * src, int src_len, int granularity )
 {
 	int i, ii; 
 
@@ -545,7 +543,7 @@ int match_ex ( char wildcard, struct filter_t * filter, char * pattern, char * s
 	{
 		ii = i; /* save i = current index */
 
-		if ( ! do_match_ex ( wildcard, filter, pattern, src, src_len, & i ) )
+		if ( ! do_match_ex ( wildcard, pattern, src, src_len, & i, NULL, NULL ) )
 		{
 			/* match failed when i = current index, i is not changed */
 

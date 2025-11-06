@@ -20,7 +20,7 @@
 extern int hit_count;
 
 extern int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * next,
-						 filter_initiate_t filter_initiate, filter_equal_t filter_equal );
+						 filter_initiate_t filter_on_initiate, filter_equal_t filter_on_equal );
 
 int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t * filters [ ], char * src, int src_len, char * dst, int dst_size,
 								   char * patterns [ ], char * replaces [ ], char * excludes [ ],
@@ -29,8 +29,8 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 	char * pos, * posx;
 	int n, m, i, ii, j, h, k, s, t;
 	int no_relay_initiate;
-	filter_initiate_t filter_initiate;
-	filter_equal_t filter_equal;
+	filter_initiate_t filter_on_initiate;
+	filter_equal_t filter_on_equal;
 	filter_operation_t filter_before_replace, filter_after_replace, filter_on_load, filter_on_custom;
 	va_list args;
 
@@ -46,8 +46,8 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 		for ( n = 0; n < argc; n ++ )
 		{
 			no_relay_initiate = filters [ n ] -> no_relay_initiate;
-			filter_initiate = filters [ n ] -> filter_initiate;
-			filter_equal = filters [ n ] -> filter_equal;
+			filter_on_initiate = filters [ n ] -> filter_on_initiate;
+			filter_on_equal = filters [ n ] -> filter_on_equal;
 			filter_before_replace = filters [ n ] -> filter_before_replace;
 			filter_after_replace = filters [ n ] -> filter_after_replace;
 			filter_on_load = filters [ n ] -> filter_on_load;
@@ -55,7 +55,7 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 	
 			ii = i; /* save i = current index */
 
-			if ( filter_initiate && filter_initiate ( src, src_len, & i ) )
+			if ( filter_on_initiate && filter_on_initiate ( src, src_len, & i ) )
 			{
 				j = ii;
 				while ( j < i )
@@ -70,7 +70,7 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 					goto quit;
 			}
 
-			if ( do_match_ex ( wildcards [ n ], patterns [ n ], src, src_len, & i, no_relay_initiate ? NULL : filter_initiate, filter_equal ) )
+			if ( do_match_ex ( wildcards [ n ], patterns [ n ], src, src_len, & i, no_relay_initiate ? NULL : filter_on_initiate, filter_on_equal ) )
 			{
 				m = 1;
 				

@@ -86,9 +86,9 @@ int my_match3 ( )
 	char src [ ] = "x<  HTML>x<HTM>x<		HTM>xSELECTx";
 	char dst [ DEFAULT_BUFFER_SIZE ];
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
-	
+
 	struct filter_t filter = { 0 }; /* init */
-	filter.filter_equal = filter_blank;
+	filter.filter_on_equal = filter_blank;
 
 	printf ( "%d:%s\n", len, src );
 	len = copy_and_replace_ex ( '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
@@ -108,7 +108,7 @@ int my_match4 ( )
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
 	
 	struct filter_t filter = { 0 }; /* init */
-	filter.filter_equal = filter_blank;
+	filter.filter_on_equal = filter_blank;
 
 	printf ( "%d:%s\n", len, src );
 	len = copy_and_replace_ex ( '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
@@ -123,12 +123,13 @@ int my_match5 ( )
 	char replace [ ] = "hello world";
 	char exclude [ ] = "";
 
-	char src [ ] = "x<\'HTM\\\'L\'>x<HTM>x<HTM>xSELECTx";
+	char src [ ] = "x<H\'T\\\'\'>x<\'ML\'>x<HTM>xSELECTx";
 	char dst [ DEFAULT_BUFFER_SIZE ];
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
 	
 	struct filter_t filter = { 0 }; /* init */
-	filter.filter_initiate = filter_quote;
+	/* filter1.no_relay_initiate = 0; */
+	filter.filter_on_initiate = filter_quote;
 
 	printf ( "%d:%s\n", len, src );
 	len = copy_and_replace_ex ( '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
@@ -138,6 +139,27 @@ int my_match5 ( )
 }
 
 int my_match6 ( )
+{
+	char pattern [ ] = "H*****M";
+	char replace [ ] = "hello world";
+	char exclude [ ] = "";
+
+	char src [ ] = "x<H\'T\\\'\'>x<\'ML\'>x<HTM>xSELECTx";
+	char dst [ DEFAULT_BUFFER_SIZE ];
+	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
+
+	struct filter_t filter = { 0 }; /* init */
+	filter.no_relay_initiate = 1;
+	filter.filter_on_initiate = filter_quote;
+
+	printf ( "%d:%s\n", len, src );
+	len = copy_and_replace_ex ( '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	printf ( "%d:%s\n", len, dst );
+
+	return 1; /* NOT 0 */
+}
+
+int my_match7 ( )
 {
 	char pattern [ ] = "*8*****3***";
 	char replace [ ] = "hello world";
@@ -167,7 +189,7 @@ int my_traverse1 ( )
 
 	struct filter_t filter1 = { 0 }; /* init */
 	filter1.no_relay_initiate = 1; /* MUST BE 1 */
-	filter1.filter_initiate = filter_quote;
+	filter1.filter_on_initiate = filter_quote;
 	filter1.filter_before_replace = filter_forward3;
 
 	/* erase format 2 comment lines */
@@ -178,7 +200,7 @@ int my_traverse1 ( )
 
 	struct filter_t filter2 = { 0 }; /* init */
 	filter2.no_relay_initiate = 1; /* MUST BE 1 */
-	filter2.filter_initiate = filter_quote;
+	filter2.filter_on_initiate = filter_quote;
 	filter2.filter_before_replace = filter_forward2;
 
 	/* ready to go */
@@ -207,7 +229,7 @@ int my_traverse3 ( )
 
 	struct filter_t filter = { 0 }; /* init */
 	/* filter.no_relay_initiate = 0; MUST BE 0 */
-	filter.filter_initiate = filter_quote;
+	filter.filter_on_initiate = filter_quote;
 	filter.filter_after_replace = filter_backward;
 
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
@@ -228,8 +250,8 @@ int my_traverse4 ( )
 
 	struct filter_t filter = { 0 }; /* init */
 	/* filter.no_relay_initiate = 0; MUST BE 0 */
-	filter.filter_initiate = filter_quote;
-	filter.filter_equal = filter_blank;
+	filter.filter_on_initiate = filter_quote;
+	filter.filter_on_equal = filter_blank;
 	filter.filter_on_load = filter_forward;
 
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
@@ -282,7 +304,8 @@ int run ( int operation )
 	switch ( operation )
 	{
 		case 1: return my_match1 ( ) && my_match2 ( ) && my_match3 ( )
-					   && my_match4 ( ) && my_match5 ( ) && my_match6 ( );
+					   && my_match4 ( ) && my_match5 ( ) && my_match6 ( )
+					   && my_match7 ( );
 		case 2: return my_traverse1 ( ) && my_traverse3 ( ) && my_traverse4 ( );
 		case 3: return my_report1 ( ) && my_report2 ( ) && my_directory ( );
 		case 4: return my_debug ( );

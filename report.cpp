@@ -55,6 +55,9 @@ int nonredundancy_copy ( char * src, int src_len, char * dst, int dst_size )
 					*( dst + h ++ ) = *( src + j ++ );
 				}
 
+				if ( h + 1 == dst_size )
+					return 0;
+
 				*( dst + h ++ ) = '\n';
 			}
 
@@ -95,18 +98,18 @@ int report_copy ( char * src, int src_len, char * dst, int dst_size )
 			continue;
 		}
 
+		if ( threshold > MAX_THRESHOLD_VALUE ) /* must be here, do NOT move this line */
+		{
+			i ++;
+			continue;
+		}
+
 		if ( '>' == *( src + i ) )
 		{
 			threshold ++;
 
 			*( dst + h ++ ) = '\n';
 
-			i ++;
-			continue;
-		}
-		
-		if ( threshold > MAX_THRESHOLD_VALUE ) /* must be here, do NOT move this line */
-		{
 			i ++;
 			continue;
 		}

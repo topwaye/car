@@ -181,6 +181,8 @@ int my_traverse1 ( )
 	filter2.filter_initiate = filter_quote;
 	filter2.filter_before_replace = filter_forward2;
 
+	/* ready to go */
+
 	char wildcards [ ] = { '*', '?' };
 	struct filter_t * filters [  ] = { & filter1, & filter2 };
 	char * patterns [ ] = { pattern1, pattern2 };
@@ -196,13 +198,16 @@ int my_traverse1 ( )
 
 int my_traverse3 ( )
 {
-	char pattern [ ] = "*\n*\n*\n*";
-	char replace [ ] = "\n\n";
-	char exclude [ ] = "";
 	char header [ ] = "";
 	char footer [ ] = "";
 
+	char pattern [ ] = "*\n*\n*\n*";
+	char replace [ ] = "\n\n";
+	char exclude [ ] = "";
+
 	struct filter_t filter = { 0 }; /* init */
+	/* filter.no_relay_initiate = 0; MUST BE 0 */
+	filter.filter_initiate = filter_quote;
 	filter.filter_after_replace = filter_backward;
 
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
@@ -214,13 +219,16 @@ int my_traverse3 ( )
 
 int my_traverse4 ( )
 {
+	char header [ ] = "";
+	char footer [ ] = "";
+
 	char pattern [ ] = "function\v2*(*)*{";
 	char replace [ ] = "\aerror_log(\"c:/apache24/htdocs\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"c:/test/err.log\");";
 	char exclude [ ] = "\r\n\"\'${"; /* what characters a matched @string excludes */
-	char header [ ] = "";
-	char footer [ ] = "";
-	
+
 	struct filter_t filter = { 0 }; /* init */
+	/* filter.no_relay_initiate = 0; MUST BE 0 */
+	filter.filter_initiate = filter_quote;
 	filter.filter_equal = filter_blank;
 	filter.filter_on_load = filter_forward;
 
@@ -275,8 +283,7 @@ int run ( int operation )
 	{
 		case 1: return my_match1 ( ) && my_match2 ( ) && my_match3 ( )
 					   && my_match4 ( ) && my_match5 ( ) && my_match6 ( );
-		case 2: return my_traverse1 ( ) && my_traverse3 ( )
-					   && my_traverse4 ( );
+		case 2: return my_traverse1 ( ) && my_traverse3 ( ) && my_traverse4 ( );
 		case 3: return my_report1 ( ) && my_report2 ( ) && my_directory ( );
 		case 4: return my_debug ( );
 	}

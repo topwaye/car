@@ -1,5 +1,5 @@
 ﻿/*
- * match.c
+ * match3.c
  *
  * Copyright (C) 2025.10.25 TOP WAYE topwaye@hotmail.com
  * 
@@ -71,9 +71,7 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 			}
 
 			if ( do_match_ex ( wildcards [ n ], patterns [ n ], src, src_len, & i, no_relay_initiate ? NULL : filter_on_initiate, filter_on_equal ) )
-			{
-				m = 1;
-				
+			{	
 				hit_count ++;
 
 				if ( filter_before_replace && ! filter_before_replace ( src, src_len, ii, & i, dst, dst_size, & h ) )
@@ -173,6 +171,7 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 				if ( filter_after_replace && ! filter_after_replace ( src, src_len, ii, & i, dst, dst_size, & h ) )
 					return 0;
 
+				m = 1;
 				break;
 			}
 		}

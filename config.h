@@ -7,8 +7,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define MAX_BUFFER_SIZE         4096    /* 4KB */
-#define MAX_FILE_SIZE		    4194304 /* 4MB */
+#define MAX_BUFFER_SIZE             65536   /* 64KB < 1MB */
+#define MAX_FILE_SIZE		    134217728   /* 128MB */
 
 #define KNOWN_ALPHABET_NUM		"1234567890"
 #define KNOWN_ALPHABET_BLANK	" \t\r\n"

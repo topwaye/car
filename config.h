@@ -20,8 +20,9 @@ typedef int ( * filter_operation_t ) ( char *, int, int, int *, char *, int, int
 
 struct filter_t
 {
-    filter_equal_t filter_equal;
+    int no_relay_initiate;
     filter_initiate_t filter_initiate;
+    filter_equal_t filter_equal;
     filter_operation_t filter_before_replace;
     filter_operation_t filter_after_replace;
 	filter_operation_t filter_on_load;

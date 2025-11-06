@@ -129,9 +129,11 @@
     <ClCompile Include="directory.cpp" />
     <ClCompile Include="match.cpp" />
     <ClCompile Include="match2.cpp" />
+    <ClCompile Include="match3.cpp" />
     <ClCompile Include="report.cpp" />
     <ClCompile Include="traverse.cpp" />
     <ClCompile Include="traverse2.cpp" />
+    <ClCompile Include="traverse3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h" />

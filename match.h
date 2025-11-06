@@ -39,6 +39,10 @@ int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, i
 						  char * pattern, char * replace, char * exclude,
 						  ... );
 
+int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t * filters [ ], char * src, int src_len, char * dst, int dst_size,
+								   char * patterns [ ], char * replaces [ ], char * excludes [ ],
+								   ... );
+
 int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
 						   char * pattern, char * replace, char * exclude,
 						   ... );

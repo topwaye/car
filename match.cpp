@@ -332,8 +332,9 @@ int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, i
 {
 	char * pos, * posx;
 	int i, ii, j, h, k, s, t;
-	filter_equal_t filter_equal;
+	int no_relay_initiate;
 	filter_initiate_t filter_initiate;
+	filter_equal_t filter_equal;
 	filter_operation_t filter_before_replace, filter_after_replace, filter_on_load, filter_on_custom;
 	va_list args;
 
@@ -342,8 +343,9 @@ int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, i
 
 	hit_count = 0;
 
-	filter_equal = filter ? filter -> filter_equal : NULL;
+	no_relay_initiate = filter ? filter -> no_relay_initiate : 0;
 	filter_initiate = filter ? filter -> filter_initiate : NULL;
+	filter_equal = filter ? filter -> filter_equal : NULL;
 	filter_before_replace = filter ? filter -> filter_before_replace : NULL;
 	filter_after_replace = filter ? filter -> filter_after_replace : NULL;
 	filter_on_load = filter ? filter -> filter_on_load : NULL;
@@ -368,7 +370,7 @@ int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, i
 			continue; /* must continue to test i < src_len now */
 		}
 
-		if ( ! do_match_ex ( wildcard, pattern, src, src_len, & i, filter_initiate, filter_equal ) )
+		if ( ! do_match_ex ( wildcard, pattern, src, src_len, & i, no_relay_initiate ? NULL : filter_initiate, filter_equal ) )
 		{
 			if ( h + 1 == dst_size )
 				return 0;

@@ -156,40 +156,42 @@ int my_match6 ( )
 
 int my_traverse1 ( )
 {
-	char pattern [ ] = "//*\n";
-	char replace [ ] = "\n";
-	char exclude [ ] = "";
 	char header [ ] = "";
 	char footer [ ] = "";
 
-	struct filter_t filter = { 0 }; /* init */
-	filter.filter_initiate = filter_quote;
-	filter.filter_before_replace = filter_forward3;
+	/* erase format 1 comment lines */
 
-	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
-	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
-	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
+	char pattern1 [ ] = "//*\n";
+	char replace1 [ ] = "\n";
+	char exclude1 [ ] = "";
 
-	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', & filter, header, footer, pattern, replace, exclude );
-}
+	struct filter_t filter1 = { 0 }; /* init */
+	filter1.no_relay_initiate = 1; /* MUST BE 1 */
+	filter1.filter_initiate = filter_quote;
+	filter1.filter_before_replace = filter_forward3;
 
-int my_traverse2 ( )
-{
-	char pattern [ ] = "/*?*/";
-	char replace [ ] = "";
-	char exclude [ ] = "";
-	char header [ ] = "";
-	char footer [ ] = "";
+	/* erase format 2 comment lines */
 
-	struct filter_t filter = { 0 }; /* init */
-	filter.filter_initiate = filter_quote;
-	filter.filter_before_replace = filter_forward2;
+	char pattern2 [ ] = "/*?*/";
+	char replace2 [ ] = "";
+	char exclude2 [ ] = "";
+
+	struct filter_t filter2 = { 0 }; /* init */
+	filter2.no_relay_initiate = 1; /* MUST BE 1 */
+	filter2.filter_initiate = filter_quote;
+	filter2.filter_before_replace = filter_forward2;
+
+	char wildcards [ ] = { '*', '?' };
+	struct filter_t * filters [  ] = { & filter1, & filter2 };
+	char * patterns [ ] = { pattern1, pattern2 };
+	char * replaces [ ] = { replace1, replace2 };
+	char * excludes [ ] = { exclude1, exclude2 };
 
 	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION);
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
-	
-	return traverse ( SOURCE_PATH, FILE_EXTENSION, '?', & filter, header, footer, pattern, replace, exclude );
+
+	return traverse3 ( SOURCE_PATH, FILE_EXTENSION, sizeof ( patterns ) / sizeof ( patterns [ 0 ] ), wildcards, filters, header, footer, patterns, replaces, excludes);
 }
 
 int my_traverse3 ( )
@@ -273,7 +275,7 @@ int run ( int operation )
 	{
 		case 1: return my_match1 ( ) && my_match2 ( ) && my_match3 ( )
 					   && my_match4 ( ) && my_match5 ( ) && my_match6 ( );
-		case 2: return my_traverse1 ( ) && my_traverse2 ( ) && my_traverse3 ( )
+		case 2: return my_traverse1 ( ) && my_traverse3 ( )
 					   && my_traverse4 ( );
 		case 3: return my_report1 ( ) && my_report2 ( ) && my_directory ( );
 		case 4: return my_debug ( );

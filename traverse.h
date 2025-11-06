@@ -21,6 +21,9 @@ int traverse2 ( const char * directory, const char * extension, const char * kno
                 struct filter_t * filter,
                 char * header, char * footer, char * pattern, char * replace, char * exclude );
 
+int traverse3 ( const char * directory, const char * extension, int argc, char wildcards [ ],
+                struct filter_t * filters [ ],
+                char * header, char * footer, char * patterns [ ], char * replaces [ ], char * excludes [ ] );
 #endif
 
 /*

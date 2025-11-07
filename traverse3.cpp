@@ -26,7 +26,8 @@ extern int hit_count;
 
 int do_command3 ( char * filename, int argc, char wildcards [ ],
                   struct filter_t * filters [ ],
-                  char * header, char * footer, char * patterns [ ], char * replaces [ ], char * excludes [ ] )
+                  char * header, char * footer, char * patterns [ ], char * replaces [ ], char * excludes [ ],
+                  const char * host, const char * log )
 {
 	int fh;
 	int bytes_read, bytes_copied, bytes_written;
@@ -57,7 +58,7 @@ int do_command3 ( char * filename, int argc, char wildcards [ ],
 	pos += bytes_copied;
 	size -= bytes_copied;
 	bytes_copied = multiple_copy_and_replace_ex ( argc, wildcards, filters, src_buf, bytes_read, pos, size,
-                                                  patterns, replaces, excludes, filename );
+                                                  patterns, replaces, excludes, host, filename, log );
     dirty += hit_count;
 	pos += bytes_copied;
 	size -= bytes_copied;
@@ -107,7 +108,8 @@ int do_command3 ( char * filename, int argc, char wildcards [ ],
 
 int traverse3 ( const char * directory, const char * extension, int argc, char wildcards [ ],
                 struct filter_t * filters [ ],
-                char * header, char * footer, char * patterns [ ], char * replaces [ ], char * excludes [ ] )
+                char * header, char * footer, char * patterns [ ], char * replaces [ ], char * excludes [ ],
+                const char * host, const char * log )
 {
     int ext_len;
     char path [ _MAX_PATH ];
@@ -141,7 +143,7 @@ int traverse3 ( const char * directory, const char * extension, int argc, char w
                 concatenate_string ( info.name, path, _MAX_PATH );
                 concatenate_string ( "/", path, _MAX_PATH );
 
-                if ( ! traverse3 ( path, extension, argc, wildcards, filters, header, footer, patterns, replaces, excludes ) )
+                if ( ! traverse3 ( path, extension, argc, wildcards, filters, header, footer, patterns, replaces, excludes, host, log ) )
                     return 0;
             }
             else
@@ -158,7 +160,7 @@ int traverse3 ( const char * directory, const char * extension, int argc, char w
                 copy_string ( directory, path, _MAX_PATH );
                 concatenate_string ( info.name, path, _MAX_PATH );
 
-                if ( ! do_command3 ( path, argc, wildcards, filters, header, footer, patterns, replaces, excludes ) )
+                if ( ! do_command3 ( path, argc, wildcards, filters, header, footer, patterns, replaces, excludes, host, log ) )
                     return 0;
             }
 

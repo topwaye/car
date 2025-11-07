@@ -30,9 +30,12 @@ int string_length ( const char * src )
 	return i;
 }
 
-int compare_string_ex ( int src_index, int src_delta, const char * src, const char * dst )
+int calculate_string ( int src_index, int src_delta, const char * src )
 {
-	int i, h, n, ii;
+	int n;
+
+	if ( src_delta < 0 ) /* NOT < 1 */
+		return -1;
 
 	n = string_length ( src );
 
@@ -46,7 +49,7 @@ int compare_string_ex ( int src_index, int src_delta, const char * src, const ch
 		if ( src_index + src_delta > n + 1 )
 			return -1;
 
-		i = n + 1 - src_index - src_delta;
+		src_index = n + 1 - src_index - src_delta;
 	}
 	else
 	{
@@ -55,21 +58,50 @@ int compare_string_ex ( int src_index, int src_delta, const char * src, const ch
 
 		if ( src_index + src_delta > n )
 			return -1;
-
-		i = src_index;
 	}
 
-	h = 0;
-	do
-	{
-		if ( ! src_delta -- )
-			break;
+	return src_index;
+}
 
-		ii = i;
+int substring ( int src_index, int src_delta, char ** src )
+{
+	int i;
+
+	i = calculate_string ( src_index, src_delta, * src );
+	if ( i == -1 )
+		return 0;
+
+	* src += i;
+	*( * src + src_delta ) = 0;
+
+	return 1;
+}
+
+int trim_string_tail ( int src_delta, char * src )
+{
+	int i;
+
+	i = calculate_string ( -1, src_delta, src );
+	if ( i == -1 )
+		return 0;
+
+	*( src + i ) = 0;
+
+	return 1;
+}
+
+int compare_string_ex ( int src_index, int src_delta, const char * src, const char * dst )
+{
+	int i, h;
+
+	i = calculate_string ( src_index, src_delta, src );
+	if ( i == -1 )
+		return -1;
+
+	h = 0;
+	while ( src_delta -- )
 		if ( *( src + i ++ ) != *( dst + h ++ ) )
 			return 1;
-
-	} while ( *( src + ii ) );
 
 	return 0; /* matched */
 }

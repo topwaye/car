@@ -17,6 +17,8 @@
 #define MATCH_H
 
 int string_length ( const char * src );
+int substring ( int src_index, int src_delta, char ** src );
+int trim_string_tail ( int src_delta, char * src );
 
 int compare_string ( const char * src, const char * dst );
 int compare_string_ex ( int src_index, int src_delta, const char * src, const char * dst );

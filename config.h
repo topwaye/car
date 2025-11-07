@@ -14,8 +14,8 @@
 #define KNOWN_ALPHABET_BLANK	" \t\r\n"
 #define KNOWN_ALPHABET_DEBUG	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_$?!&\"\'<>(){}[]+-*/.,;="
 
-typedef int ( * filter_equal_t ) ( char *, int *, char *, int, int * );
 typedef int ( * filter_initiate_t ) ( char *, int, int * );
+typedef int ( * filter_equal_t ) ( char *, int *, char *, int, int * );
 typedef int ( * filter_operation_t ) ( char *, int, int, int *, char *, int, int * );
 
 struct filter_t

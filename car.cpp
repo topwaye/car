@@ -17,26 +17,31 @@
 #include "directory.h"
 #include "debug.h"
 
+#define CAR_INIT_FILE					"c:/test/car.ini"
+#define DEFAULT_BUFFER_SIZE				128
+#define PARAM_ENTRY_WIDTH				2
+
+extern char * src_buf;
+extern char * dst_buf;
+extern int load_file ( const char * filename );
+
 /*
  * make sure these directories and files are there
  * a directory must end with '/', distinguished from a file
  */
+char param_list [ ] [ PARAM_ENTRY_WIDTH ] [ _MAX_PATH ] =
+{
+	{ "src",	"c:/apache24/htdocs/" },
+	{ "host",	"c:/apache24/htdocs/" },
+	{ "dst",	"c:/test_bak/"        },
+	{ "ext",	".php"                }, /* do NOT include wildcard characters */
+	{ "log",	"c:/test/err.log"     },
+	{ "tmp",	"c:/test/err2.log"    },
+	{ "obj",	"c:/test/err3.log"    },
+	{ "dbg",	"c:/test/debug.php"   }
+};
 
-#define SOURCE_PATH				"c:/apache24/htdocs/"
-#define DESTINATION_PATH		"c:/test_bak/"
-
-#define FILE_EXTENSION			".php" /* do NOT include wildcard characters */
-
-#define REPORT_ORG_FILE			"c:/test/err.log"
-#define REPORT_TMP_FILE			"c:/test/err2.log"
-#define REPORT_OBJ_FILE			"c:/test/err3.log"
-
-#define DEBUG_FILE				"c:/test/debug.php"
-
-#define DEFAULT_BUFFER_SIZE		128
-
-extern char * src_buf;
-extern char * dst_buf;
+int param_list_len = sizeof ( param_list ) / sizeof ( param_list [ 0 ] );
 
 int my_match1 ( )
 {
@@ -176,7 +181,7 @@ int my_match7 ( )
 	return 1; /* NOT 0 */
 }
 
-int my_traverse1 ( )
+int my_traverse1 ( const char * directory, const char * extension )
 {
 	char header [ ] = "";
 	char footer [ ] = "";
@@ -211,14 +216,14 @@ int my_traverse1 ( )
 	char * replaces [ ] = { replace1, replace2 };
 	char * excludes [ ] = { exclude1, exclude2 };
 
-	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION);
+	printf ( "listing %s*%s\n", directory, extension );
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
-	return traverse3 ( SOURCE_PATH, FILE_EXTENSION, sizeof ( patterns ) / sizeof ( patterns [ 0 ] ), wildcards, filters, header, footer, patterns, replaces, excludes);
+	return traverse3 ( directory, extension, sizeof ( patterns ) / sizeof ( patterns [ 0 ] ), wildcards, filters, header, footer, patterns, replaces, excludes, "", "" );
 }
 
-int my_traverse3 ( )
+int my_traverse3 ( const char * directory, const char * extension )
 {
 	char header [ ] = "";
 	char footer [ ] = "";
@@ -232,20 +237,21 @@ int my_traverse3 ( )
 	filter.filter_on_initiate = filter_quote;
 	filter.filter_after_replace = filter_backward;
 
-	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
+	printf ( "listing %s*%s\n", directory, extension );
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
-	return traverse2 ( SOURCE_PATH, FILE_EXTENSION, KNOWN_ALPHABET_BLANK, '*', & filter, header, footer, pattern, replace, exclude );
+	return traverse2 ( directory, extension, KNOWN_ALPHABET_BLANK, '*', & filter, header, footer, pattern, replace, exclude, "", "" );
 }
 
-int my_traverse4 ( )
+int my_traverse4 ( const char * directory, const char * extension, const char * host, const char * log )
 {
 	char header [ ] = "";
 	char footer [ ] = "";
 
 	char pattern [ ] = "function\v2*(*)*{";
-	char replace [ ] = "\aerror_log(\"c:/apache24/htdocs\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"c:/test/err.log\");";
+					/* "\aerror_log(\"c:/apache24/htdocs\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"c:/test/err.log\");" */
+	char replace [ ] = "\aerror_log(\"\f\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"\f\");";
 	char exclude [ ] = "\r\n\"\'${"; /* what characters a matched @string excludes */
 
 	struct filter_t filter = { 0 }; /* init */
@@ -254,28 +260,28 @@ int my_traverse4 ( )
 	filter.filter_on_equal = filter_blank;
 	filter.filter_on_load = filter_forward;
 
-	printf ( "listing %s*%s\n", SOURCE_PATH, FILE_EXTENSION );
+	printf ( "listing %s*%s\n", directory, extension );
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
-	return traverse ( SOURCE_PATH, FILE_EXTENSION, '*', & filter, header, footer, pattern, replace, exclude );
+	return traverse ( directory, extension, '*', & filter, header, footer, pattern, replace, exclude, host, log );
 }
 
-int my_report1 ( )
+int my_report1 ( const char * log, const char * tmp )
 {
-	printf ( "parsing %s\n", REPORT_ORG_FILE );
+	printf ( "parsing %s\n", log );
 
-	return report_copy_file ( REPORT_ORG_FILE, REPORT_TMP_FILE );
+	return report_copy_file ( log, tmp );
 }
 
-int my_report2 ( )
+int my_report2 ( const char * tmp, const char * obj )
 {
-	printf ( "parsing %s\n", REPORT_TMP_FILE );
+	printf ( "parsing %s\n", tmp );
 
-	return nonredundancy_copy_file ( REPORT_TMP_FILE, REPORT_OBJ_FILE );
+	return nonredundancy_copy_file ( tmp, obj );
 }
 
-int my_directory ( )
+int my_directory ( const char * obj, const char * src_path, const char * dst_path )
 {
 	/*
 	 * each line is a list entry which ends with '\n' implicitly
@@ -287,28 +293,132 @@ int my_directory ( )
 	 *
 	 */
 
-	printf ( "copying from %s\n", REPORT_OBJ_FILE );
+	printf ( "copying from %s\n", obj );
 
-	return copy_listed_files ( REPORT_OBJ_FILE, SOURCE_PATH, DESTINATION_PATH );
+	return copy_listed_files ( obj, src_path, dst_path );
 }
 
-int my_debug ( )
+int my_debug ( const char * dbg )
 {
-	printf ( "debugging %s\n", DEBUG_FILE );
+	printf ( "debugging %s\n", dbg );
 
-	return debug ( KNOWN_ALPHABET_DEBUG, DEBUG_FILE );
+	return debug ( KNOWN_ALPHABET_DEBUG, dbg );
 }
 
-int run ( int operation )
+int load_params ( const char * listname )
 {
+	int i, j, h;
+	char list_entry [ _MAX_PATH ];
+	char * list;
+	int list_len;
+	char * varname;
+	int varnum;
+
+	list_len = load_file ( listname );
+	if ( ! list_len )
+	{
+		printf ( "failed to load %s\n", listname );
+		return 0;
+	}
+
+	list = src_buf;
+
+	varnum = -1;
+	h = 0, i = 0;
+	while ( i < list_len )
+	{
+		if ( h + 1 == _MAX_PATH )
+			return 0;
+		
+		if ( '\r' == *( list + i ) )
+		{
+			i ++;
+			continue;
+		}
+
+		if ( '\n' == *( list + i ) )
+		{
+			*( list_entry + h ) = 0;
+
+			printf ( "%s\n", list_entry );
+
+			if ( varnum == -1 )
+			{
+				printf ( "bad format\n" );
+				return 0;
+			}
+			varname = param_list [ varnum ] [ 1 ];
+			copy_string ( list_entry, varname, _MAX_PATH );
+
+			i ++;
+			h = 0;
+			varnum = -1;
+			continue;
+		}
+		
+		if ( '=' == *( list + i ) )
+		{
+			*( list_entry + h ) = 0;
+	
+			for ( j = 0; j < param_list_len; j ++ )
+			{
+				varname = param_list [ j ] [ 0 ];
+				if ( compare_string ( list_entry, varname ) == 0 )
+				{
+					varnum = j;
+					break;
+				}
+			}
+			if ( varnum == -1 )
+			{
+				printf ( "bad varnum\n" );
+				return 0;
+			}
+
+			i ++;
+			h = 0;
+			continue;
+		}
+
+		*( list_entry + h ++ ) = *( list + i ++ );
+	}
+
+	return 1;
+}
+
+int run ( const char * listname, int operation )
+{
+	if ( ! load_params ( listname ) )
+		printf ( "warning: bad car.ini, use default parameters instead\n" );
+
+	char * src  = param_list [ 0 ] [ 1 ];
+	char * host = param_list [ 1 ] [ 1 ];
+	char * dst  = param_list [ 2 ] [ 1 ];
+	char * ext  = param_list [ 3 ] [ 1 ];
+	char * log  = param_list [ 4 ] [ 1 ];
+	char * tmp  = param_list [ 5 ] [ 1 ];
+	char * obj  = param_list [ 6 ] [ 1 ];
+	char * dbg  = param_list [ 7 ] [ 1 ];
+
+	printf ( "src: %s\n", src );
+	printf ( "host: %s\n", host );
+	printf ( "dst: %s\n", dst );
+	printf ( "ext: %s\n", ext );
+	printf ( "log: %s\n", log );
+	printf ( "tmp: %s\n", tmp );
+	printf ( "obj: %s\n", obj );
+	printf ( "dbg: %s\n", dbg );
+
+	trim_string_tail ( 1, host );
+
 	switch ( operation )
 	{
 		case 1: return my_match1 ( ) && my_match2 ( ) && my_match3 ( )
 					   && my_match4 ( ) && my_match5 ( ) && my_match6 ( )
 					   && my_match7 ( );
-		case 2: return my_traverse1 ( ) && my_traverse3 ( ) && my_traverse4 ( );
-		case 3: return my_report1 ( ) && my_report2 ( ) && my_directory ( );
-		case 4: return my_debug ( );
+		case 2: return my_traverse1 ( src, ext ) && my_traverse3 ( src, ext ) && my_traverse4 ( src, ext, host, log );
+		case 3: return my_report1 ( log, tmp ) && my_report2 ( tmp, obj ) && my_directory ( obj, src, dst );
+		case 4: return my_debug ( dbg );
 	}
 
 	return 0;
@@ -380,7 +490,7 @@ int main ( int argc, char * argv [ ] )
 	src_buf = buffer;
 	dst_buf = buffer + MAX_FILE_SIZE;
 
-	if ( ! run ( operation ) )
+	if ( ! run ( CAR_INIT_FILE, operation ) )
 	{
 		printf ( "operation failed\n" );
 		

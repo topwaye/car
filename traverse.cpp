@@ -26,7 +26,8 @@ extern int hit_count;
 
 int do_command ( char * filename, char wildcard,
                  struct filter_t * filter,
-                 char * header, char * footer, char * pattern, char * replace, char * exclude )
+                 char * header, char * footer, char * pattern, char * replace, char * exclude,
+                 const char * host, const char * log )
 {
 	int fh;
 	int bytes_read, bytes_copied, bytes_written;
@@ -57,7 +58,7 @@ int do_command ( char * filename, char wildcard,
 	pos += bytes_copied;
 	size -= bytes_copied;
 	bytes_copied = copy_and_replace_ex ( wildcard, filter, src_buf, bytes_read, pos, size,
-                                         pattern, replace, exclude, filename );
+                                         pattern, replace, exclude, host, filename, log );
     dirty += hit_count;
 	pos += bytes_copied;
 	size -= bytes_copied;
@@ -107,7 +108,8 @@ int do_command ( char * filename, char wildcard,
 
 int traverse ( const char * directory, const char * extension, char wildcard,
                struct filter_t * filter,
-               char * header, char * footer, char * pattern, char * replace, char * exclude )
+               char * header, char * footer, char * pattern, char * replace, char * exclude,
+               const char * host, const char * log )
 {
     int ext_len;
     char path [ _MAX_PATH ];
@@ -141,7 +143,7 @@ int traverse ( const char * directory, const char * extension, char wildcard,
                 concatenate_string ( info.name, path, _MAX_PATH );
                 concatenate_string ( "/", path, _MAX_PATH );
 
-                if ( ! traverse ( path, extension, wildcard, filter, header, footer, pattern, replace, exclude ) )
+                if ( ! traverse ( path, extension, wildcard, filter, header, footer, pattern, replace, exclude, host, log ) )
                     return 0;
             }
             else
@@ -158,7 +160,7 @@ int traverse ( const char * directory, const char * extension, char wildcard,
                 copy_string ( directory, path, _MAX_PATH );
                 concatenate_string ( info.name, path, _MAX_PATH );
 
-                if ( ! do_command ( path, wildcard, filter, header, footer, pattern, replace, exclude ) )
+                if ( ! do_command ( path, wildcard, filter, header, footer, pattern, replace, exclude, host, log ) )
                     return 0;
             }
 

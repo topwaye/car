@@ -17,7 +17,8 @@
 #include "directory.h"
 #include "debug.h"
 
-#define CAR_INIT_FILE					"c:/test/car.ini"
+#define DEFAULT_INIT_FILE				"c:/car/car.ini"
+
 #define DEFAULT_BUFFER_SIZE				128
 #define PARAM_ENTRY_WIDTH				2
 
@@ -33,12 +34,12 @@ char param_list [ ] [ PARAM_ENTRY_WIDTH ] [ _MAX_PATH ] =
 {
 	{ "src",	"c:/apache24/htdocs/" },
 	{ "host",	"c:/apache24/htdocs/" },
-	{ "dst",	"c:/test_bak/"        },
+	{ "dst",	"c:/car-workspace/"   },
 	{ "ext",	".php"                }, /* do NOT include wildcard characters */
-	{ "log",	"c:/test/err.log"     },
-	{ "tmp",	"c:/test/err2.log"    },
-	{ "obj",	"c:/test/err3.log"    },
-	{ "dbg",	"c:/test/debug.php"   }
+	{ "log",	"c:/car/err.log"      },
+	{ "tmp",	"c:/car/err2.log"     },
+	{ "obj",	"c:/car/err3.log"     },
+	{ "dbg",	"c:/car/debug.php"    }
 };
 
 int param_list_len = sizeof ( param_list ) / sizeof ( param_list [ 0 ] );
@@ -311,8 +312,8 @@ int load_params ( const char * listname )
 	char list_entry [ _MAX_PATH ];
 	char * list;
 	int list_len;
-	char * varname;
-	int varnum;
+	char * var;
+	int num;
 
 	list_len = load_file ( listname );
 	if ( ! list_len )
@@ -323,7 +324,7 @@ int load_params ( const char * listname )
 
 	list = src_buf;
 
-	varnum = -1;
+	num = -1;
 	h = 0, i = 0;
 	while ( i < list_len )
 	{
@@ -342,17 +343,18 @@ int load_params ( const char * listname )
 
 			printf ( "%s\n", list_entry );
 
-			if ( varnum == -1 )
+			if ( num == -1 )
 			{
 				printf ( "bad format\n" );
 				return 0;
 			}
-			varname = param_list [ varnum ] [ 1 ];
-			copy_string ( list_entry, varname, _MAX_PATH );
+
+			var = param_list [ num ] [ 1 ];
+			copy_string ( list_entry, var, _MAX_PATH );
 
 			i ++;
 			h = 0;
-			varnum = -1;
+			num = -1;
 			continue;
 		}
 		
@@ -360,18 +362,20 @@ int load_params ( const char * listname )
 		{
 			*( list_entry + h ) = 0;
 	
+			printf ( "%s=", list_entry );
+			
 			for ( j = 0; j < param_list_len; j ++ )
 			{
-				varname = param_list [ j ] [ 0 ];
-				if ( compare_string ( list_entry, varname ) == 0 )
+				var = param_list [ j ] [ 0 ];
+				if ( compare_string ( list_entry, var ) == 0 )
 				{
-					varnum = j;
+					num = j;
 					break;
 				}
 			}
-			if ( varnum == -1 )
+			if ( num == -1 )
 			{
-				printf ( "bad varnum\n" );
+				printf ( "bad variable name\n" );
 				return 0;
 			}
 
@@ -386,11 +390,8 @@ int load_params ( const char * listname )
 	return 1;
 }
 
-int run ( const char * listname, int operation )
+int run ( int operation )
 {
-	if ( ! load_params ( listname ) )
-		printf ( "warning: bad car.ini, use default parameters instead\n" );
-
 	char * src  = param_list [ 0 ] [ 1 ];
 	char * host = param_list [ 1 ] [ 1 ];
 	char * dst  = param_list [ 2 ] [ 1 ];
@@ -399,15 +400,6 @@ int run ( const char * listname, int operation )
 	char * tmp  = param_list [ 5 ] [ 1 ];
 	char * obj  = param_list [ 6 ] [ 1 ];
 	char * dbg  = param_list [ 7 ] [ 1 ];
-
-	printf ( "src: %s\n", src );
-	printf ( "host: %s\n", host );
-	printf ( "dst: %s\n", dst );
-	printf ( "ext: %s\n", ext );
-	printf ( "log: %s\n", log );
-	printf ( "tmp: %s\n", tmp );
-	printf ( "obj: %s\n", obj );
-	printf ( "dbg: %s\n", dbg );
 
 	trim_string_tail ( 1, host );
 
@@ -432,54 +424,6 @@ int main ( int argc, char * argv [ ] )
 	int operation;
 	int c;
 
-	printf ( "CAR : Computer Aided Read\n" );
-	printf ( "copyright (C) 2025.10.28 TOP WAYE topwaye@hotmail.com\n" );
-
-	if ( argc == 1 )
-	{
-		printf ( "[ 1 ] match a pattern string\n" );
-		printf ( "[ 2 ] traverse a directory tree and insert a line of source code into all files\n" );
-		printf ( "[ 3 ] make a new directory tree on the disk according to a tracing report\n" );
-		printf ( "[ 4 ] debug a file to print each known and unknown character\n" );
-		printf ( "enter an operation number: " );
-
-		c = _getch ( );
-		_putch ( c );
-		_putch ( '\n' ); /* line feed */
-
-		switch ( c )
-		{
-			case '1': operation = 1; break;
-			case '2': operation = 2; break;
-			case '3': operation = 3; break;
-			case '4': operation = 4; break;
-			default: operation = 0;
-		}
-	}
-	else if ( argc == 2 )
-	{
-		if ( compare_string ( argv [ 1 ], "1" ) == 0 )
-			operation = 1;
-		else if ( compare_string ( argv [ 1 ], "2" ) == 0 )
-			operation = 2;
-		else if ( compare_string ( argv [ 1 ], "3" ) == 0 )
-			operation = 3;
-		else if ( compare_string ( argv [ 1 ], "4" ) == 0 )
-			operation = 4;
-		else
-			operation = 0;
-	}
-	else
-	{
-		operation = 0;
-	}
-
-	if ( ! operation )
-	{
-		printf ( "invalid operation number\n" );
-		return 0;
-	}
-
 	buffer = ( char * ) malloc ( MAX_FILE_SIZE + MAX_FILE_SIZE );
 	if ( ! buffer )
 	{
@@ -490,7 +434,62 @@ int main ( int argc, char * argv [ ] )
 	src_buf = buffer;
 	dst_buf = buffer + MAX_FILE_SIZE;
 
-	if ( ! run ( CAR_INIT_FILE, operation ) )
+	printf ( "***********************************************************************************\n" );
+	printf ( "CAR: Computer Aided Read\n" );
+	printf ( "copyright (C) 2025.10.28 TOP WAYE topwaye@hotmail.com\n" );
+	printf ( "usage:\n" );
+	printf ( "car\n" );
+	printf ( "car 1\n" );
+	printf ( "car 2 c:/car/car.ini\n" );
+	printf ( "car 3 c:/car/car.ini\n");
+	printf ( "car 4 c:/car/car.ini\n" );
+	printf ( "***********************************************************************************\n" );
+
+	if ( ! load_params ( argc == 3 ? argv [ 2 ] : DEFAULT_INIT_FILE ) )
+		printf ( "warning: bad car.ini, use default parameters instead\n" );
+
+	printf ( "***********************************************************************************\n" );
+	
+	switch ( argc )
+	{
+		case 3:
+		case 2:
+			if ( compare_string ( argv [ 1 ], "1" ) == 0 )
+				operation = 1;
+			else if ( compare_string ( argv [ 1 ], "2" ) == 0 )
+				operation = 2;
+			else if ( compare_string ( argv [ 1 ], "3" ) == 0 )
+				operation = 3;
+			else if ( compare_string ( argv [ 1 ], "4" ) == 0 )
+				operation = 4;
+			else
+				operation = 0;
+			break;
+		case 1:
+			printf ( "[ 1 ] match a pattern string\n" );
+			printf ( "[ 2 ] traverse a directory tree and insert a line of source code into all files\n" );
+			printf ( "[ 3 ] make a new directory tree on the disk according to a tracing report\n" );
+			printf ( "[ 4 ] debug a file to print each known and unknown character\n" );
+			printf ( "enter an operation number: " );
+
+			c = _getch ( );
+			_putch ( c );
+			_putch ( '\n' ); /* line feed */
+
+			switch ( c )
+			{
+				case '1': operation = 1; break;
+				case '2': operation = 2; break;
+				case '3': operation = 3; break;
+				case '4': operation = 4; break;
+				default: operation = 0;
+			}
+			break;
+		default:
+			operation = 0;
+	}
+
+	if ( ! run ( operation ) )
 	{
 		printf ( "operation failed\n" );
 		

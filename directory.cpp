@@ -98,6 +98,8 @@ int load_file ( const char * filename )
 	int fh;
 	int bytes_read;
 
+	printf ( "loading %s\n", filename );
+
     /* open file for input */
     if ( _sopen_s ( &fh, filename, _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
     {

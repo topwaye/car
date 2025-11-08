@@ -128,7 +128,10 @@ int my_match5 ( )
 	char pattern [ ] = "H*****M";
 	char replace [ ] = "hello world";
 	char exclude [ ] = "";
-
+	/*
+	 * another example in test.php file:
+	 * x<H'T\'4ML\'44\'HTML'>x<'ML'>x<HTM>xSELECTx
+	 */
 	char src [ ] = "x<H\'T\\\'\'>x<\'ML\'>x<HTM>xSELECTx";
 	char dst [ DEFAULT_BUFFER_SIZE ];
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
@@ -149,7 +152,10 @@ int my_match6 ( )
 	char pattern [ ] = "H*****M";
 	char replace [ ] = "hello world";
 	char exclude [ ] = "";
-
+	/*
+	 * another example in test.php file:
+	 * x<H'T\'4ML\'44\'HTML'>x<'ML'>x<HTM>xSELECTx
+	 */
 	char src [ ] = "x<H\'T\\\'\'>x<\'ML\'>x<HTM>xSELECTx";
 	char dst [ DEFAULT_BUFFER_SIZE ];
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
@@ -293,7 +299,6 @@ int my_directory ( const char * obj, const char * src_path, const char * dst_pat
 	 * c:/test/test2/hello_world.php
 	 *
 	 */
-
 	printf ( "copying from %s\n", obj );
 
 	return copy_listed_files ( obj, src_path, dst_path );
@@ -375,7 +380,7 @@ int load_params ( const char * listname )
 			}
 			if ( num == -1 )
 			{
-				printf ( "bad variable name\n" );
+				printf ( "bad variable\n" );
 				return 0;
 			}
 

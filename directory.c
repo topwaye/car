@@ -1,0 +1,206 @@
+﻿/*
+ * directory.c
+ *
+ * Copyright (C) 2025.10.22 TOP WAYE topwaye@hotmail.com
+ * 
+ * copy files, according to a filename list, including subdirectories
+ */
+
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <io.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <direct.h>
+#include <errno.h>
+
+#include "config.h"
+
+extern char * src_buf;
+
+/* if successful, returns 1. otherwise, returns 0 */
+
+int make_directory ( char * dirname )
+{
+	if ( _mkdir ( dirname ) == -1 )
+	{
+		/*
+		 * errno is a global variable in errno.h that _mkdir will set to a
+		 * preprocessor constant to identify the specific error that has occurred
+		 */
+		if ( errno == ENOENT )
+		{
+			printf ( "path not found.\n" );
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
+int copy_file ( char * src_filename, char * dst_filename )
+{
+	char file_buf [ MAX_BUFFER_SIZE ];
+	int src_fh, dst_fh;
+	int bytes_read, bytes_written;
+
+    /* open file for input */
+    if ( _sopen_s ( &src_fh, src_filename, _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
+    {
+        printf ( "open failed on input file\n" );
+        return 0;
+    }
+	
+	/* open file for output */
+    if ( _sopen_s ( &dst_fh, dst_filename, _O_CREAT | _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
+    {
+        printf ( "open failed on output file\n" );
+		_close( src_fh );
+		return 0;
+    }
+
+	while ( 1 )
+	{
+		/* read in input */
+		bytes_read = _read ( src_fh, file_buf, MAX_BUFFER_SIZE );
+		if ( bytes_read == -1 )
+		{
+			printf ( "problem reading file\n" );
+			_close ( dst_fh );
+			_close ( src_fh );
+			return 0;
+		}
+
+		if ( bytes_read == 0 ) /* EOF */
+			break;
+
+		/* write out output */
+		bytes_written = _write ( dst_fh, file_buf, bytes_read );
+		if ( bytes_written == -1 )
+		{
+			printf ( "problem writing file\n" );
+			_close ( dst_fh );
+			_close ( src_fh );
+			return 0;
+		}
+	}
+
+    _close ( dst_fh );
+	_close ( src_fh );
+
+	return 1;
+}
+
+/* returns the number of bytes read */
+int load_file ( const char * filename )
+{
+	int fh;
+	int bytes_read;
+
+	printf ( "loading %s\n", filename );
+
+    /* open file for input */
+    if ( _sopen_s ( &fh, filename, _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
+    {
+        printf ( "open failed on input file\n" );
+        return 0;
+    }
+
+    /* read in input */
+    bytes_read = _read ( fh, src_buf, MAX_FILE_SIZE );
+    if ( bytes_read == -1 )
+    {
+        printf ( "problem reading file\n" );
+        _close ( fh );
+        return 0;
+    }
+
+    _close ( fh );
+
+	return bytes_read;
+}
+
+int copy_listed_files ( const char * listname, const char * src_path, const char * dst_path )
+{
+	int i, j, h, k, ii;
+	char list_entry [ _MAX_PATH ];
+	char * list;
+	int list_len;
+
+	list_len = load_file ( listname );
+	if ( ! list_len )
+	{
+		printf ( "failed to load %s\n", listname );
+		return 0;
+	}
+
+	list = src_buf;
+
+	h = 0, k = 0;
+	while ( *( dst_path + k ) )
+	{
+		if ( h + 1 == _MAX_PATH )
+			return 0;
+
+		*( list_entry + h ++ ) = *( dst_path + k ++ );
+	}
+
+	i = ii = 0, j = 0;
+	while ( i < list_len )
+	{
+		if ( j == 0 )
+		{
+			while ( *( src_path + j ) )
+			{
+				if ( *( src_path + j ++ ) != *( list + i ++ ) )
+				{
+					printf ( "bad src_path or bad list\n" );
+					return 0;
+				}
+			}
+		}
+
+		if ( h + 1 == _MAX_PATH )
+			return 0;
+		
+		if ( '\r' == *( list + i ) )
+		{
+			*( list + i ) = 0;
+
+			printf ( "%s\n", list + ii );
+
+			i ++;
+			continue;
+		}
+
+		if ( '\n' == *( list + i ) )
+		{
+			*( list + i ) = 0;
+			*( list_entry + h ) = 0;
+
+			printf ( "%s > ", list + ii );
+			printf ( "%s\n", list_entry );
+
+			if ( ! copy_file ( list + ii, list_entry ) )
+				return 0;
+			
+			ii = ++ i;
+			j = 0;
+			h = k;
+			continue;
+		}
+		
+		if ( '/' == *( list + i ) )
+		{
+			*( list_entry + h ) = 0;
+
+			if ( ! make_directory ( list_entry ) )
+				return 0;
+		}
+
+		*( list_entry + h ++ ) = *( list + i ++ );
+	}
+
+	return 1;
+}

@@ -11,7 +11,7 @@
 
 /* if successful, returns 1. otherwise, returns 0 */
 
-int debug ( const char * known, const char * filename );
+extern int debug ( const char * known, const char * filename );
 
 #endif
 

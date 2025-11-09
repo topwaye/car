@@ -11,7 +11,7 @@
 
 /* if successful, returns 1. otherwise, returns 0 */
 
-int copy_listed_files ( const char * listname, const char * src_path, const char * dst_path );
+extern int copy_listed_files ( const char * listname, const char * src_path, const char * dst_path );
 
 #endif
 

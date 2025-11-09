@@ -15,42 +15,45 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="car.cpp">
+    <ClCompile Include="car.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="config.cpp">
+    <ClCompile Include="config.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="directory.cpp">
+    <ClCompile Include="debug.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="match.cpp">
+    <ClCompile Include="directory.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="report.cpp">
+    <ClCompile Include="match.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="traverse.cpp">
+    <ClCompile Include="match2.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="match2.cpp">
+    <ClCompile Include="match3.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="traverse2.cpp">
+    <ClCompile Include="report.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="debug.cpp">
+    <ClCompile Include="traverse.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="match3.cpp">
+    <ClCompile Include="traverse2.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="traverse3.cpp">
+    <ClCompile Include="traverse3.c">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="directory.h">
@@ -63,9 +66,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="traverse.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="debug.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

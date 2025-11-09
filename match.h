@@ -16,49 +16,49 @@
 #ifndef MATCH_H
 #define MATCH_H
 
-int string_length ( const char * src );
-int substring ( int src_index, int src_delta, char ** src );
-int trim_string_tail ( int src_delta, char * src );
+extern int string_length ( const char * src );
+extern int substring ( int src_index, int src_delta, char ** src );
+extern int trim_string_tail ( int src_delta, char * src );
 
-int compare_string ( const char * src, const char * dst );
-int compare_string_ex ( int src_index, int src_delta, const char * src, const char * dst );
+extern int compare_string ( const char * src, const char * dst );
+extern int compare_string_ex ( int src_index, int src_delta, const char * src, const char * dst );
 
-int seek_string ( char c, char * src, int src_len, int * current );
+extern int seek_string ( char c, char * src, int src_len, int * current );
 
-int concatenate_string ( const char * src, char * dst, int dst_size, ... );
-int copy_string ( const char * src, char * dst, int dst_size, ... );
+extern int concatenate_string ( const char * src, char * dst, int dst_size, ... );
+extern int copy_string ( const char * src, char * dst, int dst_size, ... );
 
-int filter_quote ( char * src, int src_len, int * src_index );
-int filter_blank ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index );
+extern int filter_quote ( char * src, int src_len, int * src_index );
+extern int filter_blank ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index );
 
-int filter_custom ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
-int filter_forward3 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
-int filter_forward2 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
-int filter_forward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
-int filter_backward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
+extern int filter_custom ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
+extern int filter_forward3 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
+extern int filter_forward2 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
+extern int filter_forward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
+extern int filter_backward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 
-int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
-						  char * pattern, char * replace, char * exclude,
-						  ... );
+extern int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
+								 char * pattern, char * replace, char * exclude,
+								 ... );
 
-int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t * filters [ ], char * src, int src_len, char * dst, int dst_size,
-								   char * patterns [ ], char * replaces [ ], char * excludes [ ],
-								   ... );
+extern int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t * filters [ ], char * src, int src_len, char * dst, int dst_size,
+										  char * patterns [ ], char * replaces [ ], char * excludes [ ],
+										  ... );
 
-int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
-						   char * pattern, char * replace, char * exclude,
-						   ... );
+extern int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
+								  char * pattern, char * replace, char * exclude,
+								  ... );
 
-int match_ex2 ( char * known, char wildcard, char * pattern, char * src, int src_len, int granularity );
+extern int match_ex2 ( char * known, char wildcard, char * pattern, char * src, int src_len, int granularity );
 
 /* prototype do_match_ex function */
-int match_ex ( char wildcard, char * pattern, char * src, int src_len, int granularity );
+extern int match_ex ( char wildcard, char * pattern, char * src, int src_len, int granularity );
 
 /* prototype do_match function */
-int match ( char * target, char * src, int src_len, int granularity );
+extern int match ( char * target, char * src, int src_len, int granularity );
 
-int copy_and_replace ( char * src, int src_len, char * dst, int dst_size,
-					   char * target, char * replace );
+extern int copy_and_replace ( char * src, int src_len, char * dst, int dst_size,
+							  char * target, char * replace );
 
 #endif
 

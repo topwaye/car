@@ -259,13 +259,13 @@ int my_traverse4 ( const char * directory, const char * extension, const char * 
 	char pattern [ ] = "function\v2*(*)*{";
 					/* "\aerror_log(\"c:/apache24/htdocs\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"c:/test/err.log\");" */
 	char replace [ ] = "\aerror_log(\"\f\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"\f\");";
-	char exclude [ ] = "\r\n\"\'${"; /* what characters a matched @string excludes */
+	char exclude [ ] = "\r\n{"; /* what characters a matched @string excludes */
 
 	struct filter_t filter = { 0 }; /* init */
 	/* filter.no_relay_initiate = 0; MUST BE 0 */
 	filter.filter_on_initiate = filter_quote;
 	filter.filter_on_equal = filter_blank;
-	filter.filter_on_exclude = filter_escape;
+	filter.filter_on_exclude = filter_escape; /* "\"\'$" */
 	filter.filter_on_load = filter_forward;
 
 	printf ( "listing %s*%s\n", directory, extension );

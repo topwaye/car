@@ -329,6 +329,15 @@ int filter_escape ( char * src, int src_len, int src_prior, int * src_index, cha
 			/* -1: nothing to do */
 		}
 
+		/* escape characters */
+		if ( '$' == *( src + j ) || '\'' == *( src + j ) || '\"' == *( src + j ) )
+		{
+			*( dst + h ++ ) = '\\';
+
+			if ( h + 1 == dst_size ) /* must be here, do NOT move this line */
+				return 0;	
+		}
+
 		*( dst + h ++ ) = *( src + j ++ );
 	}
 

@@ -31,6 +31,8 @@ extern int copy_string ( const char * src, char * dst, int dst_size, ... );
 extern int filter_quote ( char * src, int src_len, int * src_index );
 extern int filter_blank ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index );
 
+extern int filter_escape ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index, char * exclude );
+
 extern int filter_custom ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 extern int filter_forward3 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 extern int filter_forward2 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );

@@ -18,7 +18,6 @@
 #include "config.h"
 
 extern int hit_count;
-extern int is_known_character ( const char * known, char c );
 
 int string_length ( const char * src )
 {
@@ -364,11 +363,12 @@ int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, i
 						  ... )
 {
 	char * pos, * posx;
-	int i, ii, j, g, h, k, s, t;
+	int i, ii, j, h, k, s, t;
 	int no_relay_initiate;
 	filter_initiate_t filter_on_initiate;
 	filter_equal_t filter_on_equal;
-	filter_operation_t filter_before_replace, filter_after_replace, filter_on_load, filter_on_custom;
+	filter_exclude_t filter_on_exclude;
+	filter_operation_t filter_before_replace, filter_after_replace, filter_on_load;
 	va_list args;
 
 	if ( dst_size < 1 ) /* size >= len + 1 */
@@ -379,10 +379,10 @@ int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, i
 	no_relay_initiate = filter ? filter -> no_relay_initiate : 0;
 	filter_on_initiate = filter ? filter -> filter_on_initiate : NULL;
 	filter_on_equal = filter ? filter -> filter_on_equal : NULL;
+	filter_on_exclude = filter ? filter -> filter_on_exclude : NULL;
 	filter_before_replace = filter ? filter -> filter_before_replace : NULL;
 	filter_after_replace = filter ? filter -> filter_after_replace : NULL;
 	filter_on_load = filter ? filter -> filter_on_load : NULL;
-	filter_on_custom = filter ? filter -> filter_on_custom : NULL;
 
 	h = 0, i = 0; 
 	while ( i < src_len )
@@ -430,14 +430,14 @@ int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, i
 
 			if ( '\b' == *( pos + k ) )
 			{
-				if ( filter_on_custom )
+				if ( filter_on_exclude )
 				{
-					if ( ! filter_on_custom ( src, src_len, ii, & i, dst, dst_size, & h ) )
+					if ( ! filter_on_exclude ( src, src_len, ii, & i, dst, dst_size, & h, exclude ) )
 						return 0;
 				}
 				else
 				{
-					j = ii, g = -1;
+					j = ii;
 					while ( j < i )
 					{
 						if ( h + 1 == dst_size )
@@ -459,32 +459,6 @@ int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, i
 						{
 							j ++;
 							continue;
-						}
-
-						/* remove leading and trailing spaces */
-						if ( is_known_character ( KNOWN_ALPHABET_BLANK, *( src + j ) ) )
-						{
-							if ( g == -1 )
-								g = j;
-
-							j ++;
-							continue;
-						}
-						if ( g == ii )
-						{
-							g = -1;
-						}
-						else if ( g > ii )
-						{
-							*( dst + h ++ ) = *( src + g );
-							g = -1;
-
-							if ( h + 1 == dst_size ) /* must be here, do NOT move this line */
-								return 0;
-						}
-						else
-						{
-							/* -1: nothing to do */
 						}
 
 						*( dst + h ++ ) = *( src + j ++ );

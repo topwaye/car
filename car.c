@@ -265,6 +265,7 @@ int my_traverse4 ( const char * directory, const char * extension, const char * 
 	/* filter.no_relay_initiate = 0; MUST BE 0 */
 	filter.filter_on_initiate = filter_quote;
 	filter.filter_on_equal = filter_blank;
+	filter.filter_on_exclude = filter_escape;
 	filter.filter_on_load = filter_forward;
 
 	printf ( "listing %s*%s\n", directory, extension );

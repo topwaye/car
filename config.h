@@ -16,6 +16,7 @@
 
 typedef int ( * filter_initiate_t ) ( char *, int, int * );
 typedef int ( * filter_equal_t ) ( char *, int *, char *, int, int * );
+typedef int ( * filter_exclude_t ) ( char *, int, int, int *, char *, int, int *, char * );
 typedef int ( * filter_operation_t ) ( char *, int, int, int *, char *, int, int * );
 
 struct filter_t
@@ -23,10 +24,10 @@ struct filter_t
     int no_relay_initiate;
     filter_initiate_t filter_on_initiate;
     filter_equal_t filter_on_equal;
+    filter_exclude_t filter_on_exclude;
     filter_operation_t filter_before_replace;
     filter_operation_t filter_after_replace;
 	filter_operation_t filter_on_load;
-    filter_operation_t filter_on_custom;
 };
 
 #endif

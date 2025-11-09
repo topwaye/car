@@ -77,12 +77,13 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 						   ... )
 {
 	char * pos, * posx;
-	int i, ii, iii, j, g, h, k, s, t;
+	int i, ii, iii, j, h, k, s, t;
 	int len;
 	int no_relay_initiate;
 	filter_initiate_t filter_on_initiate;
 	filter_equal_t filter_on_equal;
-	filter_operation_t filter_before_replace, filter_after_replace, filter_on_load, filter_on_custom;
+	filter_exclude_t filter_on_exclude;
+	filter_operation_t filter_before_replace, filter_after_replace, filter_on_load;
 	va_list args;
 
 	if ( dst_size < 1 ) /* size >= len + 1 */
@@ -93,10 +94,10 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 	no_relay_initiate = filter ? filter -> no_relay_initiate : 0;
 	filter_on_initiate = filter ? filter -> filter_on_initiate : NULL;
 	filter_on_equal = filter ? filter -> filter_on_equal : NULL;
+	filter_on_exclude = filter ? filter -> filter_on_exclude : NULL;
 	filter_before_replace = filter ? filter -> filter_before_replace : NULL;
 	filter_after_replace = filter ? filter -> filter_after_replace : NULL;
 	filter_on_load = filter ? filter -> filter_on_load : NULL;
-	filter_on_custom = filter ? filter -> filter_on_custom : NULL;
 
 	h = 0, i = 0;
 	while ( i < src_len )
@@ -156,14 +157,14 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 
 			if ( '\b' == *( pos + k ) )
 			{
-				if ( filter_on_custom )
+				if ( filter_on_exclude )
 				{
-					if ( ! filter_on_custom ( src, len, ii, & i, dst, dst_size, & h ) )
+					if ( ! filter_on_exclude ( src, len, ii, & i, dst, dst_size, & h, exclude ) )
 						return 0;
 				}
 				else
 				{
-					j = ii, g = -1;
+					j = ii;
 					while ( j < i )
 					{
 						if ( h + 1 == dst_size )
@@ -185,32 +186,6 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 						{
 							j ++;
 							continue;
-						}
-
-						/* remove leading and trailing spaces */
-						if ( is_known_character ( KNOWN_ALPHABET_BLANK, *( src + j ) ) )
-						{
-							if ( g == -1 )
-								g = j;
-
-							j ++;
-							continue;
-						}
-						if ( g == ii )
-						{
-							g = -1;
-						}
-						else if ( g > ii )
-						{
-							*( dst + h ++ ) = *( src + g );
-							g = -1;
-
-							if ( h + 1 == dst_size ) /* must be here, do NOT move this line */
-								return 0;
-						}
-						else
-						{
-							/* -1: nothing to do */
 						}
 
 						*( dst + h ++ ) = *( src + j ++ );
@@ -289,6 +264,70 @@ int filter_custom ( char * src, int src_len, int src_prior, int * src_index, cha
 	{
 		if ( h + 1 == dst_size )
 			return 0;
+
+		*( dst + h ++ ) = *( src + j ++ );
+	}
+
+	* src_index = i;
+	* dst_index = h;
+
+	return 1;
+}
+
+int filter_escape ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index, char * exclude )
+{
+	int i, h, j, g, s, t;
+
+	i = * src_index;
+	h = * dst_index;
+
+	j = src_prior, g = -1;
+	while ( j < i )
+	{
+		if ( h + 1 == dst_size )
+			return 0;
+
+		s = 0, t = 0;
+		while ( *( exclude + t ) )
+		{
+			if ( *( src + j ) == *( exclude + t ) )
+			{
+				s = 1;
+				break;
+			}
+			t ++;
+		}
+		if ( s )
+		{
+			j ++;
+			continue;
+		}
+
+		/* remove leading and trailing spaces */
+		if ( is_known_character ( KNOWN_ALPHABET_BLANK, *( src + j ) ) )
+		{
+			if ( g == -1 )
+				g = j;
+
+			j ++;
+			continue;
+		}
+		if ( g == src_prior )
+		{
+			g = -1;
+		}
+		else if ( g > src_prior )
+		{
+			*( dst + h ++ ) = *( src + g );
+			g = -1;
+
+			if ( h + 1 == dst_size ) /* must be here, do NOT move this line */
+				return 0;
+		}
+		else
+		{
+			/* -1: nothing to do */
+		}
 
 		*( dst + h ++ ) = *( src + j ++ );
 	}

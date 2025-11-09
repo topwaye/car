@@ -19,7 +19,6 @@
 
 extern int hit_count;
 
-extern int is_known_character ( const char * known, char c );
 extern int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * next,
 						 filter_initiate_t filter_on_initiate, filter_equal_t filter_on_equal );
 
@@ -28,11 +27,12 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 								   ... )
 {
 	char * pos, * posx;
-	int n, m, i, ii, j, g, h, k, s, t;
+	int n, m, i, ii, j, h, k, s, t;
 	int no_relay_initiate;
 	filter_initiate_t filter_on_initiate;
 	filter_equal_t filter_on_equal;
-	filter_operation_t filter_before_replace, filter_after_replace, filter_on_load, filter_on_custom;
+	filter_exclude_t filter_on_exclude;
+	filter_operation_t filter_before_replace, filter_after_replace, filter_on_load;
 	va_list args;
 
 	if ( dst_size < 1 ) /* size >= len + 1 */
@@ -49,10 +49,10 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 			no_relay_initiate = filters [ n ] -> no_relay_initiate;
 			filter_on_initiate = filters [ n ] -> filter_on_initiate;
 			filter_on_equal = filters [ n ] -> filter_on_equal;
+			filter_on_exclude = filters [ n ] -> filter_on_exclude;
 			filter_before_replace = filters [ n ] -> filter_before_replace;
 			filter_after_replace = filters [ n ] -> filter_after_replace;
 			filter_on_load = filters [ n ] -> filter_on_load;
-			filter_on_custom = filters [ n ] -> filter_on_custom;
 	
 			ii = i; /* save i = current index */
 
@@ -90,14 +90,14 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 
 					if ( '\b' == *( pos + k ) )
 					{
-						if ( filter_on_custom )
+						if ( filter_on_exclude )
 						{
-							if ( ! filter_on_custom ( src, src_len, ii, & i, dst, dst_size, & h ) )
+							if ( ! filter_on_exclude ( src, src_len, ii, & i, dst, dst_size, & h, excludes [ n ] ) )
 								return 0;
 						}
 						else
 						{
-							j = ii, g = -1;
+							j = ii;
 							while ( j < i )
 							{
 								if ( h + 1 == dst_size )
@@ -119,32 +119,6 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 								{
 									j ++;
 									continue;
-								}
-
-								/* remove leading and trailing spaces */
-								if ( is_known_character ( KNOWN_ALPHABET_BLANK, *( src + j ) ) )
-								{
-									if ( g == -1 )
-										g = j;
-
-									j ++;
-									continue;
-								}
-								if ( g == ii )
-								{
-									g = -1;
-								}
-								else if ( g > ii )
-								{
-									*( dst + h ++ ) = *( src + g );
-									g = -1;
-
-									if ( h + 1 == dst_size ) /* must be here, do NOT move this line */
-										return 0;
-								}
-								else
-								{
-									/* -1: nothing to do */
 								}
 
 								*( dst + h ++ ) = *( src + j ++ );

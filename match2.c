@@ -534,7 +534,7 @@ int filter_blank ( char * pattern, int * pattern_index, char * src, int src_len,
 				return 1;
 			}
 		}
-		if ( *( pos + k ) == '2' ) /* \v1: call number == 2 */
+		else if ( *( pos + k ) == '2' ) /* \v1: call number == 2 */
 		{
 			j = i;
 						
@@ -544,6 +544,99 @@ int filter_blank ( char * pattern, int * pattern_index, char * src, int src_len,
 			 * meaning the 1st round comparing is safe to go
 			 */
 			while ( is_known_character ( KNOWN_ALPHABET_BLANK, *( src + i ) ) )
+				if ( ++ i == src_len ) /* must be here, do NOT move this line */
+					break; /* NOT return 0 */
+
+			if ( j < i )
+			{
+				* src_index = i; /* NOT ++i */
+				* pattern_index = k;
+
+				return 1;
+			}
+		}
+		else
+		{
+			/* illegal call number */
+		}
+	}
+
+	return 0;
+}
+
+int filter_alphabet ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index )
+{
+	char * pos;
+	int i, j, k;
+
+	i = * src_index;
+
+	pos = pattern;
+	k = * pattern_index;
+
+	k ++;
+
+	if ( *( pos + k ) )
+	{
+		if ( *( pos + k ) == '1' ) /* \v0: call number == 1 */
+		{
+			/* 
+			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
+			 * do NOT check if ( i == src_len ) return 0 again here
+			 */
+			if ( is_known_character ( KNOWN_ALPHABET_BLANK, *( src + i ) ) )
+			{
+				* src_index = ++ i; /* ++i must be here */
+				* pattern_index = k;
+
+				return 1;
+			}
+		}
+		else if ( *( pos + k ) == '2' ) /* \v1: call number == 2 */
+		{
+			j = i;
+						
+			/* 
+			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
+			 * do NOT check if ( i == src_len ) return 0 again here
+			 * meaning the 1st round comparing is safe to go
+			 */
+			while ( is_known_character ( KNOWN_ALPHABET_BLANK, *( src + i ) ) )
+				if ( ++ i == src_len ) /* must be here, do NOT move this line */
+					break; /* NOT return 0 */
+
+			if ( j < i )
+			{
+				* src_index = i; /* NOT ++i */
+				* pattern_index = k;
+
+				return 1;
+			}
+		}
+		else if ( *( pos + k ) == '8' ) /* \v0: call number == 1 */
+		{
+			/* 
+			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
+			 * do NOT check if ( i == src_len ) return 0 again here
+			 */
+			if ( is_known_character ( KNOWN_ALPHABET_NAME, *( src + i ) ) )
+			{
+				* src_index = ++ i; /* ++i must be here */
+				* pattern_index = k;
+
+				return 1;
+			}
+		}
+		else if ( *( pos + k ) == '9' ) /* \v1: call number == 2 */
+		{
+			j = i;
+						
+			/* 
+			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
+			 * do NOT check if ( i == src_len ) return 0 again here
+			 * meaning the 1st round comparing is safe to go
+			 */
+			while ( is_known_character ( KNOWN_ALPHABET_NAME, *( src + i ) ) )
 				if ( ++ i == src_len ) /* must be here, do NOT move this line */
 					break; /* NOT return 0 */
 

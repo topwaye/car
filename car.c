@@ -280,7 +280,7 @@ int my_traverse4 ( const char * directory, const char * extension, const char * 
 	char header [ ] = "";
 	char footer [ ] = "";
 
-	char pattern [ ] = "function\v2*(*)*{";
+	char pattern [ ] = "function\v2\v9*(*)*{";
 					/* "\aerror_log(\"c:/apache24/htdocs\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"c:/test/err.log\");" */
 	char replace [ ] = "\aerror_log(\"\f\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"\f\");";
 	char exclude [ ] = "\r\n{"; /* what characters a matched @string excludes */
@@ -288,14 +288,14 @@ int my_traverse4 ( const char * directory, const char * extension, const char * 
 	char * knowledge [ ] =
 	{
 		KNOWN_ALPHABET_BLANK,	/* 2:** */
-		KNOWN_ALPHABET_ARGNAME,	/* 1:** */
-		KNOWN_ALPHABET_FUNCNAME	/* 0:** */
+		KNOWN_ALPHABET_ARG,		/* 1:** */
+		KNOWN_ALPHABET_BLANK	/* 0:** */
 	};
 
 	struct filter_t filter = { 0 }; /* init */
 	/* filter.no_relay_initiate = 0; MUST BE 0 */
 	filter.filter_on_initiate = filter_quote;
-	filter.filter_on_equal = filter_blank;
+	filter.filter_on_equal = filter_alphabet; /* filter_blank */
 	filter.filter_on_exclude = filter_escape; /* "\"\'$" */
 	filter.filter_on_load = filter_forward;
 

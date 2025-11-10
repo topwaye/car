@@ -12,9 +12,9 @@
 
 #define KNOWN_ALPHABET_NUM		"1234567890"
 #define KNOWN_ALPHABET_BLANK	" \t\r\n"
+#define KNOWN_ALPHABET_NAME     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_"
 #define KNOWN_ALPHABET_DEBUG	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_$#&%\"\'?!<>(){}[]^|~+-*/.,;:="
-#define KNOWN_ALPHABET_FUNCNAME "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_ \t"
-#define KNOWN_ALPHABET_ARGNAME  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_$#&%\"\'>[]^|~+-*/.,= \t"
+#define KNOWN_ALPHABET_ARG      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_$#&%\"\'>[]^|~+-*/.,= \t"
 
 typedef int ( * filter_initiate_t ) ( char *, int, int * );
 typedef int ( * filter_equal_t ) ( char *, int *, char *, int, int * );

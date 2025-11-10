@@ -39,7 +39,6 @@ extern int filter_forward2 ( char * src, int src_len, int src_prior, int * src_i
 extern int filter_forward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 extern int filter_backward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 
-/* wildcards are restricted to matching only predefined known characters */
 extern int knowledge_based_copy_and_replace_ex ( int argc, char * knowledge [ ], char wildcard, struct filter_t * filter,
 												 char * src, int src_len, char * dst, int dst_size,
 												 char * pattern, char * replace, char * exclude,

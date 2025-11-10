@@ -137,7 +137,7 @@ int my_match5 ( )
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
 	
 	struct filter_t filter = { 0 }; /* init */
-	/* filter1.relay_initiate = 0; */
+	/* filter1.no_relay_initiate = 0; */
 	filter.filter_on_initiate = filter_quote;
 
 	printf ( "%d:%s\n", len, src );
@@ -161,7 +161,7 @@ int my_match6 ( )
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
 
 	struct filter_t filter = { 0 }; /* init */
-	filter.relay_initiate = 1;
+	filter.no_relay_initiate = 1;
 	filter.filter_on_initiate = filter_quote;
 
 	printf ( "%d:%s\n", len, src );
@@ -224,7 +224,7 @@ int my_traverse1 ( const char * directory, const char * extension )
 	char exclude1 [ ] = "";
 
 	struct filter_t filter1 = { 0 }; /* init */
-	/* filter1.relay_initiate = 0; MUST BE 0 */
+	filter1.no_relay_initiate = 1; /* MUST BE 1 */
 	filter1.filter_on_initiate = filter_quote;
 	filter1.filter_before_replace = filter_forward3;
 
@@ -235,7 +235,7 @@ int my_traverse1 ( const char * directory, const char * extension )
 	char exclude2 [ ] = "";
 
 	struct filter_t filter2 = { 0 }; /* init */
-	/* filter2.relay_initiate = 0; MUST BE 0 */
+	filter2.no_relay_initiate = 1; /* MUST BE 1 */
 	filter2.filter_on_initiate = filter_quote;
 	filter2.filter_before_replace = filter_forward2;
 
@@ -264,7 +264,7 @@ int my_traverse3 ( const char * directory, const char * extension )
 	char exclude [ ] = "";
 
 	struct filter_t filter = { 0 }; /* init */
-	filter.relay_initiate = 1; /* MUST BE 1 */
+	/* filter.no_relay_initiate = 0; MUST BE 0 */
 	filter.filter_on_initiate = filter_quote;
 	filter.filter_after_replace = filter_backward;
 
@@ -293,7 +293,7 @@ int my_traverse4 ( const char * directory, const char * extension, const char * 
 	};
 
 	struct filter_t filter = { 0 }; /* init */
-	/* filter.relay_initiate = 0; MUST BE 0 */
+	/* filter.no_relay_initiate = 0; MUST BE 0 */
 	filter.filter_on_initiate = filter_quote;
 	filter.filter_on_equal = filter_blank;
 	filter.filter_on_exclude = filter_escape; /* "\"\'$" */

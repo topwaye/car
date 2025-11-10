@@ -79,7 +79,7 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 	char * pos, * posx;
 	int i, ii, iii, j, h, k, s, t;
 	int len;
-	int relay_initiate;
+	int no_relay_initiate;
 	filter_initiate_t filter_on_initiate;
 	filter_equal_t filter_on_equal;
 	filter_exclude_t filter_on_exclude;
@@ -91,7 +91,7 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 
 	hit_count = 0;
 
-	relay_initiate = filter ? filter -> relay_initiate : 0;
+	no_relay_initiate = filter ? filter -> no_relay_initiate : 0;
 	filter_on_initiate = filter ? filter -> filter_on_initiate : NULL;
 	filter_on_equal = filter ? filter -> filter_on_equal : NULL;
 	filter_on_exclude = filter ? filter -> filter_on_exclude : NULL;
@@ -130,7 +130,7 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 			continue; /* must continue to test i < src_len now */
 		}
 
-		if ( ! do_match_ex ( wildcard, pattern, src, len, & i, ! relay_initiate ? NULL : filter_on_initiate, filter_on_equal ) )
+		if ( ! do_match_ex ( wildcard, pattern, src, len, & i, no_relay_initiate ? NULL : filter_on_initiate, filter_on_equal ) )
 		{
 			if ( h + 1 == dst_size )
 				return 0;

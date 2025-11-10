@@ -21,6 +21,8 @@ extern int hit_count;
 extern int is_known_character ( const char * known, char c );
 extern int seek_string ( char c, char * src, int src_len, int * current );
 
+/* wildcards are restricted to matching only predefined known characters */
+
 int knowledge_based_do_match_ex ( int argc, char * knowledge [ ], char wildcard,
 								  char * pattern, char * src, int src_len, int * next,
 								  filter_initiate_t filter_on_initiate, filter_equal_t filter_on_equal )
@@ -165,7 +167,7 @@ int knowledge_based_copy_and_replace_ex ( int argc, char * knowledge [ ], char w
 {
 	char * pos, * posx;
 	int i, ii, j, h, k, s, t;
-	int no_relay_initiate;
+	int relay_initiate;
 	filter_initiate_t filter_on_initiate;
 	filter_equal_t filter_on_equal;
 	filter_exclude_t filter_on_exclude;
@@ -177,7 +179,7 @@ int knowledge_based_copy_and_replace_ex ( int argc, char * knowledge [ ], char w
 
 	hit_count = 0;
 
-	no_relay_initiate = filter ? filter -> no_relay_initiate : 0;
+	relay_initiate = filter ? filter -> relay_initiate : 0;
 	filter_on_initiate = filter ? filter -> filter_on_initiate : NULL;
 	filter_on_equal = filter ? filter -> filter_on_equal : NULL;
 	filter_on_exclude = filter ? filter -> filter_on_exclude : NULL;
@@ -204,7 +206,7 @@ int knowledge_based_copy_and_replace_ex ( int argc, char * knowledge [ ], char w
 			continue; /* must continue to test i < src_len now */
 		}
 
-		if ( ! knowledge_based_do_match_ex ( argc, knowledge, wildcard, pattern, src, src_len, & i, no_relay_initiate ? NULL : filter_on_initiate, filter_on_equal ) )
+		if ( ! knowledge_based_do_match_ex ( argc, knowledge, wildcard, pattern, src, src_len, & i, ! relay_initiate ? NULL : filter_on_initiate, filter_on_equal ) )
 		{
 			if ( h + 1 == dst_size )
 				return 0;

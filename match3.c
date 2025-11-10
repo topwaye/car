@@ -28,7 +28,7 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 {
 	char * pos, * posx;
 	int n, m, i, ii, j, h, k, s, t;
-	int no_relay_initiate;
+	int relay_initiate;
 	filter_initiate_t filter_on_initiate;
 	filter_equal_t filter_on_equal;
 	filter_exclude_t filter_on_exclude;
@@ -46,7 +46,7 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 		m = 0;
 		for ( n = 0; n < argc; n ++ )
 		{
-			no_relay_initiate = filters [ n ] -> no_relay_initiate;
+			relay_initiate = filters [ n ] -> relay_initiate;
 			filter_on_initiate = filters [ n ] -> filter_on_initiate;
 			filter_on_equal = filters [ n ] -> filter_on_equal;
 			filter_on_exclude = filters [ n ] -> filter_on_exclude;
@@ -71,7 +71,7 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 					goto quit;
 			}
 
-			if ( do_match_ex ( wildcards [ n ], patterns [ n ], src, src_len, & i, no_relay_initiate ? NULL : filter_on_initiate, filter_on_equal ) )
+			if ( do_match_ex ( wildcards [ n ], patterns [ n ], src, src_len, & i, ! relay_initiate ? NULL : filter_on_initiate, filter_on_equal ) )
 			{	
 				hit_count ++;
 

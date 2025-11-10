@@ -134,10 +134,12 @@
     <ClCompile Include="match.c" />
     <ClCompile Include="match2.c" />
     <ClCompile Include="match3.c" />
+    <ClCompile Include="match4.c" />
     <ClCompile Include="report.c" />
     <ClCompile Include="traverse.c" />
     <ClCompile Include="traverse2.c" />
     <ClCompile Include="traverse3.c" />
+    <ClCompile Include="traverse4.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h" />

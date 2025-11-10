@@ -48,6 +48,12 @@
     <ClCompile Include="traverse3.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="match4.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="traverse4.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">

@@ -177,6 +177,30 @@ int my_match7 ( )
 	char replace [ ] = "hello world";
 	char exclude [ ] = "";
 
+	char * knowledge [ ] =
+	{
+		KNOWN_ALPHABET_NUM,	/* 2:** */
+		KNOWN_ALPHABET_NUM,	/* 1:** */
+		KNOWN_ALPHABET_NUM	/* 0:** */
+	};
+
+	char src [ ] = "x987654x83x678x";
+	char dst [ DEFAULT_BUFFER_SIZE ];
+	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
+
+	printf ( "%d:%s\n", len, src );
+	len = knowledge_based_copy_and_replace_ex (  sizeof ( knowledge ) / sizeof ( knowledge [ 0 ] ), knowledge, '*', NULL, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	printf ( "%d:%s\n", len, dst );
+
+	return 1; /* NOT 0 */
+}
+
+int my_match8 ( )
+{
+	char pattern [ ] = "*8*****3***";
+	char replace [ ] = "hello world";
+	char exclude [ ] = "";
+
 	char src [ ] = "x98765432x83x678x";
 	char dst [ DEFAULT_BUFFER_SIZE ];
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
@@ -261,6 +285,13 @@ int my_traverse4 ( const char * directory, const char * extension, const char * 
 	char replace [ ] = "\aerror_log(\"\f\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"\f\");";
 	char exclude [ ] = "\r\n{"; /* what characters a matched @string excludes */
 
+	char * knowledge [ ] =
+	{
+		KNOWN_ALPHABET_BLANK,	/* 2:** */
+		KNOWN_ALPHABET_ARGNAME,	/* 1:** */
+		KNOWN_ALPHABET_FUNCNAME	/* 0:** */
+	};
+
 	struct filter_t filter = { 0 }; /* init */
 	/* filter.no_relay_initiate = 0; MUST BE 0 */
 	filter.filter_on_initiate = filter_quote;
@@ -272,7 +303,7 @@ int my_traverse4 ( const char * directory, const char * extension, const char * 
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
-	return traverse ( directory, extension, '*', & filter, header, footer, pattern, replace, exclude, host, log );
+	return traverse4 ( directory, extension, sizeof ( knowledge ) / sizeof ( knowledge [ 0 ] ), knowledge, '*', & filter, header, footer, pattern, replace, exclude, host, log );
 }
 
 int my_report1 ( const char * log, const char * tmp )
@@ -413,7 +444,7 @@ int run ( int operation )
 	{
 		case 1: return my_match1 ( ) && my_match2 ( ) && my_match3 ( )
 					   && my_match4 ( ) && my_match5 ( ) && my_match6 ( )
-					   && my_match7 ( );
+					   && my_match7 ( ) && my_match8 ( );
 		case 2: return my_traverse1 ( src, ext ) && my_traverse3 ( src, ext ) && my_traverse4 ( src, ext, host, log );
 		case 3: return my_report1 ( log, tmp ) && my_report2 ( tmp, obj ) && my_directory ( obj, src, dst );
 		case 4: return my_debug ( dbg );

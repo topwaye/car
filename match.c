@@ -293,13 +293,10 @@ int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * 
 					if ( filter_on_initiate && filter_on_initiate ( src, src_len, & i ) )
 						continue; /* must continue to test i < src_len now */
 
-					if ( ! do_match_ex ( wildcard, pos + k, src, src_len, & i, filter_on_initiate, filter_on_equal ) )
-					{
-						i ++;
-						continue;
-					}
+					if ( do_match_ex ( wildcard, pos + k, src, src_len, & i, filter_on_initiate, filter_on_equal ) )
+						goto quit;
 
-					goto quit;
+					i ++;
 				}
 
 				a = 0;

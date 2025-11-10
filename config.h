@@ -7,12 +7,14 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define MAX_BUFFER_SIZE             65536   /* 64KB < 1MB */
+#define MAX_BUFFER_SIZE         65536       /* 64KB < 1MB */
 #define MAX_FILE_SIZE		    134217728   /* 128MB */
 
 #define KNOWN_ALPHABET_NUM		"1234567890"
 #define KNOWN_ALPHABET_BLANK	" \t\r\n"
-#define KNOWN_ALPHABET_DEBUG	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_$?!&\"\'<>(){}[]+-*/.,;="
+#define KNOWN_ALPHABET_DEBUG	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_$#&%\"\'?!<>(){}[]^|~+-*/.,;:="
+#define KNOWN_ALPHABET_FUNCNAME "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_ \t"
+#define KNOWN_ALPHABET_ARGNAME  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_$#&%\"\'>[]^|~+-*/.,= \t"
 
 typedef int ( * filter_initiate_t ) ( char *, int, int * );
 typedef int ( * filter_equal_t ) ( char *, int *, char *, int, int * );

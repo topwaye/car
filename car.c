@@ -190,7 +190,7 @@ int my_match7 ( )
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
 
 	printf ( "%d:%s\n", len, src );
-	len = knowledge_based_copy_and_replace_ex (  sizeof ( knowledge ) / sizeof ( knowledge [ 0 ] ), knowledge, '*', NULL, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	len = knowledge_based_copy_and_replace_ex ( sizeof ( knowledge ) / sizeof ( knowledge [ 0 ] ), knowledge, '*', NULL, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
 	printf ( "%d:%s\n", len, dst );
 
 	return 1; /* NOT 0 */
@@ -289,9 +289,11 @@ int my_traverse4 ( const char * directory, const char * extension, const char * 
 
 	const char * knowledge [ ] =
 	{
-		KNOWN_ALPHABET_BLANK,	/* wildcard segment 2 */
-		NULL,					/* wildcard segment 1, NULL = no limit */
-		KNOWN_ALPHABET_BLANK	/* wildcard segment 0 */
+		":?"					/* , */
+		KNOWN_ALPHABET_BLANK	/* , */
+		KNOWN_ALPHABET_NAME,	/* wildcard segment 2, a return type for php 7, e.g. function name ( ) : type { } */
+		NULL,					/* wildcard segment 1, function parameters are arbitrary characters with no limit */
+		KNOWN_ALPHABET_BLANK	/* wildcard segment 0, a function name has already defined at \v9 */
 	};
 
 	struct filter_t filter = { 0 }; /* init */

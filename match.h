@@ -39,7 +39,8 @@ extern int filter_forward2 ( char * src, int src_len, int src_prior, int * src_i
 extern int filter_forward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 extern int filter_backward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 
-extern int knowledge_based_copy_and_replace_ex ( int argc, char * knowledge [ ], char wildcard, struct filter_t * filter,
+/* wildcards are restricted to matching only predefined known characters */
+extern int knowledge_based_copy_and_replace_ex ( int argc, const char * knowledge [ ], char wildcard, struct filter_t * filter,
 												 char * src, int src_len, char * dst, int dst_size,
 												 char * pattern, char * replace, char * exclude,
 												 ... );
@@ -57,7 +58,7 @@ extern int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char *
 								 ... );
 
 /* prototype knowledge_based_do_match_ex function */
-extern int knowledge_based_match_ex ( int argc, char * knowledge [ ], char wildcard, char * pattern, char * src, int src_len, int granularity );
+extern int knowledge_based_match_ex ( int argc, const char * knowledge [ ], char wildcard, char * pattern, char * src, int src_len, int granularity );
 
 extern int match_ex2 ( char * known, char wildcard, char * pattern, char * src, int src_len, int granularity );
 

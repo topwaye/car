@@ -21,9 +21,10 @@ extern int hit_count;
 extern int is_known_character ( const char * known, char c );
 extern int seek_string ( char c, char * src, int src_len, int * current );
 
-int knowledge_based_do_match_ex ( int argc, char * knowledge [ ], char wildcard,
+/* wildcards are restricted to matching only predefined known characters */
+int knowledge_based_do_match_ex ( int argc, const char * knowledge [ ], char wildcard,
 								  char * pattern, char * src, int src_len, int * next,
-								  filter_initiate_t filter_on_initiate, filter_equal_t filter_on_equal )
+								  filter_terminate_t filter_on_terminate, filter_equal_t filter_on_equal )
 {
 	char * pos;
 	int i, k;
@@ -71,21 +72,21 @@ int knowledge_based_do_match_ex ( int argc, char * knowledge [ ], char wildcard,
 			{
 				/* a new block in pattern was found, therefore, reenter */
 
-				while ( i < src_len )
+				if ( argc > 0 )
 				{
-					if ( filter_on_initiate && filter_on_initiate ( src, src_len, & i ) )
-						continue; /* must continue to test i < src_len now */
+					while ( i < src_len )
+					{
+						if ( knowledge_based_do_match_ex ( argc - 1, knowledge, wildcard, pos + k, src, src_len, & i, filter_on_terminate, filter_on_equal ) )
+							goto quit;
 
-					if ( argc < 1 )
-						break;
+						if ( knowledge [ argc - 1 ] && ! is_known_character ( knowledge [ argc - 1 ], *( src + i ) ) )
+							break;
 
-					if ( knowledge_based_do_match_ex ( argc - 1, knowledge, wildcard, pos + k, src, src_len, & i, filter_on_initiate, filter_on_equal ) )
-						goto quit;
+						if ( filter_on_terminate && filter_on_terminate ( src, src_len, & i ) )
+							continue; /* must continue to test i < src_len now */
 
-					if ( ! is_known_character ( knowledge [ argc - 1 ], *( src + i ) ) )
-						break;
-
-					i ++;
+						i ++;
+					}
 				}
 
 				a = 0;
@@ -138,18 +139,18 @@ int knowledge_based_do_match_ex ( int argc, char * knowledge [ ], char wildcard,
 
 	if ( a && b ) /* b must be after a, do NOT move this line */
 	{
-		while ( i < src_len )
+		if ( argc > 0 )
 		{
-			if ( filter_on_initiate && filter_on_initiate ( src, src_len, & i ) )
-				continue; /* must continue to test i < src_len now */
+			while ( i < src_len )
+			{
+				if ( knowledge [ argc - 1 ] && ! is_known_character ( knowledge [ argc - 1 ], *( src + i ) ) )
+					break;
 
-			if ( argc < 1 )
-				break;
+				if ( filter_on_terminate && filter_on_terminate ( src, src_len, & i ) )
+					continue; /* must continue to test i < src_len now */
 
-			if ( ! is_known_character ( knowledge [ argc - 1 ], *( src + i ) ) )
-				break;
-
-			i ++;
+				i ++;
+			}
 		}
 	}
 quit:
@@ -158,15 +159,15 @@ quit:
 	return a;
 }
 
-int knowledge_based_copy_and_replace_ex ( int argc, char * knowledge [ ], char wildcard, struct filter_t * filter,
+int knowledge_based_copy_and_replace_ex ( int argc, const char * knowledge [ ], char wildcard, struct filter_t * filter,
 										  char * src, int src_len, char * dst, int dst_size,
 										  char * pattern, char * replace, char * exclude,
 										  ... )
 {
 	char * pos, * posx;
 	int i, ii, j, h, k, s, t;
-	int no_relay_initiate;
 	filter_initiate_t filter_on_initiate;
+	filter_terminate_t filter_on_terminate;
 	filter_equal_t filter_on_equal;
 	filter_exclude_t filter_on_exclude;
 	filter_operation_t filter_before_replace, filter_after_replace, filter_on_load;
@@ -177,8 +178,8 @@ int knowledge_based_copy_and_replace_ex ( int argc, char * knowledge [ ], char w
 
 	hit_count = 0;
 
-	no_relay_initiate = filter ? filter -> no_relay_initiate : 0;
 	filter_on_initiate = filter ? filter -> filter_on_initiate : NULL;
+	filter_on_terminate = filter ? filter -> filter_on_terminate : NULL;
 	filter_on_equal = filter ? filter -> filter_on_equal : NULL;
 	filter_on_exclude = filter ? filter -> filter_on_exclude : NULL;
 	filter_before_replace = filter ? filter -> filter_before_replace : NULL;
@@ -204,7 +205,7 @@ int knowledge_based_copy_and_replace_ex ( int argc, char * knowledge [ ], char w
 			continue; /* must continue to test i < src_len now */
 		}
 
-		if ( ! knowledge_based_do_match_ex ( argc, knowledge, wildcard, pattern, src, src_len, & i, no_relay_initiate ? NULL : filter_on_initiate, filter_on_equal ) )
+		if ( ! knowledge_based_do_match_ex ( argc, knowledge, wildcard, pattern, src, src_len, & i, filter_on_terminate, filter_on_equal ) )
 		{
 			if ( h + 1 == dst_size )
 				return 0;

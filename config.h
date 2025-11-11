@@ -14,17 +14,17 @@
 #define KNOWN_ALPHABET_BLANK	" \t\r\n"
 #define KNOWN_ALPHABET_NAME     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_"
 #define KNOWN_ALPHABET_DEBUG	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_$#&%\"\'?!<>(){}[]^|~+-*/.,;:="
-#define KNOWN_ALPHABET_ARG      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_$#&%\"\'>[]^|~+-*/.,= \t"
 
 typedef int ( * filter_initiate_t ) ( char *, int, int * );
+typedef int ( * filter_terminate_t ) ( char *, int, int * );
 typedef int ( * filter_equal_t ) ( char *, int *, char *, int, int * );
 typedef int ( * filter_exclude_t ) ( char *, int, int, int *, char *, int, int *, char * );
 typedef int ( * filter_operation_t ) ( char *, int, int, int *, char *, int, int * );
 
 struct filter_t
 {
-    int no_relay_initiate;
     filter_initiate_t filter_on_initiate;
+    filter_terminate_t filter_on_terminate;
     filter_equal_t filter_on_equal;
     filter_exclude_t filter_on_exclude;
     filter_operation_t filter_before_replace;

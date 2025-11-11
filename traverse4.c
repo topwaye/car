@@ -24,7 +24,7 @@ extern int hit_count;
 
 /* if successful, returns 1. otherwise, returns 0 */
 
-int do_command4 ( char * filename, int argc, char * knowledge [ ], char wildcard,
+int do_command4 ( char * filename, int argc, const char * knowledge [ ], char wildcard,
                   struct filter_t * filter,
                   char * header, char * footer, char * pattern, char * replace, char * exclude,
                   const char * host, const char * log )
@@ -106,7 +106,7 @@ int do_command4 ( char * filename, int argc, char * knowledge [ ], char wildcard
     return 1;
 }
 
-int traverse4 ( const char * directory, const char * extension, int argc, char * knowledge [ ], char wildcard,
+int traverse4 ( const char * directory, const char * extension, int argc, const char * knowledge [ ], char wildcard,
                 struct filter_t * filter,
                 char * header, char * footer, char * pattern, char * replace, char * exclude,
                 const char * host, const char * log )

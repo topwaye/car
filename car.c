@@ -137,8 +137,9 @@ int my_match5 ( )
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
 	
 	struct filter_t filter = { 0 }; /* init */
-	/* filter1.no_relay_initiate = 0; */
+	/* filter_relay_initiate */
 	filter.filter_on_initiate = filter_quote;
+	filter.filter_on_terminate = filter_quote;
 
 	printf ( "%d:%s\n", len, src );
 	len = copy_and_replace_ex ( '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
@@ -161,7 +162,7 @@ int my_match6 ( )
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
 
 	struct filter_t filter = { 0 }; /* init */
-	filter.no_relay_initiate = 1;
+	/* filter_no_relay_initiate */
 	filter.filter_on_initiate = filter_quote;
 
 	printf ( "%d:%s\n", len, src );
@@ -177,7 +178,7 @@ int my_match7 ( )
 	char replace [ ] = "hello world";
 	char exclude [ ] = "";
 
-	char * knowledge [ ] =
+	const char * knowledge [ ] =
 	{
 		KNOWN_ALPHABET_NUM,	/* 2:** */
 		KNOWN_ALPHABET_NUM,	/* 1:** */
@@ -224,7 +225,7 @@ int my_traverse1 ( const char * directory, const char * extension )
 	char exclude1 [ ] = "";
 
 	struct filter_t filter1 = { 0 }; /* init */
-	filter1.no_relay_initiate = 1; /* MUST BE 1 */
+	/* filter1_no_relay_initiate */
 	filter1.filter_on_initiate = filter_quote;
 	filter1.filter_before_replace = filter_forward3;
 
@@ -235,7 +236,7 @@ int my_traverse1 ( const char * directory, const char * extension )
 	char exclude2 [ ] = "";
 
 	struct filter_t filter2 = { 0 }; /* init */
-	filter2.no_relay_initiate = 1; /* MUST BE 1 */
+	/* filter2_no_relay_initiate */
 	filter2.filter_on_initiate = filter_quote;
 	filter2.filter_before_replace = filter_forward2;
 
@@ -264,8 +265,9 @@ int my_traverse3 ( const char * directory, const char * extension )
 	char exclude [ ] = "";
 
 	struct filter_t filter = { 0 }; /* init */
-	/* filter.no_relay_initiate = 0; MUST BE 0 */
+	/* filter_relay_initiate */
 	filter.filter_on_initiate = filter_quote;
+	filter.filter_on_terminate = filter_quote;
 	filter.filter_after_replace = filter_backward;
 
 	printf ( "listing %s*%s\n", directory, extension );
@@ -285,16 +287,17 @@ int my_traverse4 ( const char * directory, const char * extension, const char * 
 	char replace [ ] = "\aerror_log(\"\f\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"\f\");";
 	char exclude [ ] = "\r\n{"; /* what characters a matched @string excludes */
 
-	char * knowledge [ ] =
+	const char * knowledge [ ] =
 	{
 		KNOWN_ALPHABET_BLANK,	/* 2:** */
-		KNOWN_ALPHABET_ARG,		/* 1:** */
+		NULL,					/* 1:** NULL = no limit */
 		KNOWN_ALPHABET_BLANK	/* 0:** */
 	};
 
 	struct filter_t filter = { 0 }; /* init */
-	/* filter.no_relay_initiate = 0; MUST BE 0 */
+	/* filter_relay_initiate */
 	filter.filter_on_initiate = filter_quote;
+	filter.filter_on_terminate = filter_quote;
 	filter.filter_on_equal = filter_alphabet; /* filter_blank */
 	filter.filter_on_exclude = filter_escape; /* "\"\'$" */
 	filter.filter_on_load = filter_forward;

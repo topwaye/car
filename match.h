@@ -10,7 +10,11 @@
  * escape character \a represents a runtime current matched string which can NOT be trimmed
  * escape character \b represents a runtime current matched string which can be trimmed (e.g. exclude somechar)
  * escape character \f represents a runtime placeholder which can be arbitrary string predefined
- * escape character \v represents anything, the behavior of a \v is defined by filters.
+ * escape character \v represents anything, the behavior of a \v is defined by filters
+ *
+ * the most fundamental feature of this algorithm is
+ * wildcards cannot ensure the order of matching
+ * only fixed characters can guarantee the matching order
  */
 
 #ifndef MATCH_H

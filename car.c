@@ -293,7 +293,7 @@ int my_traverse4 ( const char * directory, const char * extension, const char * 
 		KNOWN_ALPHABET_BLANK	/* , */
 		KNOWN_ALPHABET_NAME,	/* wildcard segment 2, a return type for php 7, e.g. function name ( ) : type { } */
 		NULL,					/* wildcard segment 1, function parameters are arbitrary characters with no limit */
-		KNOWN_ALPHABET_BLANK	/* wildcard segment 0, a function name has already defined at \v9 */
+		KNOWN_ALPHABET_BLANK	/* wildcard segment 0, a function name has already been defined at \v9 */
 	};
 
 	struct filter_t filter = { 0 }; /* init */

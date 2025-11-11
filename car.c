@@ -180,9 +180,9 @@ int my_match7 ( )
 
 	const char * knowledge [ ] =
 	{
-		KNOWN_ALPHABET_NUM,	/* 2:** */
-		KNOWN_ALPHABET_NUM,	/* 1:** */
-		KNOWN_ALPHABET_NUM	/* 0:** */
+		KNOWN_ALPHABET_NUM,	/* wildcard segment 2 */
+		KNOWN_ALPHABET_NUM,	/* wildcard segment 1 */
+		KNOWN_ALPHABET_NUM	/* wildcard segment 0 */
 	};
 
 	char src [ ] = "x987654x83x678x";
@@ -289,9 +289,9 @@ int my_traverse4 ( const char * directory, const char * extension, const char * 
 
 	const char * knowledge [ ] =
 	{
-		KNOWN_ALPHABET_BLANK,	/* 2:** */
-		NULL,					/* 1:** NULL = no limit */
-		KNOWN_ALPHABET_BLANK	/* 0:** */
+		KNOWN_ALPHABET_BLANK,	/* wildcard segment 2 */
+		NULL,					/* wildcard segment 1, NULL = no limit */
+		KNOWN_ALPHABET_BLANK	/* wildcard segment 0 */
 	};
 
 	struct filter_t filter = { 0 }; /* init */

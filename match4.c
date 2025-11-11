@@ -156,6 +156,11 @@ int knowledge_based_do_match_ex ( int argc, const char * knowledge [ ], char wil
 				i ++;
 			}
 		}
+		else
+		{
+			a = 0;
+			i = ii;
+		}
 	}
 quit:
 	* next = i;

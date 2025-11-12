@@ -265,9 +265,8 @@ int my_traverse3 ( const char * directory, const char * extension )
 	char exclude [ ] = "";
 
 	struct filter_t filter = { 0 }; /* init */
-	/* filter_relay_initiate */
+	/* filter_no_relay_initiate */
 	filter.filter_on_initiate = filter_quote;
-	filter.filter_on_terminate = filter_quote;
 	filter.filter_after_replace = filter_backward;
 
 	printf ( "listing %s*%s\n", directory, extension );

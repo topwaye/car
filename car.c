@@ -36,9 +36,9 @@ char param_list [ ] [ PARAM_ENTRY_WIDTH ] [ _MAX_PATH ] =
 	{ "host",	"c:/apache24/htdocs/" },
 	{ "dst",	"c:/car-workspace/"   },
 	{ "ext",	".php"                }, /* do NOT include wildcard characters */
-	{ "log",	"c:/car/err.log"      },
-	{ "tmp",	"c:/car/err2.log"     },
-	{ "obj",	"c:/car/err3.log"     },
+	{ "log",	"c:/car/e.log"        },
+	{ "tmp",	"c:/car/e2.log"       },
+	{ "obj",	"c:/car/e3.log"       },
 	{ "dbg",	"c:/car/debug.php"    }
 };
 

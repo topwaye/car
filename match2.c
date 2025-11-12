@@ -24,6 +24,7 @@
 
 extern int hit_count;
 
+extern int string_length ( const char * src );
 extern int seek_string ( char c, char * src, int src_len, int * current );
 extern int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * next,
 						 filter_terminate_t filter_on_terminate, filter_equal_t filter_on_equal );
@@ -280,17 +281,25 @@ int filter_custom ( char * src, int src_len, int src_prior, int * src_index, cha
 
 int filter_escape ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index, char * exclude )
 {
-	int i, h, j, g, s, t;
+	int i, h, j, f, g, s, t;
 	int threshold;
+	int skip;
 
 	i = * src_index;
 	h = * dst_index;
 
-	j = src_prior, g = -1; threshold = 0;
+	j = src_prior, f = g = -1; threshold = 0; skip = string_length ( "function" );
 	while ( j < i )
 	{
 		if ( h + 1 == dst_size )
 			return 0;
+
+		if ( skip )
+		{
+			skip --;
+			j ++;
+			continue;
+		}
 
 		s = 0, t = 0;
 		while ( *( exclude + t ) )
@@ -335,6 +344,9 @@ int filter_escape ( char * src, int src_len, int src_prior, int * src_index, cha
 		}
 
 		/* remove leading and trailing spaces */
+		if ( f == -1 ) /* must be here, do NOT move this line */
+			f = j;
+
 		if ( is_known_character ( KNOWN_ALPHABET_BLANK, *( src + j ) ) )
 		{
 			if ( g == -1 )
@@ -343,11 +355,11 @@ int filter_escape ( char * src, int src_len, int src_prior, int * src_index, cha
 			j ++;
 			continue;
 		}
-		if ( g == src_prior )
+		if ( g == f )
 		{
 			g = -1;
 		}
-		else if ( g > src_prior )
+		else if ( g > f )
 		{
 			*( dst + h ++ ) = *( src + g );
 			g = -1;

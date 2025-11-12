@@ -281,11 +281,12 @@ int filter_custom ( char * src, int src_len, int src_prior, int * src_index, cha
 int filter_escape ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index, char * exclude )
 {
 	int i, h, j, g, s, t;
+	int threshold;
 
 	i = * src_index;
 	h = * dst_index;
 
-	j = src_prior, g = -1;
+	j = src_prior, g = -1; threshold = 0;
 	while ( j < i )
 	{
 		if ( h + 1 == dst_size )
@@ -305,6 +306,32 @@ int filter_escape ( char * src, int src_len, int src_prior, int * src_index, cha
 		{
 			j ++;
 			continue;
+		}
+
+		/* remove the characters in parentheses */
+		if( '(' == *( src + j ) )
+		{
+			if ( threshold ++ > 0 )
+			{
+				j ++;
+				continue;
+			}
+		}
+		else if( ')' == *( src + j ) )
+		{
+			if ( -- threshold > 0 )
+			{
+				j ++;
+				continue;
+			}
+		}
+		else
+		{
+			if ( threshold > 0 ) /* NOT 1 */
+			{
+				j ++;
+				continue;
+			}
 		}
 
 		/* remove leading and trailing spaces */

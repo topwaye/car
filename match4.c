@@ -22,6 +22,7 @@
 #include "config.h"
 
 extern int hit_count;
+
 extern int is_known_character ( const char * known, char c );
 extern int seek_string ( char c, char * src, int src_len, int * current );
 

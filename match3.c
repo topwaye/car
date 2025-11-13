@@ -23,6 +23,7 @@
 
 extern int hit_count;
 
+extern int is_known_character ( const char * known, char c );
 extern int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * next,
 						 filter_terminate_t filter_on_terminate, filter_equal_t filter_on_equal );
 

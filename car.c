@@ -283,8 +283,8 @@ int my_traverse4 ( const char * directory, const char * extension, const char * 
 	char footer [ ] = "";
 
 	char pattern [ ] = "function\v2\v9*(*)*{";
-					/* "\aerror_log(\"c:/apache24/htdocs\".$_SERVER['PHP_SELF'].\">\f>\b\".PHP_EOL, 3, \"c:/test/err.log\");" */
-	char replace [ ] = "\aerror_log($_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"\f\");";
+					/* "\aerror_log(\"c:/apache24/htdocs\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"c:/test/err.log\");" */
+	char replace [ ] = "\aerror_log($_SERVER['PHP_SELF'].\">\f>\b\".PHP_EOL, 3, \"\f\");";
 	char exclude [ ] = "\r\n{"; /* what characters a matched @string excludes */
 
 	const char * knowledge [ ] =

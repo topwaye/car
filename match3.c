@@ -108,7 +108,7 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 								if ( h + 1 == dst_size )
 									return 0;
 
-								if ( is_known_character ( exclude [ n ], *( src + j ) ) )
+								if ( is_known_character ( excludes [ n ], *( src + j ) ) )
 								{
 									j ++;
 									continue;

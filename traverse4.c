@@ -17,6 +17,8 @@
 #include "config.h"
 #include "match.h"
 
+extern const char * src_dir;
+extern const char * dst_dir;
 extern char * src_buf;
 extern char * dst_buf;
 
@@ -24,11 +26,12 @@ extern int hit_count;
 
 /* if successful, returns 1. otherwise, returns 0 */
 
-int do_command4 ( char * filename, int argc, const char * knowledge [ ], char wildcard,
+int do_command4 ( const char * filename, int argc, const char * knowledge [ ], char wildcard,
                   struct filter_t * filter,
                   char * header, char * footer, char * pattern, char * replace, char * exclude,
-                  const char * host, const char * log )
+                  const char * log )
 {
+    char path [ _MAX_PATH ];
 	int fh;
 	int bytes_read, bytes_copied, bytes_written;
 	int size;
@@ -50,7 +53,10 @@ int do_command4 ( char * filename, int argc, const char * knowledge [ ], char wi
         _close ( fh );
         return 0;
     }
-	
+
+    copy_string ( "/", path, _MAX_PATH ); /* make a new root */
+    concatenate_string ( filename + string_length ( src_dir ), path, _MAX_PATH );
+
 	size = MAX_FILE_SIZE;
 	pos = dst_buf;
 	bytes_copied = copy_string ( header, pos, size, filename );
@@ -58,7 +64,7 @@ int do_command4 ( char * filename, int argc, const char * knowledge [ ], char wi
 	pos += bytes_copied;
 	size -= bytes_copied;
 	bytes_copied = knowledge_based_copy_and_replace_ex ( argc, knowledge, wildcard, filter, src_buf, bytes_read, pos, size,
-                                                         pattern, replace, exclude, host, filename, log );
+                                                         pattern, replace, exclude, path, log );
     dirty += hit_count;
 	pos += bytes_copied;
 	size -= bytes_copied;
@@ -109,7 +115,7 @@ int do_command4 ( char * filename, int argc, const char * knowledge [ ], char wi
 int traverse4 ( const char * directory, const char * extension, int argc, const char * knowledge [ ], char wildcard,
                 struct filter_t * filter,
                 char * header, char * footer, char * pattern, char * replace, char * exclude,
-                const char * host, const char * log )
+                const char * log )
 {
     int ext_len;
     char path [ _MAX_PATH ];
@@ -143,7 +149,7 @@ int traverse4 ( const char * directory, const char * extension, int argc, const 
                 concatenate_string ( info.name, path, _MAX_PATH );
                 concatenate_string ( "/", path, _MAX_PATH );
 
-                if ( ! traverse4 ( path, extension, argc, knowledge, wildcard, filter, header, footer, pattern, replace, exclude, host, log ) )
+                if ( ! traverse4 ( path, extension, argc, knowledge, wildcard, filter, header, footer, pattern, replace, exclude, log ) )
                     return 0;
             }
             else
@@ -160,7 +166,7 @@ int traverse4 ( const char * directory, const char * extension, int argc, const 
                 copy_string ( directory, path, _MAX_PATH );
                 concatenate_string ( info.name, path, _MAX_PATH );
 
-                if ( ! do_command4 ( path, argc, knowledge, wildcard, filter, header, footer, pattern, replace, exclude, host, log ) )
+                if ( ! do_command4 ( path, argc, knowledge, wildcard, filter, header, footer, pattern, replace, exclude, log ) )
                     return 0;
             }
 

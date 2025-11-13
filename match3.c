@@ -31,7 +31,7 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 								   ... )
 {
 	char * pos, * posx;
-	int n, m, i, ii, j, h, k, s, t;
+	int n, m, i, ii, j, h, k;
 	filter_initiate_t filter_on_initiate;
 	filter_terminate_t filter_on_terminate;
 	filter_equal_t filter_on_equal;
@@ -107,19 +107,7 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 								if ( h + 1 == dst_size )
 									return 0;
 
-								posx = excludes [ n ];
-
-								s = 0, t = 0;
-								while ( *( posx + t ) )
-								{
-									if ( *( src + j ) == *( posx + t ) )
-									{
-										s = 1;
-										break;
-									}
-									t ++;
-								}
-								if ( s )
+								if ( is_known_character ( exclude [ n ], *( src + j ) ) )
 								{
 									j ++;
 									continue;
@@ -155,13 +143,13 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 					{
 						posx = va_arg ( args, char * );
 
-						t = 0;
-						while ( *( posx + t ) )
+						j = 0;
+						while ( *( posx + j ) )
 						{
 							if ( h + 1 == dst_size )
 								return 0;
 
-							*( dst + h ++ ) = *( posx + t ++ );
+							*( dst + h ++ ) = *( posx + j ++ );
 						}
 
 						k ++;

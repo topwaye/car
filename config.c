@@ -6,6 +6,9 @@
 
 /* global variables */
 
+const char * src_dir;
+const char * dst_dir;
+
 char * src_buf;
 char * dst_buf;
 

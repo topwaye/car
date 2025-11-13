@@ -17,11 +17,13 @@
 
 #include "config.h"
 
+extern const char * src_dir;
+extern const char * dst_dir;
 extern char * src_buf;
 
 /* if successful, returns 1. otherwise, returns 0 */
 
-int make_directory ( char * dirname )
+int make_directory ( const char * dirname )
 {
 	if ( _mkdir ( dirname ) == -1 )
 	{
@@ -39,7 +41,7 @@ int make_directory ( char * dirname )
 	return 1;
 }
 
-int copy_file ( char * src_filename, char * dst_filename )
+int copy_file ( const char * src_filename, const char * dst_filename )
 {
 	char file_buf [ MAX_BUFFER_SIZE ];
 	int src_fh, dst_fh;
@@ -121,10 +123,14 @@ int load_file ( const char * filename )
 	return bytes_read;
 }
 
-int copy_listed_files ( const char * listname, const char * src_path, const char * dst_path )
+int copy_listed_files ( const char * listname )
 {
-	int i, j, h, k, ii;
-	char list_entry [ _MAX_PATH ];
+	int i, f, g, h, k;
+	int a;
+	const char * src_path;
+	const char * dst_path;
+	char src_entry [ _MAX_PATH ];
+	char dst_entry [ _MAX_PATH ];
 	char * list;
 	int list_len;
 
@@ -136,6 +142,17 @@ int copy_listed_files ( const char * listname, const char * src_path, const char
 	}
 
 	list = src_buf;
+	src_path = src_dir;
+	dst_path = dst_dir;
+
+	g = 0, f = 0;
+	while ( *( src_path + f ) )
+	{
+		if ( g + 1 == _MAX_PATH )
+			return 0;
+
+		*( src_entry + g ++ ) = *( src_path + f ++ );
+	}
 
 	h = 0, k = 0;
 	while ( *( dst_path + k ) )
@@ -143,63 +160,58 @@ int copy_listed_files ( const char * listname, const char * src_path, const char
 		if ( h + 1 == _MAX_PATH )
 			return 0;
 
-		*( list_entry + h ++ ) = *( dst_path + k ++ );
+		*( dst_entry + h ++ ) = *( dst_path + k ++ );
 	}
 
-	i = ii = 0, j = 0;
+	a = 0;
+	i = 0;
 	while ( i < list_len )
 	{
-		if ( j == 0 )
-		{
-			while ( *( src_path + j ) )
-			{
-				if ( *( src_path + j ++ ) != *( list + i ++ ) )
-				{
-					printf ( "bad src_path or bad list\n" );
-					return 0;
-				}
-			}
-		}
-
-		if ( h + 1 == _MAX_PATH )
+		if ( h + 1 == _MAX_PATH || g + 1 == _MAX_PATH )
 			return 0;
 		
 		if ( '\r' == *( list + i ) )
 		{
-			*( list + i ) = 0;
-
-			printf ( "%s\n", list + ii );
-
 			i ++;
 			continue;
 		}
 
 		if ( '\n' == *( list + i ) )
 		{
-			*( list + i ) = 0;
-			*( list_entry + h ) = 0;
+			*( src_entry + g ) = 0;
+			*( dst_entry + h ) = 0;
 
-			printf ( "%s > ", list + ii );
-			printf ( "%s\n", list_entry );
+			printf ( "%s > ", src_entry );
+			printf ( "%s\n", dst_entry );
 
-			if ( ! copy_file ( list + ii, list_entry ) )
+			if ( ! copy_file ( src_entry, dst_entry ) )
 				return 0;
-			
-			ii = ++ i;
-			j = 0;
+
+			a = 0;
+			g = f;
 			h = k;
+			i ++;
 			continue;
 		}
 		
 		if ( '/' == *( list + i ) )
 		{
-			*( list_entry + h ) = 0;
+			if ( a == 0 )
+			{
+				a = 1;
+				i ++;
+				continue;
+			}
 
-			if ( ! make_directory ( list_entry ) )
+			*( dst_entry + h ) = 0;
+
+			if ( ! make_directory ( dst_entry ) )
 				return 0;
 		}
 
-		*( list_entry + h ++ ) = *( list + i ++ );
+		*( src_entry + g ++ ) = *( list + i );
+		*( dst_entry + h ++ ) = *( list + i );
+		i ++;
 	}
 
 	return 1;

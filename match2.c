@@ -82,7 +82,7 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 						   ... )
 {
 	char * pos, * posx;
-	int i, ii, iii, j, h, k, s, t;
+	int i, ii, iii, j, h, k;
 	int len;
 	filter_initiate_t filter_on_initiate;
 	filter_terminate_t filter_on_terminate;
@@ -175,19 +175,7 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 						if ( h + 1 == dst_size )
 							return 0;
 
-						posx = exclude;
-
-						s = 0, t = 0;
-						while ( *( posx + t ) )
-						{
-							if ( *( src + j ) == *( posx + t ) )
-							{
-								s = 1;
-								break;
-							}
-							t ++;
-						}
-						if ( s )
+						if ( is_known_character ( exclude, *( src + j ) ) )
 						{
 							j ++;
 							continue;
@@ -223,13 +211,13 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 			{
 				posx = va_arg ( args, char * );
 
-				t = 0;
-				while ( *( posx + t ) )
+				j = 0;
+				while ( *( posx + j ) )
 				{
 					if ( h + 1 == dst_size )
 						return 0;
 
-					*( dst + h ++ ) = *( posx + t ++ );
+					*( dst + h ++ ) = *( posx + j ++ );
 				}
 
 				k ++;
@@ -281,7 +269,7 @@ int filter_custom ( char * src, int src_len, int src_prior, int * src_index, cha
 
 int filter_escape ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index, char * exclude )
 {
-	int i, h, j, f, g, s, t;
+	int i, h, j, f, g;
 	int threshold;
 	int skip;
 
@@ -301,17 +289,7 @@ int filter_escape ( char * src, int src_len, int src_prior, int * src_index, cha
 			continue;
 		}
 
-		s = 0, t = 0;
-		while ( *( exclude + t ) )
-		{
-			if ( *( src + j ) == *( exclude + t ) )
-			{
-				s = 1;
-				break;
-			}
-			t ++;
-		}
-		if ( s )
+		if ( is_known_character ( exclude, *( src + j ) ) )
 		{
 			j ++;
 			continue;

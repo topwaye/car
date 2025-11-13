@@ -174,7 +174,7 @@ int knowledge_based_copy_and_replace_ex ( int argc, const char * knowledge [ ], 
 										  ... )
 {
 	char * pos, * posx;
-	int i, ii, j, h, k, s, t;
+	int i, ii, j, h, k;
 	filter_initiate_t filter_on_initiate;
 	filter_terminate_t filter_on_terminate;
 	filter_equal_t filter_on_equal;
@@ -254,19 +254,7 @@ int knowledge_based_copy_and_replace_ex ( int argc, const char * knowledge [ ], 
 						if ( h + 1 == dst_size )
 							return 0;
 
-						posx = exclude;
-
-						s = 0, t = 0;
-						while ( *( posx + t ) )
-						{
-							if ( *( src + j ) == *( posx + t ) )
-							{
-								s = 1;
-								break;
-							}
-							t ++;
-						}
-						if ( s )
+						if ( is_known_character ( exclude, *( src + j ) ) )
 						{
 							j ++;
 							continue;
@@ -302,13 +290,13 @@ int knowledge_based_copy_and_replace_ex ( int argc, const char * knowledge [ ], 
 			{
 				posx = va_arg ( args, char * );
 
-				t = 0;
-				while ( *( posx + t ) )
+				j = 0;
+				while ( *( posx + j ) )
 				{
 					if ( h + 1 == dst_size )
 						return 0;
 
-					*( dst + h ++ ) = *( posx + t ++ );
+					*( dst + h ++ ) = *( posx + j ++ );
 				}
 
 				k ++;

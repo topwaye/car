@@ -22,6 +22,8 @@
 #define DEFAULT_BUFFER_SIZE				128
 #define PARAM_ENTRY_WIDTH				2
 
+extern const char * src_dir;
+extern const char * dst_dir;
 extern char * src_buf;
 extern char * dst_buf;
 extern int load_file ( const char * filename );
@@ -33,7 +35,6 @@ extern int load_file ( const char * filename );
 char param_list [ ] [ PARAM_ENTRY_WIDTH ] [ _MAX_PATH ] =
 {
 	{ "src",	"c:/apache24/htdocs/" },
-	{ "host",	"c:/apache24/htdocs/" },
 	{ "dst",	"c:/car-workspace/"   },
 	{ "ext",	".php"                }, /* do NOT include wildcard characters */
 	{ "log",	"c:/car/e.log"        },
@@ -252,7 +253,7 @@ int my_traverse1 ( const char * directory, const char * extension )
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
-	return traverse3 ( directory, extension, sizeof ( patterns ) / sizeof ( patterns [ 0 ] ), wildcards, filters, header, footer, patterns, replaces, excludes, "", "" );
+	return traverse3 ( directory, extension, sizeof ( patterns ) / sizeof ( patterns [ 0 ] ), wildcards, filters, header, footer, patterns, replaces, excludes, "" );
 }
 
 int my_traverse3 ( const char * directory, const char * extension )
@@ -273,17 +274,17 @@ int my_traverse3 ( const char * directory, const char * extension )
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
-	return traverse2 ( directory, extension, KNOWN_ALPHABET_BLANK, '*', & filter, header, footer, pattern, replace, exclude, "", "" );
+	return traverse2 ( directory, extension, KNOWN_ALPHABET_BLANK, '*', & filter, header, footer, pattern, replace, exclude, "" );
 }
 
-int my_traverse4 ( const char * directory, const char * extension, const char * host, const char * log )
+int my_traverse4 ( const char * directory, const char * extension, const char * log )
 {
 	char header [ ] = "";
 	char footer [ ] = "";
 
 	char pattern [ ] = "function\v2\v9*(*)*{";
 					/* "\aerror_log(\"c:/apache24/htdocs\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"c:/test/err.log\");" */
-	char replace [ ] = "\aerror_log(\"\f\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"\f\");";
+	char replace [ ] = "\aerror_log($_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"\f\");";
 	char exclude [ ] = "\r\n{"; /* what characters a matched @string excludes */
 
 	const char * knowledge [ ] =
@@ -307,7 +308,7 @@ int my_traverse4 ( const char * directory, const char * extension, const char * 
 	printf ( "RDO HID SYS ARC      SIZE FILE %30c COMMAND\n", ' ' );
 	printf ( "--- --- --- ---      ---- ---- %30c -------\n", ' ' );
 
-	return traverse4 ( directory, extension, sizeof ( knowledge ) / sizeof ( knowledge [ 0 ] ), knowledge, '*', & filter, header, footer, pattern, replace, exclude, host, log );
+	return traverse4 ( directory, extension, sizeof ( knowledge ) / sizeof ( knowledge [ 0 ] ), knowledge, '*', & filter, header, footer, pattern, replace, exclude, log );
 }
 
 int my_report1 ( const char * log, const char * tmp )
@@ -324,7 +325,7 @@ int my_report2 ( const char * tmp, const char * obj )
 	return nonredundancy_copy_file ( tmp, obj );
 }
 
-int my_directory ( const char * obj, const char * src_path, const char * dst_path )
+int my_directory ( const char * obj )
 {
 	/*
 	 * each line is a list entry which ends with '\n' implicitly
@@ -337,7 +338,7 @@ int my_directory ( const char * obj, const char * src_path, const char * dst_pat
 	 */
 	printf ( "copying from %s\n", obj );
 
-	return copy_listed_files ( obj, src_path, dst_path );
+	return copy_listed_files ( obj );
 }
 
 int my_debug ( const char * dbg )
@@ -433,24 +434,24 @@ int load_params ( const char * listname )
 
 int run ( int operation )
 {
-	char * src  = param_list [ 0 ] [ 1 ];
-	char * host = param_list [ 1 ] [ 1 ];
-	char * dst  = param_list [ 2 ] [ 1 ];
-	char * ext  = param_list [ 3 ] [ 1 ];
-	char * log  = param_list [ 4 ] [ 1 ];
-	char * tmp  = param_list [ 5 ] [ 1 ];
-	char * obj  = param_list [ 6 ] [ 1 ];
-	char * dbg  = param_list [ 7 ] [ 1 ];
+	char * src = param_list [ 0 ] [ 1 ];
+	char * dst = param_list [ 1 ] [ 1 ];
+	char * ext = param_list [ 2 ] [ 1 ];
+	char * log = param_list [ 3 ] [ 1 ];
+	char * tmp = param_list [ 4 ] [ 1 ];
+	char * obj = param_list [ 5 ] [ 1 ];
+	char * dbg = param_list [ 6 ] [ 1 ];
 
-	trim_string_tail ( 1, host );
+	src_dir = src;
+	dst_dir = dst;
 
 	switch ( operation )
 	{
 		case 1: return my_match1 ( ) && my_match2 ( ) && my_match3 ( )
 					   && my_match4 ( ) && my_match5 ( ) && my_match6 ( )
 					   && my_match7 ( ) && my_match8 ( );
-		case 2: return my_traverse1 ( src, ext ) && my_traverse3 ( src, ext ) && my_traverse4 ( src, ext, host, log );
-		case 3: return my_report1 ( log, tmp ) && my_report2 ( tmp, obj ) && my_directory ( obj, src, dst );
+		case 2: return my_traverse1 ( src, ext ) && my_traverse3 ( src, ext ) && my_traverse4 ( src, ext, log );
+		case 3: return my_report1 ( log, tmp ) && my_report2 ( tmp, obj ) && my_directory ( obj );
 		case 4: return my_debug ( dbg );
 	}
 

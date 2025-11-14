@@ -25,6 +25,8 @@ extern int report_copy_file ( const char * src_filename, const char * dst_filena
 
 extern int nonredundancy_copy_file ( const char * src_filename, const char * dst_filename );
 
+extern int rich_copy_file ( const char * src_filename, const char * dst_filename, const char * lead, const char * trail );
+
 #endif
 
 /*

@@ -40,6 +40,7 @@ char param_list [ ] [ PARAM_ENTRY_WIDTH ] [ _MAX_PATH ] =
 	{ "log",	"c:/car/e.log"        },
 	{ "tmp",	"c:/car/e2.log"       },
 	{ "obj",	"c:/car/e3.log"       },
+	{ "inc",	"c:/car/e4.log"       },
 	{ "dbg",	"c:/car/debug.php"    }
 };
 
@@ -325,6 +326,16 @@ int my_report2 ( const char * tmp, const char * obj )
 	return nonredundancy_copy_file ( tmp, obj );
 }
 
+int my_report3 ( const char * obj, const char * inc )
+{
+	char lead [ ] = "require_once ABSPATH . WPINC . '";
+	char trail [ ] = "';";
+
+	printf ( "parsing %s\n", obj );
+
+	return rich_copy_file ( obj, inc, lead, trail );
+}
+
 int my_directory ( const char * obj )
 {
 	/*
@@ -440,7 +451,8 @@ int run ( int operation )
 	char * log = param_list [ 3 ] [ 1 ];
 	char * tmp = param_list [ 4 ] [ 1 ];
 	char * obj = param_list [ 5 ] [ 1 ];
-	char * dbg = param_list [ 6 ] [ 1 ];
+	char * inc = param_list [ 6 ] [ 1 ];
+	char * dbg = param_list [ 7 ] [ 1 ];
 
 	src_dir = src;
 	dst_dir = dst;
@@ -451,7 +463,8 @@ int run ( int operation )
 					   && my_match4 ( ) && my_match5 ( ) && my_match6 ( )
 					   && my_match7 ( ) && my_match8 ( );
 		case 2: return my_traverse1 ( src, ext ) && my_traverse3 ( src, ext ) && my_traverse4 ( src, ext, log );
-		case 3: return my_report1 ( log, tmp ) && my_report2 ( tmp, obj ) && my_directory ( obj );
+		case 3: return my_report1 ( log, tmp ) && my_report2 ( tmp, obj )  && my_report3 ( obj, inc )
+					   && my_directory ( obj );
 		case 4: return my_debug ( dbg );
 	}
 

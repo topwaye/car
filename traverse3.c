@@ -28,7 +28,7 @@ extern int hit_count;
 
 int do_command3 ( const char * filename, int argc, char wildcards [ ],
                   struct filter_t * filters [ ],
-                  char * header, char * footer, char * patterns [ ], char * replaces [ ], char * excludes [ ],
+                  const char * header, const char * footer, char * patterns [ ], char * replaces [ ], char * excludes [ ],
                   const char * log )
 {
     char path [ _MAX_PATH ];
@@ -59,7 +59,7 @@ int do_command3 ( const char * filename, int argc, char wildcards [ ],
 
 	size = MAX_FILE_SIZE;
 	pos = dst_buf;
-	bytes_copied = copy_string ( header, pos, size, filename );
+	bytes_copied = copy_string ( header, pos, size, path );
     dirty = bytes_copied > 0;
 	pos += bytes_copied;
 	size -= bytes_copied;
@@ -68,7 +68,7 @@ int do_command3 ( const char * filename, int argc, char wildcards [ ],
     dirty += hit_count;
 	pos += bytes_copied;
 	size -= bytes_copied;
-	bytes_copied = copy_string ( footer, pos, size, filename );
+	bytes_copied = copy_string ( footer, pos, size, path );
     dirty += bytes_copied > 0;
 	size -= bytes_copied;
 	bytes_copied = MAX_FILE_SIZE - size;
@@ -114,7 +114,7 @@ int do_command3 ( const char * filename, int argc, char wildcards [ ],
 
 int traverse3 ( const char * directory, const char * extension, int argc, char wildcards [ ],
                 struct filter_t * filters [ ],
-                char * header, char * footer, char * patterns [ ], char * replaces [ ], char * excludes [ ],
+                const char * header, const char * footer, char * patterns [ ], char * replaces [ ], char * excludes [ ],
                 const char * log )
 {
     int ext_len;

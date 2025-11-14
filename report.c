@@ -30,6 +30,67 @@
 extern char * src_buf;
 extern char * dst_buf;
 
+int rich_copy ( char * src, int src_len, char * dst, int dst_size, const char * lead, const char * trail )
+{
+	int i, j, h, ii;
+
+	if ( dst_size < 1 ) /* size >= len + 1 */
+		return 0;
+
+	h = 0, i = ii = 0;
+	while ( i < src_len )
+	{
+		if ( '\n' == *( src + i ) )
+		{
+			*( src + i ) = 0;
+
+			j = 0;
+			while ( *( lead + j ) )
+			{
+				if ( h + 1 == dst_size )
+					return 0;
+
+				*( dst + h ++ ) = *( lead + j ++ );
+			}
+
+			j = ii;
+			while ( *( src + j ) )
+			{
+				if ( h + 1 == dst_size )
+					return 0;
+
+				*( dst + h ++ ) = *( src + j ++ );
+			}
+
+			j = 0;
+			while ( *( trail + j ) )
+			{
+				if ( h + 1 == dst_size )
+					return 0;
+
+				*( dst + h ++ ) = *( trail + j ++ );
+			}
+
+			if ( h + 1 == dst_size )
+				return 0;
+
+			*( dst + h ++ ) = '\n';
+
+			ii = ++ i;
+			continue;
+		}
+
+		if ( '\r' == *( src + i ) )
+			*( src + i ) = 0;
+		
+		i ++;
+	}
+
+	*( dst + h ) = 0;
+
+	return h;
+}
+
 int nonredundancy_copy ( char * src, int src_len, char * dst, int dst_size )
 {
 	int i, j, h, ii;
@@ -207,6 +268,58 @@ int nonredundancy_copy_file ( const char * src_filename, const char * dst_filena
 	}
 
 	bytes_copied = nonredundancy_copy ( src_buf, bytes_read, dst_buf, MAX_FILE_SIZE );
+
+	/* write out output */
+	bytes_written = _write ( dst_fh, dst_buf, bytes_copied );
+	if ( bytes_written == -1 )
+	{
+		printf ( "problem writing file\n" );
+		_close ( dst_fh );
+		_close ( src_fh );
+		return 0;
+	}
+	
+	printf ( "%d bytes read, ", bytes_read );
+	printf ( "%d bytes copied, ", bytes_copied );
+	printf ( "%d bytes written\n", bytes_written );
+
+    _close ( dst_fh );
+	_close ( src_fh );
+
+	return 1;
+}
+
+int rich_copy_file ( const char * src_filename, const char * dst_filename, const char * lead, const char * trail )
+{
+	int src_fh, dst_fh;
+	int bytes_read, bytes_copied, bytes_written;
+
+    /* open file for input */
+    if ( _sopen_s ( &src_fh, src_filename, _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
+    {
+        printf ( "open failed on input file\n" );
+        return 0;
+    }
+	
+	/* open file for output */
+    if ( _sopen_s ( &dst_fh, dst_filename, _O_CREAT | _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
+    {
+        printf ( "open failed on output file\n" );
+		_close( src_fh );
+		return 0;
+    }
+
+	/* read in input */
+	bytes_read = _read ( src_fh, src_buf, MAX_FILE_SIZE );
+	if ( bytes_read == -1 )
+	{
+		printf ( "problem reading file\n" );
+		_close ( dst_fh );
+		_close ( src_fh );
+		return 0;
+	}
+
+	bytes_copied = rich_copy ( src_buf, bytes_read, dst_buf, MAX_FILE_SIZE, lead, trail );
 
 	/* write out output */
 	bytes_written = _write ( dst_fh, dst_buf, bytes_copied );

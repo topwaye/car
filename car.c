@@ -328,7 +328,7 @@ int my_report2 ( const char * tmp, const char * obj )
 
 int my_report3 ( const char * obj, const char * inc )
 {
-	char lead [ ] = "require_once ABSPATH . WPINC . '";
+	char lead [ ] = "require_once ABSPATH . '";
 	char trail [ ] = "';";
 
 	printf ( "parsing %s\n", obj );

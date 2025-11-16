@@ -41,6 +41,10 @@ char param_list [ ] [ PARAM_ENTRY_WIDTH ] [ _MAX_PATH ] =
 	{ "tmp",	"c:/car/e2.log"       },
 	{ "obj",	"c:/car/e3.log"       },
 	{ "inc",	"c:/car/e4.log"       },
+	{ "xt_log",	"c:/car/xdebug.xt"    },
+	{ "xt_tmp",	"c:/car/xdebug2.xt"   },
+	{ "xt_obj",	"c:/car/xdebug3.xt"   },
+	{ "xt_inc",	"c:/car/xdebug4.xt"   },
 	{ "dbg",	"c:/car/debug.php"    }
 };
 
@@ -79,7 +83,7 @@ int my_match2 ( )
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
 
 	printf ( "%d:%s\n", len, src );
-	len = copy_and_replace_ex ( '*', NULL, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	len = copy_and_replace_ex ( 0, '*', NULL, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
 	printf ( "%d:%s\n", len, dst );
 
 	return 1; /* NOT 0 */
@@ -99,7 +103,7 @@ int my_match3 ( )
 	filter.filter_on_equal = filter_blank;
 
 	printf ( "%d:%s\n", len, src );
-	len = copy_and_replace_ex ( '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	len = copy_and_replace_ex ( 0, '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
 	printf ( "%d:%s\n", len, dst );
 
 	return 1; /* NOT 0 */
@@ -119,7 +123,7 @@ int my_match4 ( )
 	filter.filter_on_equal = filter_blank;
 
 	printf ( "%d:%s\n", len, src );
-	len = copy_and_replace_ex ( '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	len = copy_and_replace_ex ( 0, '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
 	printf ( "%d:%s\n", len, dst );
 
 	return 1; /* NOT 0 */
@@ -144,7 +148,7 @@ int my_match5 ( )
 	filter.filter_on_terminate = filter_quote;
 
 	printf ( "%d:%s\n", len, src );
-	len = copy_and_replace_ex ( '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	len = copy_and_replace_ex ( 0, '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
 	printf ( "%d:%s\n", len, dst );
 
 	return 1; /* NOT 0 */
@@ -168,7 +172,7 @@ int my_match6 ( )
 	filter.filter_on_initiate = filter_quote;
 
 	printf ( "%d:%s\n", len, src );
-	len = copy_and_replace_ex ( '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	len = copy_and_replace_ex ( 0, '*', & filter, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
 	printf ( "%d:%s\n", len, dst );
 
 	return 1; /* NOT 0 */
@@ -192,7 +196,7 @@ int my_match7 ( )
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
 
 	printf ( "%d:%s\n", len, src );
-	len = knowledge_based_copy_and_replace_ex ( sizeof ( knowledge ) / sizeof ( knowledge [ 0 ] ), knowledge, '*', NULL, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	len = knowledge_based_copy_and_replace_ex ( 0, sizeof ( knowledge ) / sizeof ( knowledge [ 0 ] ), knowledge, '*', NULL, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
 	printf ( "%d:%s\n", len, dst );
 
 	return 1; /* NOT 0 */
@@ -209,7 +213,7 @@ int my_match8 ( )
 	int len = sizeof ( src ) / sizeof ( src [ 0 ] ) - 1;
 
 	printf ( "%d:%s\n", len, src );
-	len = copy_and_replace_ex2 ( KNOWN_ALPHABET_NUM, '*', NULL, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+	len = copy_and_replace_ex2 ( 0, KNOWN_ALPHABET_NUM, '*', NULL, src, len, dst, DEFAULT_BUFFER_SIZE, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
 	printf ( "%d:%s\n", len, dst );
 
 	return 1; /* NOT 0 */
@@ -283,7 +287,7 @@ int my_traverse4 ( const char * directory, const char * extension, const char * 
 	char header [ ] = "";
 	char footer [ ] = "";
 
-	char pattern [ ] = "function\v2\v9*(*)*{";
+	char pattern [ ] = "function\v2\v8*(*)*{";
 					/* "\aerror_log(\"c:/apache24/htdocs\".$_SERVER['PHP_SELF'].\">\f>\b\\n\", 3, \"c:/test/err.log\");" */
 	char replace [ ] = "\aerror_log($_SERVER['PHP_SELF'].\">\f>\b\".PHP_EOL, 3, \"\f\");";
 	char exclude [ ] = "\r\n{"; /* what characters a matched @string excludes */
@@ -334,6 +338,21 @@ int my_report3 ( const char * obj, const char * inc )
 	printf ( "parsing %s\n", obj );
 
 	return rich_copy_file ( obj, inc, lead, trail );
+}
+
+int my_report4 ( const char * log, const char * tmp )
+{
+	char pattern [ ] = "\v2\v9:\v6";
+	char replace [ ] = "\b\n";
+	char exclude [ ] = ""; /* what characters a matched @string excludes */
+
+	struct filter_t filter = { 0 }; /* init */
+	/* filter_no_relay_initiate */
+	filter.filter_on_initiate = filter_quote;
+	filter.filter_on_equal = filter_alphabet2; /* filter_blank */
+	filter.filter_on_exclude = filter_escape2; /* "\"\'$" */
+
+	return strip_copy_file ( log, tmp, '*', & filter, pattern, replace, exclude );
 }
 
 int my_directory ( const char * obj )
@@ -448,11 +467,18 @@ int run ( int operation )
 	char * src = param_list [ 0 ] [ 1 ];
 	char * dst = param_list [ 1 ] [ 1 ];
 	char * ext = param_list [ 2 ] [ 1 ];
+
 	char * log = param_list [ 3 ] [ 1 ];
 	char * tmp = param_list [ 4 ] [ 1 ];
 	char * obj = param_list [ 5 ] [ 1 ];
 	char * inc = param_list [ 6 ] [ 1 ];
-	char * dbg = param_list [ 7 ] [ 1 ];
+
+	char * xt_log = param_list [ 7 ] [ 1 ];
+	char * xt_tmp = param_list [ 8 ] [ 1 ];
+	char * xt_obj = param_list [ 9 ] [ 1 ];
+	char * xt_inc = param_list [ 10 ] [ 1 ];
+
+	char * dbg = param_list [ 11 ] [ 1 ];
 
 	src_dir = src;
 	dst_dir = dst;
@@ -465,7 +491,9 @@ int run ( int operation )
 		case 2: return my_traverse1 ( src, ext ) && my_traverse3 ( src, ext ) && my_traverse4 ( src, ext, log );
 		case 3: return my_report1 ( log, tmp ) && my_report2 ( tmp, obj )  && my_report3 ( obj, inc )
 					   && my_directory ( obj );
-		case 4: return my_debug ( dbg );
+		case 4: return my_report4 ( xt_log, xt_tmp ) && my_report2 ( xt_tmp, xt_obj )  && my_report3 ( xt_obj, xt_inc )
+					   && my_directory ( xt_obj );
+		case 5: return my_debug ( dbg );
 	}
 
 	return 0;
@@ -517,6 +545,8 @@ int main ( int argc, char * argv [ ] )
 				operation = 3;
 			else if ( compare_string ( argv [ 1 ], "4" ) == 0 )
 				operation = 4;
+			else if ( compare_string ( argv [ 1 ], "5" ) == 0 )
+				operation = 5;
 			else
 				operation = 0;
 			break;
@@ -524,7 +554,8 @@ int main ( int argc, char * argv [ ] )
 			printf ( "[ 1 ] match a pattern string\n" );
 			printf ( "[ 2 ] traverse a directory tree and insert a line of source code into all files\n" );
 			printf ( "[ 3 ] make a new directory tree on the disk according to a tracing report\n" );
-			printf ( "[ 4 ] debug a file to print each known and unknown character\n" );
+			printf ( "[ 4 ] make a new directory tree on the disk according to an xdebug tracing report\n" );
+			printf ( "[ 5 ] debug a file to print each known and unknown character\n" );
 			printf ( "enter an operation number: " );
 
 			c = _getch ( );
@@ -537,6 +568,7 @@ int main ( int argc, char * argv [ ] )
 				case '2': operation = 2; break;
 				case '3': operation = 3; break;
 				case '4': operation = 4; break;
+				case '5': operation = 5; break;
 				default: operation = 0;
 			}
 			break;

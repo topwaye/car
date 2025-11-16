@@ -169,7 +169,7 @@ quit:
 	return a;
 }
 
-int knowledge_based_copy_and_replace_ex ( int argc, const char * knowledge [ ], char wildcard, struct filter_t * filter,
+int knowledge_based_copy_and_replace_ex ( int match_only, int argc, const char * knowledge [ ], char wildcard, struct filter_t * filter,
 										  char * src, int src_len, char * dst, int dst_size,
 										  char * pattern, char * replace, char * exclude,
 										  ... )
@@ -203,6 +203,9 @@ int knowledge_based_copy_and_replace_ex ( int argc, const char * knowledge [ ], 
 
 		if ( filter_on_initiate && filter_on_initiate ( src, src_len, & i ) )
 		{
+			if ( match_only )
+				continue;
+
 			j = ii;
 			while ( j < i )
 			{
@@ -217,6 +220,12 @@ int knowledge_based_copy_and_replace_ex ( int argc, const char * knowledge [ ], 
 
 		if ( ! knowledge_based_do_match_ex ( argc, knowledge, wildcard, pattern, src, src_len, & i, filter_on_terminate, filter_on_equal ) )
 		{
+			if ( match_only )
+			{
+				i ++;
+				continue;
+			}
+
 			if ( h + 1 == dst_size )
 				return 0;
 

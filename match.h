@@ -35,7 +35,9 @@ extern int copy_string ( const char * src, char * dst, int dst_size, ... );
 extern int filter_quote ( char * src, int src_len, int * src_index );
 extern int filter_blank ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index );
 extern int filter_alphabet ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index );
+extern int filter_alphabet2 ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index );
 extern int filter_escape ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index, char * exclude );
+extern int filter_escape2 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index, char * exclude );
 
 extern int filter_custom ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 extern int filter_forward3 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
@@ -44,20 +46,20 @@ extern int filter_forward ( char * src, int src_len, int src_prior, int * src_in
 extern int filter_backward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 
 /* wildcards are restricted to matching only predefined known characters */
-extern int knowledge_based_copy_and_replace_ex ( int argc, const char * knowledge [ ], char wildcard, struct filter_t * filter,
+extern int knowledge_based_copy_and_replace_ex ( int match_only, int argc, const char * knowledge [ ], char wildcard, struct filter_t * filter,
 												 char * src, int src_len, char * dst, int dst_size,
 												 char * pattern, char * replace, char * exclude,
 												 ... );
 
-extern int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t * filters [ ], char * src, int src_len, char * dst, int dst_size,
+extern int multiple_copy_and_replace_ex ( int match_only, int argc, char wildcards [ ], struct filter_t * filters [ ], char * src, int src_len, char * dst, int dst_size,
 										  char * patterns [ ], char * replaces [ ], char * excludes [ ],
 										  ... );
 
-extern int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
+extern int copy_and_replace_ex2 ( int match_only, const char * known, char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
 								  char * pattern, char * replace, char * exclude,
 								  ... );
 
-extern int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
+extern int copy_and_replace_ex ( int match_only, char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
 								 char * pattern, char * replace, char * exclude,
 								 ... );
 
@@ -107,7 +109,7 @@ extern int copy_and_replace ( char * src, int src_len, char * dst, int dst_size,
  *     len = sizeof ( unknown_chars_1 ) / sizeof ( unknown_chars_1 [ 0 ] ) - 1;
  *
  *     printf ( "%d:%s\n", len, unknown_chars_1 );
- *     len = copy_and_replace_ex ( '*', unknown_chars_1, len, unknown_chars_2, MAX_TEST_SIZE, NULL, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
+ *     len = copy_and_replace_ex ( 0, '*', unknown_chars_1, len, unknown_chars_2, MAX_TEST_SIZE, NULL, pattern, replace, exclude, "placeholder_1", "placeholder_2" );
  *     printf ( "%d:%s\n", len, unknown_chars_2 );
  * }
  * 

@@ -27,7 +27,7 @@ extern int is_known_character ( const char * known, char c );
 extern int do_match_ex ( char wildcard, char * pattern, char * src, int src_len, int * next,
 						 filter_terminate_t filter_on_terminate, filter_equal_t filter_on_equal );
 
-int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t * filters [ ], char * src, int src_len, char * dst, int dst_size,
+int multiple_copy_and_replace_ex ( int match_only, int argc, char wildcards [ ], struct filter_t * filters [ ], char * src, int src_len, char * dst, int dst_size,
 								   char * patterns [ ], char * replaces [ ], char * excludes [ ],
 								   ... )
 {
@@ -63,17 +63,22 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 
 			if ( filter_on_initiate && filter_on_initiate ( src, src_len, & i ) )
 			{
-				j = ii;
-				while ( j < i )
+				if ( ! match_only )
 				{
-					if ( h + 1 == dst_size )
-						return 0;
+					j = ii;
+					while ( j < i )
+					{
+						if ( h + 1 == dst_size )
+							return 0;
 
-					*( dst + h ++ ) = *( src + j ++ );
+						*( dst + h ++ ) = *( src + j ++ );
+					}
 				}
 
 				if ( i == src_len ) /* must test i < src_len now */
 					goto quit;
+
+				ii = i; /* again, save i = current index */
 			}
 
 			if ( do_match_ex ( wildcards [ n ], patterns [ n ], src, src_len, & i, filter_on_terminate, filter_on_equal ) )
@@ -171,6 +176,12 @@ int multiple_copy_and_replace_ex ( int argc, char wildcards [ ], struct filter_t
 		}
 		if ( ! m )
 		{
+			if ( match_only )
+			{
+				i ++;
+				continue;
+			}
+
 			if ( h + 1 == dst_size )
 				return 0;
 

@@ -22,6 +22,7 @@
 
 #include "config.h"
 
+extern const char * src_dir;
 extern int hit_count;
 
 extern int string_length ( const char * src );
@@ -77,7 +78,7 @@ int seek_unknown_character ( const char * known, char * src, int src_len, int * 
 	return 0;
 }
 
-int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
+int copy_and_replace_ex2 ( int match_only, const char * known, char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
 						   char * pattern, char * replace, char * exclude,
 						   ... )
 {
@@ -109,6 +110,12 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 	{
 		if ( ! is_known_character ( known, *( src + i ) ) )
 		{
+			if ( match_only )
+			{
+				i ++;
+				continue;
+			}
+
 			if ( h + 1 == dst_size )
 				return 0;
 
@@ -123,6 +130,9 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 
 		if ( filter_on_initiate && filter_on_initiate ( src, len, & i ) )
 		{
+			if ( match_only )
+				continue;
+
 			j = ii;
 			while ( j < i )
 			{
@@ -137,6 +147,12 @@ int copy_and_replace_ex2 ( const char * known, char wildcard, struct filter_t * 
 
 		if ( ! do_match_ex ( wildcard, pattern, src, len, & i, filter_on_terminate, filter_on_equal ) )
 		{
+			if ( match_only )
+			{
+				i ++;
+				continue;
+			}
+
 			if ( h + 1 == dst_size )
 				return 0;
 
@@ -270,6 +286,7 @@ int filter_custom ( char * src, int src_len, int src_prior, int * src_index, cha
 int filter_escape ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index, char * exclude )
 {
 	int i, h, j, f, g;
+	int a;
 	int threshold;
 	int skip;
 
@@ -277,17 +294,14 @@ int filter_escape ( char * src, int src_len, int src_prior, int * src_index, cha
 	h = * dst_index;
 
 	j = src_prior, f = g = -1; threshold = 0; skip = string_length ( "function" );
+
+	while ( skip -- )
+		j ++;
+
 	while ( j < i )
 	{
 		if ( h + 1 == dst_size )
 			return 0;
-
-		if ( skip )
-		{
-			skip --;
-			j ++;
-			continue;
-		}
 
 		if ( is_known_character ( exclude, *( src + j ) ) )
 		{
@@ -296,7 +310,53 @@ int filter_escape ( char * src, int src_len, int src_prior, int * src_index, cha
 		}
 
 		/* remove the characters in parentheses */
-		if( '(' == *( src + j ) )
+		if ( '\'' == *( src + j ) )
+		{
+			a = 0;
+			while ( ++ j < i ) 
+			{
+				if ( a )
+				{
+					a = 0;
+					continue;
+				}
+
+				if ( '\'' == *( src + j ) )
+				{
+					j ++; /* must be here, do NOT move this line */
+					break;
+				}
+
+				if ( '\\' == *( src + j ) )
+					a = 1;
+			}
+
+			continue;
+		}
+		else if ( '\"' == *( src + j ) )
+		{
+			a = 0;
+			while ( ++ j < i ) 
+			{
+				if ( a )
+				{
+					a = 0;
+					continue;
+				}
+
+				if ( '\"' == *( src + j ) )
+				{
+					j ++; /* must be here, do NOT move this line */
+					break;
+				}
+
+				if ( '\\' == *( src + j ) )
+					a = 1;
+			}
+
+			continue;
+		}
+		else if( '(' == *( src + j ) )
 		{
 			if ( threshold ++ > 0 )
 			{
@@ -357,6 +417,47 @@ int filter_escape ( char * src, int src_len, int src_prior, int * src_index, cha
 
 			if ( h + 1 == dst_size ) /* must be here, do NOT move this line */
 				return 0;	
+		}
+
+		*( dst + h ++ ) = *( src + j ++ );
+	}
+
+	* src_index = i;
+	* dst_index = h;
+
+	return 1;
+}
+
+int filter_escape2 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index, char * exclude )
+{
+	int i, h, j;
+	int skip;
+
+	i = * src_index;
+	h = * dst_index;
+
+	j = src_prior; skip = string_length ( src_dir );
+
+	while ( skip -- > 1 ) /* NOT >0, for c:/test/ => c:/test */
+		j ++;
+
+	while ( j < i )
+	{
+		if ( h + 1 == dst_size )
+			return 0;
+
+		if ( is_known_character ( exclude, *( src + j ) ) )
+		{
+			j ++;
+			continue;
+		}
+
+		/* escape characters */
+		if ( '\\' == *( src + j ) )
+		{
+			*( dst + h ++ ) = '/';
+			j ++; /* patch */
+			continue;
 		}
 
 		*( dst + h ++ ) = *( src + j ++ );
@@ -541,7 +642,7 @@ int filter_blank ( char * pattern, int * pattern_index, char * src, int src_len,
 
 	if ( *( pos + k ) )
 	{
-		if ( *( pos + k ) == '1' ) /* \v0: call number == 1 */
+		if ( *( pos + k ) == '1' ) /* \v1: call number == 1 */
 		{
 			/* 
 			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
@@ -555,7 +656,7 @@ int filter_blank ( char * pattern, int * pattern_index, char * src, int src_len,
 				return 1;
 			}
 		}
-		else if ( *( pos + k ) == '2' ) /* \v1: call number == 2 */
+		else if ( *( pos + k ) == '2' ) /* \v2: call number == 2 */
 		{
 			j = i;
 						
@@ -599,7 +700,7 @@ int filter_alphabet ( char * pattern, int * pattern_index, char * src, int src_l
 
 	if ( *( pos + k ) )
 	{
-		if ( *( pos + k ) == '1' ) /* \v0: call number == 1 */
+		if ( *( pos + k ) == '1' ) /* \v1: call number == 1 */
 		{
 			/* 
 			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
@@ -613,7 +714,7 @@ int filter_alphabet ( char * pattern, int * pattern_index, char * src, int src_l
 				return 1;
 			}
 		}
-		else if ( *( pos + k ) == '2' ) /* \v1: call number == 2 */
+		else if ( *( pos + k ) == '2' ) /* \v2: call number == 2 */
 		{
 			j = i;
 						
@@ -634,7 +735,7 @@ int filter_alphabet ( char * pattern, int * pattern_index, char * src, int src_l
 				return 1;
 			}
 		}
-		else if ( *( pos + k ) == '8' ) /* \v0: call number == 8 */
+		else if ( *( pos + k ) == '7' ) /* \v7: call number == 7 */
 		{
 			/* 
 			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
@@ -648,7 +749,7 @@ int filter_alphabet ( char * pattern, int * pattern_index, char * src, int src_l
 				return 1;
 			}
 		}
-		else if ( *( pos + k ) == '9' ) /* \v1: call number == 9 */
+		else if ( *( pos + k ) == '8' ) /* \v8: call number == 8 */
 		{
 			j = i;
 						
@@ -664,6 +765,148 @@ int filter_alphabet ( char * pattern, int * pattern_index, char * src, int src_l
 			if ( j < i )
 			{
 				* src_index = i; /* NOT ++i */
+				* pattern_index = k;
+
+				return 1;
+			}
+		}
+		else
+		{
+			/* illegal call number */
+		}
+	}
+
+	return 0;
+}
+
+int filter_alphabet2 ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index )
+{
+	char * pos;
+	int i, j, k;
+
+	i = * src_index;
+
+	pos = pattern;
+	k = * pattern_index;
+
+	k ++;
+
+	if ( *( pos + k ) )
+	{
+		if ( *( pos + k ) == '1' ) /* \v1: call number == 1 */
+		{
+			/* 
+			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
+			 * do NOT check if ( i == src_len ) return 0 again here
+			 */
+			if ( is_known_character ( KNOWN_ALPHABET_BLANK, *( src + i ) ) )
+			{
+				* src_index = ++ i; /* ++i must be here */
+				* pattern_index = k;
+
+				return 1;
+			}
+		}
+		else if ( *( pos + k ) == '2' ) /* \v2: call number == 2 */
+		{
+			j = i;
+						
+			/* 
+			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
+			 * do NOT check if ( i == src_len ) return 0 again here
+			 * meaning the 1st round comparing is safe to go
+			 */
+			while ( is_known_character ( KNOWN_ALPHABET_BLANK, *( src + i ) ) )
+				if ( ++ i == src_len ) /* must be here, do NOT move this line */
+					break; /* NOT return 0 */
+
+			if ( j < i )
+			{
+				* src_index = i; /* NOT ++i */
+				* pattern_index = k;
+
+				return 1;
+			}
+		}
+		else if ( *( pos + k ) == '3' ) /* \v3: call number == 3 */
+		{
+			/* 
+			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
+			 * do NOT check if ( i == src_len ) return 0 again here
+			 */
+			if ( is_known_character ( KNOWN_ALPHABET_NUM, *( src + i ) ) )
+			{
+				* src_index = ++ i; /* ++i must be here */
+				* pattern_index = k;
+
+				return 1;
+			}
+		}
+		else if ( *( pos + k ) == '4' ) /* \v4: call number == 4 */
+		{
+			j = i;
+						
+			/* 
+			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
+			 * do NOT check if ( i == src_len ) return 0 again here
+			 * meaning the 1st round comparing is safe to go
+			 */
+			while ( is_known_character ( KNOWN_ALPHABET_NUM, *( src + i ) ) )
+				if ( ++ i == src_len ) /* must be here, do NOT move this line */
+					break; /* NOT return 0 */
+
+			if ( j < i )
+			{
+				* src_index = i; /* NOT ++i */
+				* pattern_index = k;
+
+				return 1;
+			}
+		}
+		else if ( *( pos + k ) == '5' ) /* \v5: call number == 5 */
+		{
+			/* 
+			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
+			 * do NOT check if ( i == src_len ) return 0 again here
+			 */
+			if ( is_known_character ( KNOWN_ALPHABET_DIR, *( src + i ) ) )
+			{
+				* src_index = ++ i; /* ++i must be here */
+				* pattern_index = k;
+
+				return 1;
+			}
+		}
+		else if ( *( pos + k ) == '6' ) /* \v6: call number == 6 */
+		{
+			j = i;
+						
+			/* 
+			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
+			 * do NOT check if ( i == src_len ) return 0 again here
+			 * meaning the 1st round comparing is safe to go
+			 */
+			while ( is_known_character ( KNOWN_ALPHABET_DIR, *( src + i ) ) )
+				if ( ++ i == src_len ) /* must be here, do NOT move this line */
+					break; /* NOT return 0 */
+
+			if ( j < i )
+			{
+				* src_index = i; /* NOT ++i */
+				* pattern_index = k;
+
+				return 1;
+			}
+		}
+		else if ( *( pos + k ) == '9' ) /* \v9: call number == 9 */
+		{
+			/* 
+			 * do_match_ex ( ) has already checked current 1 char *( src + i ),
+			 * do NOT check if ( i == src_len ) return 0 again here
+			 */
+			if ( is_known_character ( KNOWN_ALPHABET_DRV, *( src + i ) ) )
+			{
+				* src_index = ++ i; /* ++i must be here */
 				* pattern_index = k;
 
 				return 1;

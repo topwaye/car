@@ -136,6 +136,7 @@
     <ClCompile Include="match3.c" />
     <ClCompile Include="match4.c" />
     <ClCompile Include="report.c" />
+    <ClCompile Include="report2.c" />
     <ClCompile Include="traverse.c" />
     <ClCompile Include="traverse2.c" />
     <ClCompile Include="traverse3.c" />

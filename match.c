@@ -360,7 +360,7 @@ quit:
 	return a;
 }
 
-int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
+int copy_and_replace_ex ( int match_only, char wildcard, struct filter_t * filter, char * src, int src_len, char * dst, int dst_size,
 						  char * pattern, char * replace, char * exclude,
 						  ... )
 {
@@ -393,6 +393,9 @@ int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, i
 
 		if ( filter_on_initiate && filter_on_initiate ( src, src_len, & i ) )
 		{
+			if ( match_only )
+				continue;
+
 			j = ii;
 			while ( j < i )
 			{
@@ -407,6 +410,12 @@ int copy_and_replace_ex ( char wildcard, struct filter_t * filter, char * src, i
 
 		if ( ! do_match_ex ( wildcard, pattern, src, src_len, & i, filter_on_terminate, filter_on_equal ) )
 		{
+			if ( match_only )
+			{
+				i ++;
+				continue;
+			}
+
 			if ( h + 1 == dst_size )
 				return 0;
 

@@ -63,7 +63,7 @@ int do_command4 ( const char * filename, int argc, const char * knowledge [ ], c
     dirty = bytes_copied > 0;
 	pos += bytes_copied;
 	size -= bytes_copied;
-	bytes_copied = knowledge_based_copy_and_replace_ex ( argc, knowledge, wildcard, filter, src_buf, bytes_read, pos, size,
+	bytes_copied = knowledge_based_copy_and_replace_ex ( 0, argc, knowledge, wildcard, filter, src_buf, bytes_read, pos, size,
                                                          pattern, replace, exclude, path, log );
     dirty += hit_count;
 	pos += bytes_copied;

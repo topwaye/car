@@ -63,7 +63,7 @@ int do_command3 ( const char * filename, int argc, char wildcards [ ],
     dirty = bytes_copied > 0;
 	pos += bytes_copied;
 	size -= bytes_copied;
-	bytes_copied = multiple_copy_and_replace_ex ( argc, wildcards, filters, src_buf, bytes_read, pos, size,
+	bytes_copied = multiple_copy_and_replace_ex ( 0, argc, wildcards, filters, src_buf, bytes_read, pos, size,
                                                   patterns, replaces, excludes, path, log );
     dirty += hit_count;
 	pos += bytes_copied;

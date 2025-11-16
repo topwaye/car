@@ -27,6 +27,10 @@ extern int nonredundancy_copy_file ( const char * src_filename, const char * dst
 
 extern int rich_copy_file ( const char * src_filename, const char * dst_filename, const char * lead, const char * trail );
 
+extern int strip_copy_file ( const char * src_filename, const char * dst_filename, char wildcard,
+                             struct filter_t * filter,
+            	             char * pattern, char * replace, char * exclude );
+
 #endif
 
 /*

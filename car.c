@@ -342,7 +342,7 @@ int my_report3 ( const char * obj, const char * inc )
 
 int my_report4 ( const char * log, const char * tmp )
 {
-	char pattern [ ] = "\v2\v9:\v6";
+	char pattern [ ] = "\v1\v9:\v6";
 	char replace [ ] = "\b\n";
 	char exclude [ ] = ""; /* what characters a matched @string excludes */
 

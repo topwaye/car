@@ -438,7 +438,7 @@ int filter_escape2 ( char * src, int src_len, int src_prior, int * src_index, ch
 
 	j = src_prior; skip = string_length ( src_dir );
 
-	while ( skip -- > 1 ) /* NOT >0, for c:/test/ => c:/test */
+	while ( skip -- ) /* a blank + c:/test/ => c:/test */
 		j ++;
 
 	while ( j < i )

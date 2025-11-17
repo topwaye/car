@@ -10,7 +10,7 @@
 #define MAX_BUFFER_SIZE         65536       /* 64KB < 1MB */
 #define MAX_FILE_SIZE		    134217728   /* 128MB */
 
-#define KNOWN_ALPHABET_NUM		"1234567890"
+#define KNOWN_ALPHABET_NUM		"123456789.0"
 #define KNOWN_ALPHABET_BLANK	" \t\r\n"
 #define KNOWN_ALPHABET_NAME     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_"
 #define KNOWN_ALPHABET_DRV      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"

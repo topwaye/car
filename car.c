@@ -34,18 +34,20 @@ extern int load_file ( const char * filename );
  */
 char param_list [ ] [ PARAM_ENTRY_WIDTH ] [ _MAX_PATH ] =
 {
-	{ "src",	"c:/apache24/htdocs/" },
-	{ "dst",	"c:/car-workspace/"   },
-	{ "ext",	".php"                }, /* do NOT include wildcard characters */
-	{ "log",	"c:/car/e.log"        },
-	{ "tmp",	"c:/car/e2.log"       },
-	{ "obj",	"c:/car/e3.log"       },
-	{ "inc",	"c:/car/e4.log"       },
-	{ "xt_log",	"c:/car/xdebug.xt"    },
-	{ "xt_tmp",	"c:/car/xdebug2.xt"   },
-	{ "xt_obj",	"c:/car/xdebug3.xt"   },
-	{ "xt_inc",	"c:/car/xdebug4.xt"   },
-	{ "dbg",	"c:/car/debug.php"    }
+	{ "src",		"c:/apache24/htdocs/" },
+	{ "dst",		"c:/car-workspace/"   },
+	{ "ext",		".php"                }, /* do NOT include wildcard characters */
+	{ "log",		"c:/car/e.log"        },
+	{ "tmp",		"c:/car/e2.log"       },
+	{ "obj",		"c:/car/e3.log"       },
+	{ "inc",		"c:/car/e4.log"       },
+	{ "xt_log",		"c:/car/xdebug.xt"    },
+	{ "xt_tmp",		"c:/car/xdebug2.xt"   },
+	{ "xt_obj",		"c:/car/xdebug3.xt"   },
+	{ "xt_inc",		"c:/car/xdebug4.xt"   },
+	{ "xt_time",	"c:/car/xdebug5.xt"   },
+	{ "xt_mem",		"c:/car/xdebug6.xt"   },
+	{ "dbg",		"c:/car/debug.php"    }
 };
 
 int param_list_len = sizeof ( param_list ) / sizeof ( param_list [ 0 ] );
@@ -352,7 +354,16 @@ int my_report4 ( const char * log, const char * tmp )
 	filter.filter_on_equal = filter_alphabet2; /* filter_blank */
 	filter.filter_on_exclude = filter_escape2; /* "\"\'$" */
 
+	printf ( "parsing %s\n", log );
+
 	return strip_copy_file ( log, tmp, '*', & filter, pattern, replace, exclude );
+}
+
+int my_report5 ( int threshold, const char * log, const char * tmp )
+{
+	printf ( "parsing %s\n", log );
+
+	return x_report_copy_file ( threshold, log, tmp );
 }
 
 int my_directory ( const char * obj )
@@ -477,8 +488,10 @@ int run ( int operation )
 	char * xt_tmp = param_list [ 8 ] [ 1 ];
 	char * xt_obj = param_list [ 9 ] [ 1 ];
 	char * xt_inc = param_list [ 10 ] [ 1 ];
+	char * xt_time = param_list [ 11 ] [ 1 ];
+	char * xt_mem = param_list [ 12 ] [ 1 ];
 
-	char * dbg = param_list [ 11 ] [ 1 ];
+	char * dbg = param_list [ 13 ] [ 1 ];
 
 	src_dir = src;
 	dst_dir = dst;
@@ -492,6 +505,7 @@ int run ( int operation )
 		case 3: return my_report1 ( log, tmp ) && my_report2 ( tmp, obj )  && my_report3 ( obj, inc )
 					   && my_directory ( obj );
 		case 4: return my_report4 ( xt_log, xt_tmp ) && my_report2 ( xt_tmp, xt_obj )  && my_report3 ( xt_obj, xt_inc )
+					   && my_report5 ( TIME_THRESHOLD_VALUE, xt_log, xt_time )  && my_report5 ( MEM_THRESHOLD_VALUE, xt_log, xt_mem )
 					   && my_directory ( xt_obj );
 		case 5: return my_debug ( dbg );
 	}

@@ -19,17 +19,22 @@
 #ifndef REPORT_H
 #define REPORT_H
 
+#define TIME_THRESHOLD_VALUE		1
+#define MEM_THRESHOLD_VALUE			2
+
 /* if successful, returns 1. otherwise, returns 0 */
+
+extern int strip_copy_file ( const char * src_filename, const char * dst_filename, char wildcard,
+                             struct filter_t * filter,
+            	             char * pattern, char * replace, char * exclude );
+
+extern int x_report_copy_file ( int threshold, const char * src_filename, const char * dst_filename );
 
 extern int report_copy_file ( const char * src_filename, const char * dst_filename );
 
 extern int nonredundancy_copy_file ( const char * src_filename, const char * dst_filename );
 
 extern int rich_copy_file ( const char * src_filename, const char * dst_filename, const char * lead, const char * trail );
-
-extern int strip_copy_file ( const char * src_filename, const char * dst_filename, char wildcard,
-                             struct filter_t * filter,
-            	             char * pattern, char * replace, char * exclude );
 
 #endif
 

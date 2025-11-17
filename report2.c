@@ -32,51 +32,48 @@ extern int seek_unknown_character ( const char * known, char * src, int src_len,
 int x_report_copy ( int threshold, char * src, int src_len, char * dst, int dst_size )
 {
 	int i, h;
-	int a, n;
+	int n;
 	int begin, end;
 
 	if ( dst_size < 1 ) /* size >= len + 1 */
 		return 0;
 
-	h = 0, i = 0; a = 0;
+	h = 0, i = 0;
 	while ( i < src_len )
 	{
 		if ( h + 1 == dst_size )
 			return 0;
 
-		if ( ! a )
-		{
-			begin = end = i;
-			for ( n = 0; n < threshold; n ++ )
-			{	
-				begin = end;
-				if ( ! seek_unknown_character ( KNOWN_ALPHABET_BLANK, src, src_len, & begin ) )
-					begin = src_len;
+		begin = end = i;
+		for ( n = 0; n < threshold; n ++ )
+		{	
+			begin = end;
+			if ( ! seek_unknown_character ( KNOWN_ALPHABET_BLANK, src, src_len, & begin ) )
+				begin = src_len;
 
-				end = begin;
-				if ( ! seek_unknown_character ( KNOWN_ALPHABET_NUM, src, src_len, & end ) )
-					end = src_len;
-			}
-
-			a = 1;
+			end = begin;
+			if ( ! seek_unknown_character ( KNOWN_ALPHABET_NUM, src, src_len, & end ) )
+				end = src_len;
 		}
 
-		if ( '\n' == *( src + i ) )
+		i = begin;
+		while ( i < end )
 		{
-			a = 0; /* reinit */
+			if ( h + 1 == dst_size )
+				return 0;
 
-			*( dst + h ++ ) = '\n';
-			i ++;
-			continue;
-		}
-
-		if ( i >= begin && i < end ) /* must be here, do NOT move this line */
-		{
 			*( dst + h ++ ) = *( src + i ++ );
-			continue;
 		}
 
-		i ++;
+		if ( h + 1 == dst_size )
+			return 0;
+		
+		*( dst + h ++ ) = '\n';
+
+		if ( ! seek_string ( '\n', src, src_len, & i ) ) /* start a new line hopefully */
+			break;
+
+		i ++; /* add 1 manually */
 	}
 
 	*( dst + h ) = 0;

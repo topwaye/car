@@ -28,7 +28,11 @@ extern int strip_copy_file ( const char * src_filename, const char * dst_filenam
                              struct filter_t * filter,
             	             char * pattern, char * replace, char * exclude );
 
-extern int x_report_copy_file ( int threshold, const char * src_filename, const char * dst_filename );
+extern int field_copy_file ( int threshold, const char * src_filename, const char * dst_filename );
+
+extern int float_delta_copy_file ( const char * src_filename, const char * dst_filename );
+
+extern int integer_delta_copy_file ( const char * src_filename, const char * dst_filename );
 
 extern int report_copy_file ( const char * src_filename, const char * dst_filename );
 

@@ -29,7 +29,109 @@ extern char * dst_buf;
 
 extern int seek_unknown_character ( const char * known, char * src, int src_len, int * current );
 
-int x_report_copy ( int threshold, char * src, int src_len, char * dst, int dst_size )
+int float_delta_copy ( char * src, int src_len, char * dst, int dst_size )
+{
+	int i, ii, iii, j, h;
+	int prior_len, current_len;
+	double prior, current;
+	char delta_in_chars [ _CVTBUFSIZE ];
+
+	if ( dst_size < 1 ) /* size >= len + 1 */
+		return 0;
+
+	h = 0, iii = ii = i = 0; prior_len = current_len = 0;
+	while ( i < src_len )
+	{
+		if ( ! seek_string ( '\n', src, src_len, & i ) ) /* start a new line hopefully */
+			break;
+
+		*( src + i ) = 0;
+
+		prior_len = current_len;
+		current_len = string_length ( src + ii ); /* NOT i, must be here, do NOT move this line */
+
+		if ( prior_len > 0 && current_len > 0 )
+		{
+			prior = atof ( src + iii );
+			current = atof ( src + ii );
+			sprintf_s ( delta_in_chars, _CVTBUFSIZE, "%.4f", current - prior ); /* Convert float to string with 4 decimal */
+
+			j = 0;
+			while ( *( delta_in_chars + j ) )
+			{
+				if ( h + 1 == dst_size )
+					return 0;
+
+				*( dst + h ++ ) = *( delta_in_chars + j ++ );
+			}
+			
+			if ( h + 1 == dst_size )
+				return 0;
+		
+			*( dst + h ++ ) = '\n';
+		}
+
+		iii = ii;
+		ii = ++ i; /* NOT i++ */
+	}
+
+	*( dst + h ) = 0;
+
+	return h;
+}
+
+int integer_delta_copy ( char * src, int src_len, char * dst, int dst_size )
+{
+	int i, ii, iii, j, h;
+	int prior_len, current_len;
+	int prior, current;
+	char delta_in_chars [ _CVTBUFSIZE ];
+
+	if ( dst_size < 1 ) /* size >= len + 1 */
+		return 0;
+
+	h = 0, iii = ii = i = 0; prior_len = current_len = 0;
+	while ( i < src_len )
+	{
+		if ( ! seek_string ( '\n', src, src_len, & i ) ) /* start a new line hopefully */
+			break;
+
+		*( src + i ) = 0;
+
+		prior_len = current_len;
+		current_len = string_length ( src + ii ); /* NOT i, must be here, do NOT move this line */
+
+		if ( prior_len > 0 && current_len > 0 )
+		{
+			prior = atoi ( src + iii );
+			current = atoi ( src + ii );
+			_itoa_s ( current - prior, delta_in_chars, _CVTBUFSIZE, 10 );
+
+			j = 0;
+			while ( *( delta_in_chars + j ) )
+			{
+				if ( h + 1 == dst_size )
+					return 0;
+
+				*( dst + h ++ ) = *( delta_in_chars + j ++ );
+			}
+			
+			if ( h + 1 == dst_size )
+				return 0;
+		
+			*( dst + h ++ ) = '\n';
+		}
+
+		iii = ii;
+		ii = ++ i; /* NOT i++ */
+	}
+
+	*( dst + h ) = 0;
+
+	return h;
+}
+
+int field_copy ( int threshold, char * src, int src_len, char * dst, int dst_size )
 {
 	int i, h;
 	int n;
@@ -83,7 +185,7 @@ int x_report_copy ( int threshold, char * src, int src_len, char * dst, int dst_
 
 /* if successful, returns 1. otherwise, returns 0 */
 
-int x_report_copy_file ( int threshold, const char * src_filename, const char * dst_filename )
+int field_copy_file ( int threshold, const char * src_filename, const char * dst_filename )
 {
 	int src_fh, dst_fh;
 	int bytes_read, bytes_copied, bytes_written;
@@ -113,7 +215,111 @@ int x_report_copy_file ( int threshold, const char * src_filename, const char * 
 		return 0;
 	}
 
-	bytes_copied = x_report_copy ( threshold, src_buf, bytes_read, dst_buf, MAX_FILE_SIZE );
+	bytes_copied = field_copy ( threshold, src_buf, bytes_read, dst_buf, MAX_FILE_SIZE );
+
+	/* write out output */
+	bytes_written = _write ( dst_fh, dst_buf, bytes_copied );
+	if ( bytes_written == -1 )
+	{
+		printf ( "problem writing file\n" );
+		_close ( dst_fh );
+		_close ( src_fh );
+		return 0;
+	}
+
+	printf ( "%d bytes read, ", bytes_read );
+	printf ( "%d bytes copied, ", bytes_copied );
+	printf ( "%d bytes written\n", bytes_written );
+
+    _close ( dst_fh );
+	_close ( src_fh );
+
+	return 1;
+}
+
+int float_delta_copy_file ( const char * src_filename, const char * dst_filename )
+{
+	int src_fh, dst_fh;
+	int bytes_read, bytes_copied, bytes_written;
+
+    /* open file for input */
+    if ( _sopen_s ( &src_fh, src_filename, _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
+    {
+        printf ( "open failed on input file\n" );
+        return 0;
+    }
+	
+	/* open file for output */
+    if ( _sopen_s ( &dst_fh, dst_filename, _O_CREAT | _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
+    {
+        printf ( "open failed on output file\n" );
+		_close( src_fh );
+		return 0;
+    }
+
+	/* read in input */
+	bytes_read = _read ( src_fh, src_buf, MAX_FILE_SIZE );
+	if ( bytes_read == -1 )
+	{
+		printf ( "problem reading file\n" );
+		_close ( dst_fh );
+		_close ( src_fh );
+		return 0;
+	}
+
+	bytes_copied = float_delta_copy ( src_buf, bytes_read, dst_buf, MAX_FILE_SIZE );
+
+	/* write out output */
+	bytes_written = _write ( dst_fh, dst_buf, bytes_copied );
+	if ( bytes_written == -1 )
+	{
+		printf ( "problem writing file\n" );
+		_close ( dst_fh );
+		_close ( src_fh );
+		return 0;
+	}
+
+	printf ( "%d bytes read, ", bytes_read );
+	printf ( "%d bytes copied, ", bytes_copied );
+	printf ( "%d bytes written\n", bytes_written );
+
+    _close ( dst_fh );
+	_close ( src_fh );
+
+	return 1;
+}
+
+int integer_delta_copy_file ( const char * src_filename, const char * dst_filename )
+{
+	int src_fh, dst_fh;
+	int bytes_read, bytes_copied, bytes_written;
+
+    /* open file for input */
+    if ( _sopen_s ( &src_fh, src_filename, _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
+    {
+        printf ( "open failed on input file\n" );
+        return 0;
+    }
+	
+	/* open file for output */
+    if ( _sopen_s ( &dst_fh, dst_filename, _O_CREAT | _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
+    {
+        printf ( "open failed on output file\n" );
+		_close( src_fh );
+		return 0;
+    }
+
+	/* read in input */
+	bytes_read = _read ( src_fh, src_buf, MAX_FILE_SIZE );
+	if ( bytes_read == -1 )
+	{
+		printf ( "problem reading file\n" );
+		_close ( dst_fh );
+		_close ( src_fh );
+		return 0;
+	}
+
+	bytes_copied = integer_delta_copy ( src_buf, bytes_read, dst_buf, MAX_FILE_SIZE );
 
 	/* write out output */
 	bytes_written = _write ( dst_fh, dst_buf, bytes_copied );

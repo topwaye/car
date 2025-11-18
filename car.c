@@ -34,24 +34,24 @@ extern int load_file ( const char * filename );
  */
 char param_list [ ] [ PARAM_ENTRY_WIDTH ] [ _MAX_PATH ] =
 {
-	{ "src",		"c:/apache24/htdocs/" },
-	{ "dst",		"c:/car-workspace/"   },
-	{ "ext",		".php"                }, /* do NOT include wildcard characters */
-	{ "log",		"c:/car/e.log"        },
-	{ "tmp",		"c:/car/e2.log"       },
-	{ "obj",		"c:/car/e3.log"       },
-	{ "inc",		"c:/car/e4.log"       },
-	{ "xt_log",		"c:/car/xdebug.xt"    },
-	{ "xt_tmp",		"c:/car/xdebug2.xt"   },
-	{ "xt_obj",		"c:/car/xdebug3.xt"   },
-	{ "xt_inc",		"c:/car/xdebug4.xt"   },
+	{ "src",			"c:/apache24/htdocs/" },
+	{ "dst",			"c:/car-workspace/"   },
+	{ "ext",			".php"                }, /* do NOT include wildcard characters */
+	{ "log",			"c:/car/e.log"        },
+	{ "tmp",			"c:/car/e2.log"       },
+	{ "obj",			"c:/car/e3.log"       },
+	{ "inc",			"c:/car/e4.log"       },
+	{ "xt_log",			"c:/car/xdebug.xt"    },
+	{ "xt_tmp",			"c:/car/xdebug2.xt"   },
+	{ "xt_obj",			"c:/car/xdebug3.xt"   },
+	{ "xt_inc",			"c:/car/xdebug4.xt"   },
 	{ "xt_time_tmp",	"c:/car/xdebug5.xt"   },
 	{ "xt_time_obj",	"c:/car/xdebug6.xt"   },
 	{ "xt_time_ndx",	"c:/car/xdebug7.xt"   },
 	{ "xt_mem_tmp",		"c:/car/xdebug8.xt"   },
 	{ "xt_mem_obj",		"c:/car/xdebug9.xt"   },
-	{ "xt_mem_ndx",		"c:/car/xdebug10.xt"   },
-	{ "dbg",		"c:/car/debug.php"    }
+	{ "xt_mem_ndx",		"c:/car/xdebug10.xt"  },
+	{ "dbg",			"c:/car/debug.php"    }
 };
 
 int param_list_len = sizeof ( param_list ) / sizeof ( param_list [ 0 ] );
@@ -517,12 +517,15 @@ int run ( int operation )
 	char * inc = param_list [ 6 ] [ 1 ];
 
 	char * xt_log = param_list [ 7 ] [ 1 ];
+
 	char * xt_tmp = param_list [ 8 ] [ 1 ];
 	char * xt_obj = param_list [ 9 ] [ 1 ];
 	char * xt_inc = param_list [ 10 ] [ 1 ];
+
 	char * xt_time_tmp = param_list [ 11 ] [ 1 ];
 	char * xt_time_obj = param_list [ 12 ] [ 1 ];
 	char * xt_time_ndx = param_list [ 13 ] [ 1 ];
+
 	char * xt_mem_tmp = param_list [ 14 ] [ 1 ];
 	char * xt_mem_obj = param_list [ 15 ] [ 1 ];
 	char * xt_mem_ndx = param_list [ 16 ] [ 1 ];

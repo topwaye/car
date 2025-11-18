@@ -47,8 +47,10 @@ char param_list [ ] [ PARAM_ENTRY_WIDTH ] [ _MAX_PATH ] =
 	{ "xt_inc",		"c:/car/xdebug4.xt"   },
 	{ "xt_time_tmp",	"c:/car/xdebug5.xt"   },
 	{ "xt_time_obj",	"c:/car/xdebug6.xt"   },
-	{ "xt_mem_tmp",		"c:/car/xdebug7.xt"   },
-	{ "xt_mem_obj",		"c:/car/xdebug8.xt"   },
+	{ "xt_time_ndx",	"c:/car/xdebug7.xt"   },
+	{ "xt_mem_tmp",		"c:/car/xdebug8.xt"   },
+	{ "xt_mem_obj",		"c:/car/xdebug9.xt"   },
+	{ "xt_mem_ndx",		"c:/car/xdebug10.xt"   },
 	{ "dbg",		"c:/car/debug.php"    }
 };
 
@@ -375,11 +377,25 @@ int my_report6 ( const char * tmp, const char * obj )
 	return float_delta_copy_file ( tmp, obj );
 }
 
-int my_report7 ( const char * tmp, const char * obj )
+int my_report7 ( const char * obj, const char * ndx )
+{
+	printf ( "parsing %s\n", obj );
+
+	return float_index_copy_file ( obj, ndx );
+}
+
+int my_report8 ( const char * tmp, const char * obj )
 {
 	printf ( "parsing %s\n", tmp );
 
 	return integer_delta_copy_file ( tmp, obj );
+}
+
+int my_report9 ( const char * obj, const char * ndx )
+{
+	printf ( "parsing %s\n", obj );
+
+	return integer_index_copy_file ( obj, ndx );
 }
 
 int my_directory ( const char * obj )
@@ -506,10 +522,12 @@ int run ( int operation )
 	char * xt_inc = param_list [ 10 ] [ 1 ];
 	char * xt_time_tmp = param_list [ 11 ] [ 1 ];
 	char * xt_time_obj = param_list [ 12 ] [ 1 ];
-	char * xt_mem_tmp = param_list [ 13 ] [ 1 ];
-	char * xt_mem_obj = param_list [ 14 ] [ 1 ];
+	char * xt_time_ndx = param_list [ 13 ] [ 1 ];
+	char * xt_mem_tmp = param_list [ 14 ] [ 1 ];
+	char * xt_mem_obj = param_list [ 15 ] [ 1 ];
+	char * xt_mem_ndx = param_list [ 16 ] [ 1 ];
 
-	char * dbg = param_list [ 15 ] [ 1 ];
+	char * dbg = param_list [ 17 ] [ 1 ];
 
 	src_dir = src;
 	dst_dir = dst;
@@ -523,8 +541,8 @@ int run ( int operation )
 		case 3: return my_report1 ( log, tmp ) && my_report2 ( tmp, obj )  && my_report3 ( obj, inc )
 					   && my_directory ( obj );
 		case 4: return my_report4 ( xt_log, xt_tmp ) && my_report2 ( xt_tmp, xt_obj )  && my_report3 ( xt_obj, xt_inc )
-					   && my_report5 ( TIME_THRESHOLD_VALUE, xt_log, xt_time_tmp ) && my_report6 ( xt_time_tmp, xt_time_obj )
-					   && my_report5 ( MEM_THRESHOLD_VALUE, xt_log, xt_mem_tmp ) && my_report7 ( xt_mem_tmp, xt_mem_obj )
+					   && my_report5 ( TIME_THRESHOLD_VALUE, xt_log, xt_time_tmp ) && my_report6 ( xt_time_tmp, xt_time_obj ) && my_report7 ( xt_time_obj, xt_time_ndx )
+					   && my_report5 ( MEM_THRESHOLD_VALUE, xt_log, xt_mem_tmp ) && my_report8 ( xt_mem_tmp, xt_mem_obj ) && my_report9 ( xt_mem_obj, xt_mem_ndx )
 					   && my_directory ( xt_obj );
 		case 5: return my_debug ( dbg );
 	}

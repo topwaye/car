@@ -30,7 +30,11 @@ extern int strip_copy_file ( const char * src_filename, const char * dst_filenam
 
 extern int field_copy_file ( int threshold, const char * src_filename, const char * dst_filename );
 
+extern int float_index_copy_file ( const char * src_filename, const char * dst_filename );
+
 extern int float_delta_copy_file ( const char * src_filename, const char * dst_filename );
+
+extern int integer_index_copy_file ( const char * src_filename, const char * dst_filename );
 
 extern int integer_delta_copy_file ( const char * src_filename, const char * dst_filename );
 

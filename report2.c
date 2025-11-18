@@ -41,9 +41,6 @@ int x_report_copy ( int threshold, char * src, int src_len, char * dst, int dst_
 	h = 0, i = 0;
 	while ( i < src_len )
 	{
-		if ( h + 1 == dst_size )
-			return 0;
-
 		begin = end = i;
 		for ( n = 0; n < threshold; n ++ )
 		{	
@@ -65,10 +62,13 @@ int x_report_copy ( int threshold, char * src, int src_len, char * dst, int dst_
 			*( dst + h ++ ) = *( src + i ++ );
 		}
 
-		if ( h + 1 == dst_size )
-			return 0;
+		if ( begin < end )
+		{
+			if ( h + 1 == dst_size )
+				return 0;
 		
-		*( dst + h ++ ) = '\n';
+			*( dst + h ++ ) = '\n';
+		}
 
 		if ( ! seek_string ( '\n', src, src_len, & i ) ) /* start a new line hopefully */
 			break;

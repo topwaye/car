@@ -20,7 +20,6 @@ this is how we can quickly understand PHP projects with thousands of lines of co
 
 this program is written in C language and compiled with Visual Studio 2022
 
-this program reimplements part of regular expressions, using a recursive algorithm, 
-referring to a book by the author of regular expressions, Beautiful Code
+this program reimplements part of regular expressions, using a recursive algorithm, referring to a book by the author of regular expressions, Beautiful Code
 
 topwaye@hotmail.com

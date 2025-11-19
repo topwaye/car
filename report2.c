@@ -77,7 +77,7 @@ int float_index_copy ( char * src, int src_len, int src_size, char * dst, int ds
 	// 3. sort indexes in src_buf
 
 	values = ( double * ) dst;
-	indexes= ( int * ) src;
+	indexes = ( int * ) src;
 	
 	if ( h < 1 )
 		return 0;
@@ -168,7 +168,7 @@ int integer_index_copy ( char * src, int src_len, int src_size, char * dst, int 
 	// 3. sort indexes in src_buf
 
 	values = ( int * ) dst;
-	indexes= ( int * ) src;
+	indexes = ( int * ) src;
 	
 	if ( h < 1 )
 		return 0;

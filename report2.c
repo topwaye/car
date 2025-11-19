@@ -29,10 +29,10 @@ extern char * dst_buf;
 
 extern int seek_unknown_character ( const char * known, char * src, int src_len, int * current );
 
-int float_index_copy ( char * src, int src_len, char * dst, int dst_size )
+int float_index_copy ( char * src, int src_len, int src_size, char * dst, int dst_size )
 {
 	int i, ii, j, h, t;
-	int count, tmp;
+	int tmp;
 	double current;
 	double * values;
 	int * indexes;
@@ -43,7 +43,7 @@ int float_index_copy ( char * src, int src_len, char * dst, int dst_size )
 
 	// 1. write numbers to dst_buf
 
-	h = 0, ii = i = 0; count = 0;
+	h = 0, ii = i = 0;
 	while ( i < src_len )
 	{
 		if ( ! seek_string ( '\n', src, src_len, & i ) ) /* start a new line hopefully */
@@ -55,12 +55,10 @@ int float_index_copy ( char * src, int src_len, char * dst, int dst_size )
 		{
 			current = atof ( src + ii );
 			
-			if ( h + sizeof ( double ) > dst_size ) /* NOT ==, NOT >= */
+			if ( sizeof ( double ) * ( h + 1 ) > dst_size ) /* NOT ==, NOT >= */
 				return 0;
 
 			*( ( double * ) dst + h ++ ) = current;
-
-			count ++;
 		}
 
 		ii = ++ i; /* NOT i++ */
@@ -68,9 +66,9 @@ int float_index_copy ( char * src, int src_len, char * dst, int dst_size )
 
 	// 2. write indexes to src_buf
 
-	for ( i = 0; i < count; i ++ )
+	for ( i = 0; i < h; i ++ )
 	{
-		if ( h + sizeof ( int ) > src_len ) /* NOT ==, NOT >= */
+		if ( sizeof ( int ) * ( i + 1 ) > src_size ) /* NOT ==, NOT >= */
 			return 0;
 
 		*( ( int * ) src + i ) = i;	
@@ -81,13 +79,13 @@ int float_index_copy ( char * src, int src_len, char * dst, int dst_size )
 	values = ( double * ) dst;
 	indexes= ( int * ) src;
 	
-	if ( count < 1 )
+	if ( h < 1 )
 		return 0;
 
-	for ( i = 0; i < count - 1; i ++ )
+	for ( i = 0; i < h - 1; i ++ )
 	{
 		t = i;
-		for ( j = i + 1; j < count; j ++ )
+		for ( j = i + 1; j < h; j ++ )
 			if ( *( values + *( indexes + t ) ) < *( values + *( indexes + j ) ) )
 				t = j;
 
@@ -97,9 +95,8 @@ int float_index_copy ( char * src, int src_len, char * dst, int dst_size )
 	}
 
 	// 4. write indexes to dst_buf
-
-	h = 0;
-	for ( i = 0; i < count; i ++ )
+	t = h; h = 0;
+	for ( i = 0; i < t; i ++ )
 	{
 		_itoa_s ( *( indexes + i ), index_in_chars, _CVTBUFSIZE, 10 );
 
@@ -123,10 +120,10 @@ int float_index_copy ( char * src, int src_len, char * dst, int dst_size )
 	return h;
 }
 
-int integer_index_copy ( char * src, int src_len, char * dst, int dst_size )
+int integer_index_copy ( char * src, int src_len, int src_size, char * dst, int dst_size )
 {
 	int i, ii, j, h, t;
-	int count, tmp;
+	int tmp;
 	int current;
 	int * values;
 	int * indexes;
@@ -137,7 +134,7 @@ int integer_index_copy ( char * src, int src_len, char * dst, int dst_size )
 
 	// 1. write numbers to dst_buf
 
-	h = 0, ii = i = 0; count = 0;
+	h = 0, ii = i = 0;
 	while ( i < src_len )
 	{
 		if ( ! seek_string ( '\n', src, src_len, & i ) ) /* start a new line hopefully */
@@ -149,12 +146,10 @@ int integer_index_copy ( char * src, int src_len, char * dst, int dst_size )
 		{
 			current = atoi ( src + ii );
 			
-			if ( h + sizeof ( int ) > dst_size ) /* NOT ==, NOT >= */
+			if ( sizeof ( int ) * ( h + 1 ) > dst_size ) /* NOT ==, NOT >= */
 				return 0;
 
 			*( ( int * ) dst + h ++ ) = current;
-
-			count ++;
 		}
 
 		ii = ++ i; /* NOT i++ */
@@ -162,9 +157,9 @@ int integer_index_copy ( char * src, int src_len, char * dst, int dst_size )
 
 	// 2. write indexes to src_buf
 
-	for ( i = 0; i < count; i ++ )
+	for ( i = 0; i < h; i ++ )
 	{
-		if ( h + sizeof ( int ) > src_len ) /* NOT ==, NOT >= */
+		if ( sizeof ( int ) * ( i + 1 ) > src_size ) /* NOT ==, NOT >= */
 			return 0;
 
 		*( ( int * ) src + i ) = i;	
@@ -175,13 +170,13 @@ int integer_index_copy ( char * src, int src_len, char * dst, int dst_size )
 	values = ( int * ) dst;
 	indexes= ( int * ) src;
 	
-	if ( count < 1 )
+	if ( h < 1 )
 		return 0;
 
-	for ( i = 0; i < count - 1; i ++ )
+	for ( i = 0; i < h - 1; i ++ )
 	{
 		t = i;
-		for ( j = i + 1; j < count; j ++ )
+		for ( j = i + 1; j < h; j ++ )
 			if ( *( values + *( indexes + t ) ) < *( values + *( indexes + j ) ) )
 				t = j;
 
@@ -191,9 +186,8 @@ int integer_index_copy ( char * src, int src_len, char * dst, int dst_size )
 	}
 
 	// 4. write indexes to dst_buf
-
-	h = 0;
-	for ( i = 0; i < count; i ++ )
+	t = h; h = 0;
+	for ( i = 0; i < t; i ++ )
 	{
 		_itoa_s ( *( indexes + i ), index_in_chars, _CVTBUFSIZE, 10 );
 
@@ -455,7 +449,7 @@ int float_index_copy_file ( const char * src_filename, const char * dst_filename
 		return 0;
 	}
 
-	bytes_copied = float_index_copy ( src_buf, bytes_read, dst_buf, MAX_FILE_SIZE );
+	bytes_copied = float_index_copy ( src_buf, bytes_read, MAX_FILE_SIZE, dst_buf, MAX_FILE_SIZE );
 
 	/* write out output */
 	bytes_written = _write ( dst_fh, dst_buf, bytes_copied );
@@ -559,7 +553,7 @@ int integer_index_copy_file ( const char * src_filename, const char * dst_filena
 		return 0;
 	}
 
-	bytes_copied = integer_index_copy ( src_buf, bytes_read, dst_buf, MAX_FILE_SIZE );
+	bytes_copied = integer_index_copy ( src_buf, bytes_read, MAX_FILE_SIZE, dst_buf, MAX_FILE_SIZE );
 
 	/* write out output */
 	bytes_written = _write ( dst_fh, dst_buf, bytes_copied );

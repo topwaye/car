@@ -38,6 +38,7 @@ extern int filter_alphabet ( char * pattern, int * pattern_index, char * src, in
 extern int filter_alphabet2 ( char * pattern, int * pattern_index, char * src, int src_len, int * src_index );
 extern int filter_escape ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index, char * exclude );
 extern int filter_escape2 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index, char * exclude );
+extern int filter_escape3 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index, char * exclude );
 
 extern int filter_custom ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );
 extern int filter_forward3 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index );

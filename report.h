@@ -24,6 +24,10 @@
 
 /* if successful, returns 1. otherwise, returns 0 */
 
+extern int include_copy_file ( const char * src_filename, const char * dst_filename, int argc, char wildcards [ ],
+                               struct filter_t * filters [ ],
+                               char * patterns [ ], char * replaces [ ], char * excludes [ ] );
+
 extern int strip_copy_file ( const char * src_filename, const char * dst_filename, char wildcard,
                              struct filter_t * filter,
             	             char * pattern, char * replace, char * exclude );

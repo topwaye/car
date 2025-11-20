@@ -469,6 +469,49 @@ int filter_escape2 ( char * src, int src_len, int src_prior, int * src_index, ch
 	return 1;
 }
 
+int filter_escape3 ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index, char * exclude )
+{
+	int i, h, j;
+	int skip;
+
+	i = * src_index;
+	h = * dst_index;
+
+	j = src_prior; skip = string_length ( src_dir );
+
+	seek_string ( '(', src, src_len, & j ); /* always succeed */
+
+	while ( skip -- ) /* a blank + c:/test/ => c:/test */
+		j ++;
+
+	while ( j < i )
+	{
+		if ( h + 1 == dst_size )
+			return 0;
+
+		if ( is_known_character ( exclude, *( src + j ) ) )
+		{
+			j ++;
+			continue;
+		}
+
+		/* escape characters */
+		if ( '\\' == *( src + j ) )
+		{
+			*( dst + h ++ ) = '/';
+			j ++; /* patch */
+			continue;
+		}
+
+		*( dst + h ++ ) = *( src + j ++ );
+	}
+
+	* src_index = i;
+	* dst_index = h;
+
+	return 1;
+}
+
 int filter_backward ( char * src, int src_len, int src_prior, int * src_index, char * dst, int dst_size, int * dst_index )
 {
 	int i, h, j;

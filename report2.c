@@ -681,3 +681,58 @@ int strip_copy_file ( const char * src_filename, const char * dst_filename, char
 
 	return 1;
 }
+
+int include_copy_file ( const char * src_filename, const char * dst_filename, int argc, char wildcards [ ],
+                    	struct filter_t * filters [ ],
+                    	char * patterns [ ], char * replaces [ ], char * excludes [ ] )
+{
+	int src_fh, dst_fh;
+	int bytes_read, bytes_copied, bytes_written;
+
+    /* open file for input */
+    if ( _sopen_s ( &src_fh, src_filename, _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
+    {
+        printf ( "open failed on input file\n" );
+        return 0;
+    }
+	
+	/* open file for output */
+    if ( _sopen_s ( &dst_fh, dst_filename, _O_CREAT | _O_BINARY | _O_RDWR, _SH_DENYNO, _S_IREAD | _S_IWRITE) )
+    {
+        printf ( "open failed on output file\n" );
+		_close( src_fh );
+		return 0;
+    }
+
+	/* read in input */
+	bytes_read = _read ( src_fh, src_buf, MAX_FILE_SIZE );
+	if ( bytes_read == -1 )
+	{
+		printf ( "problem reading file\n" );
+		_close ( dst_fh );
+		_close ( src_fh );
+		return 0;
+	}
+
+	bytes_copied = multiple_copy_and_replace_ex ( 1, argc, wildcards, filters, src_buf, bytes_read, dst_buf, MAX_FILE_SIZE,
+                                                  patterns, replaces, excludes );
+
+	/* write out output */
+	bytes_written = _write ( dst_fh, dst_buf, bytes_copied );
+	if ( bytes_written == -1 )
+	{
+		printf ( "problem writing file\n" );
+		_close ( dst_fh );
+		_close ( src_fh );
+		return 0;
+	}
+
+	printf ( "%d bytes read, ", bytes_read );
+	printf ( "%d bytes copied, ", bytes_copied );
+	printf ( "%d bytes written\n", bytes_written );
+
+    _close ( dst_fh );
+	_close ( src_fh );
+
+	return 1;
+}

@@ -45,12 +45,14 @@ char param_list [ ] [ PARAM_ENTRY_WIDTH ] [ _MAX_PATH ] =
 	{ "xt_tmp",			"c:/car/xdebug2.xt"   },
 	{ "xt_obj",			"c:/car/xdebug3.xt"   },
 	{ "xt_inc",			"c:/car/xdebug4.xt"   },
-	{ "xt_time_tmp",	"c:/car/xdebug5.xt"   },
-	{ "xt_time_obj",	"c:/car/xdebug6.xt"   },
-	{ "xt_time_ndx",	"c:/car/xdebug7.xt"   },
-	{ "xt_mem_tmp",		"c:/car/xdebug8.xt"   },
-	{ "xt_mem_obj",		"c:/car/xdebug9.xt"   },
-	{ "xt_mem_ndx",		"c:/car/xdebug10.xt"  },
+	{ "xt_include_tmp",	"c:/car/xdebug5.xt"   },
+	{ "xt_include_obj",	"c:/car/xdebug6.xt"   },
+	{ "xt_time_tmp",	"c:/car/xdebug7.xt"   },
+	{ "xt_time_obj",	"c:/car/xdebug8.xt"   },
+	{ "xt_time_ndx",	"c:/car/xdebug9.xt"   },
+	{ "xt_mem_tmp",		"c:/car/xdebug10.xt"  },
+	{ "xt_mem_obj",		"c:/car/xdebug11.xt"  },
+	{ "xt_mem_ndx",		"c:/car/xdebug12.xt"  },
 	{ "dbg",			"c:/car/debug.php"    }
 };
 
@@ -363,6 +365,37 @@ int my_report4 ( const char * log, const char * tmp )
 	return strip_copy_file ( log, tmp, '*', & filter, pattern, replace, exclude );
 }
 
+int my_report10 ( const char * log, const char * tmp )
+{
+	/* include, include_once, require, require_once */
+
+	char pattern1 [ ] = "include(\v9:\v6";
+	char pattern2 [ ] = "include_once(\v9:\v6";
+	char pattern3 [ ] = "require(\v9:\v6";
+	char pattern4 [ ] = "require_once(\v9:\v6";
+
+	char replace [ ] = "\b\n";
+	char exclude [ ] = ""; /* what characters a matched @string excludes */
+
+	struct filter_t filter = { 0 }; /* init */
+	/* filter_no_relay_initiate */
+	filter.filter_on_initiate = filter_quote;
+	filter.filter_on_equal = filter_alphabet2; /* filter_blank */
+	filter.filter_on_exclude = filter_escape3; /* "\"\'$" */
+
+	/* ready to go */
+
+	char wildcards [ ] = { '*', '*', '*', '*' };
+	struct filter_t * filters [  ] = { & filter, & filter, & filter, & filter };
+	char * patterns [ ] = { pattern1, pattern2, pattern3, pattern4 };
+	char * replaces [ ] = { replace, replace, replace, replace };
+	char * excludes [ ] = { exclude, exclude, exclude, exclude };
+
+	printf ( "parsing %s\n", log );
+
+	return include_copy_file ( log, tmp, sizeof ( patterns ) / sizeof ( patterns [ 0 ] ), wildcards, filters, patterns, replaces, excludes );
+}
+
 int my_report5 ( int threshold, const char * log, const char * tmp )
 {
 	printf ( "parsing %s\n", log );
@@ -522,15 +555,18 @@ int run ( int operation )
 	char * xt_obj = param_list [ 9 ] [ 1 ];
 	char * xt_inc = param_list [ 10 ] [ 1 ];
 
-	char * xt_time_tmp = param_list [ 11 ] [ 1 ];
-	char * xt_time_obj = param_list [ 12 ] [ 1 ];
-	char * xt_time_ndx = param_list [ 13 ] [ 1 ];
+	char * xt_include_tmp = param_list [ 11 ] [ 1 ];
+	char * xt_include_obj = param_list [ 12 ] [ 1 ];
 
-	char * xt_mem_tmp = param_list [ 14 ] [ 1 ];
-	char * xt_mem_obj = param_list [ 15 ] [ 1 ];
-	char * xt_mem_ndx = param_list [ 16 ] [ 1 ];
+	char * xt_time_tmp = param_list [ 13 ] [ 1 ];
+	char * xt_time_obj = param_list [ 14 ] [ 1 ];
+	char * xt_time_ndx = param_list [ 15 ] [ 1 ];
 
-	char * dbg = param_list [ 17 ] [ 1 ];
+	char * xt_mem_tmp = param_list [ 16 ] [ 1 ];
+	char * xt_mem_obj = param_list [ 17 ] [ 1 ];
+	char * xt_mem_ndx = param_list [ 18 ] [ 1 ];
+
+	char * dbg = param_list [ 19 ] [ 1 ];
 
 	src_dir = src;
 	dst_dir = dst;
@@ -544,6 +580,7 @@ int run ( int operation )
 		case 3: return my_report1 ( log, tmp ) && my_report2 ( tmp, obj )  && my_report3 ( obj, inc )
 					   && my_directory ( obj );
 		case 4: return my_report4 ( xt_log, xt_tmp ) && my_report2 ( xt_tmp, xt_obj )  && my_report3 ( xt_obj, xt_inc )
+					   && my_report10 ( xt_log, xt_include_tmp ) && my_report2 ( xt_include_tmp, xt_include_obj )
 					   && my_report5 ( TIME_THRESHOLD_VALUE, xt_log, xt_time_tmp ) && my_report6 ( xt_time_tmp, xt_time_obj ) && my_report7 ( xt_time_obj, xt_time_ndx )
 					   && my_report5 ( MEM_THRESHOLD_VALUE, xt_log, xt_mem_tmp ) && my_report8 ( xt_mem_tmp, xt_mem_obj ) && my_report9 ( xt_mem_obj, xt_mem_ndx )
 					   && my_directory ( xt_obj );

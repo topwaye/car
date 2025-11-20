@@ -22,4 +22,6 @@ this program is written in C language and compiled with Visual Studio 2022
 
 this program reimplements part of regular expressions, using a recursive algorithm, referring to a book by the author of regular expressions, Beautiful Code
 
+all thinking in the human brain is a selection of mathematical permutations and combinations
+
 topwaye@hotmail.com

@@ -4,7 +4,7 @@ the primary reason why the WordPress homepage runs slowly is due to a call initi
 
 -> fread('https://api.wordpress.org/core/version-check/1.7/?version=6.8.3&php=8.4.10&locale=en_US&mysql=8.4.6');
 
-[excerpt from xdebug trace report]
+[excerpt from xdebug tracing report]
 
 TRACE START [2025-11-19 15:12:47.052726]
     0.5877     426872   -> {main}() C:\Apache24\htdocs\wp-cron.php:0
@@ -24,3 +24,4 @@ TRACE START [2025-11-19 15:12:47.052726]
    23.8732   36527960     -> wp_cache_close() C:\Apache24\htdocs\wp-includes\load.php:1306
    23.8757   36493672
 TRACE END   [2025-11-19 15:12:49.351256]
+

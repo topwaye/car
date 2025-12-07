@@ -386,7 +386,7 @@ int my_report10 ( const char * log, const char * tmp )
 	/* ready to go */
 
 	char wildcards [ ] = { '*', '*', '*', '*' };
-	struct filter_t * filters [  ] = { & filter, & filter, & filter, & filter };
+	struct filter_t * filters [ ] = { & filter, & filter, & filter, & filter };
 	char * patterns [ ] = { pattern1, pattern2, pattern3, pattern4 };
 	char * replaces [ ] = { replace, replace, replace, replace };
 	char * excludes [ ] = { exclude, exclude, exclude, exclude };

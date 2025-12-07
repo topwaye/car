@@ -41,7 +41,7 @@ int float_index_copy ( char * src, int src_len, int src_size, char * dst, int ds
 	if ( dst_size < 1 ) /* size >= len + 1 */
 		return 0;
 
-	// 1. write numbers to dst_buf
+	/* 1. write numbers to dst_buf */
 
 	h = 0, ii = i = 0;
 	while ( i < src_len )
@@ -64,7 +64,7 @@ int float_index_copy ( char * src, int src_len, int src_size, char * dst, int ds
 		ii = ++ i; /* NOT i++ */
 	}
 
-	// 2. write indexes to src_buf
+	/* 2. write indexes to src_buf */
 
 	for ( i = 0; i < h; i ++ )
 	{
@@ -74,7 +74,7 @@ int float_index_copy ( char * src, int src_len, int src_size, char * dst, int ds
 		*( ( int * ) src + i ) = i;	
 	}
 
-	// 3. sort indexes in src_buf
+	/* 3. sort indexes in src_buf */
 
 	values = ( double * ) dst;
 	indexes = ( int * ) src;
@@ -94,7 +94,7 @@ int float_index_copy ( char * src, int src_len, int src_size, char * dst, int ds
 		*( indexes + i ) = tmp;
 	}
 
-	// 4. write indexes to dst_buf
+	/* 4. write indexes to dst_buf */
 	t = h; h = 0;
 	for ( i = 0; i < t; i ++ )
 	{
@@ -132,7 +132,7 @@ int integer_index_copy ( char * src, int src_len, int src_size, char * dst, int 
 	if ( dst_size < 1 ) /* size >= len + 1 */
 		return 0;
 
-	// 1. write numbers to dst_buf
+	/* 1. write numbers to dst_buf */
 
 	h = 0, ii = i = 0;
 	while ( i < src_len )
@@ -155,7 +155,7 @@ int integer_index_copy ( char * src, int src_len, int src_size, char * dst, int 
 		ii = ++ i; /* NOT i++ */
 	}
 
-	// 2. write indexes to src_buf
+	/* 2. write indexes to src_buf */
 
 	for ( i = 0; i < h; i ++ )
 	{
@@ -165,7 +165,7 @@ int integer_index_copy ( char * src, int src_len, int src_size, char * dst, int 
 		*( ( int * ) src + i ) = i;	
 	}
 
-	// 3. sort indexes in src_buf
+	/* 3. sort indexes in src_buf */
 
 	values = ( int * ) dst;
 	indexes = ( int * ) src;
@@ -185,7 +185,7 @@ int integer_index_copy ( char * src, int src_len, int src_size, char * dst, int 
 		*( indexes + i ) = tmp;
 	}
 
-	// 4. write indexes to dst_buf
+	/* 4. write indexes to dst_buf */
 	t = h; h = 0;
 	for ( i = 0; i < t; i ++ )
 	{
